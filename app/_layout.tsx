@@ -13,6 +13,7 @@ import "react-native-reanimated";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import Auth from "./Auth";
 import { supabase } from "@/lib/supabase";
+import { Linking } from "react-native";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -25,6 +26,12 @@ export default function RootLayout() {
   const [session, setSession] = useState<any>(null);
   const router = useRouter();
 
+  const handleDeepLink = (event: { url: string }) => {
+    const { url } = event;
+    console.log("Deep link URL:", url);
+    // Handle extracting auth code here
+  };
+
   useEffect(() => {
     supabase.auth
       .getSession()
@@ -36,7 +43,16 @@ export default function RootLayout() {
       setSession(session)
     );
 
-    return () => subscription.unsubscribe();
+    const linkingListener = Linking.addEventListener("url", handleDeepLink);
+    // if cold start (app launched from link)
+    Linking.getInitialURL().then((url) => {
+      if (url) handleDeepLink({ url });
+    });
+
+    return () => {
+      subscription.unsubscribe();
+      linkingListener.remove();
+    };
   }, []);
 
   useEffect(() => {
