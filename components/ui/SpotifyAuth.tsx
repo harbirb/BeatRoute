@@ -13,7 +13,7 @@ WebBrowser.maybeCompleteAuthSession();
 
 // Spotify configuration
 const SPOTIFY_CLIENT_ID = "fc42a335e4a747739fe8a8f8fa07c59d"; // Replace with your Spotify Client ID
-const SPOTIFY_REDIRECT_URI = "exp://localhost";
+const SPOTIFY_REDIRECT_URI = "exp://moovit.onrender.com/auth/spotify/callback";
 const SPOTIFY_AUTHORIZATION_URL = "https://accounts.spotify.com/authorize";
 const SPOTIFY_TOKEN_URL = "https://accounts.spotify.com/api/token";
 
