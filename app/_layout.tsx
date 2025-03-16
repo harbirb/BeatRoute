@@ -10,9 +10,9 @@ import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
 import "react-native-reanimated";
 
-import { useColorScheme } from "@/hooks/useColorScheme";
+import { useColorScheme } from "@/app/hooks/useColorScheme";
 import Auth from "./Auth";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/app/lib/supabase";
 import { Linking } from "react-native";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.

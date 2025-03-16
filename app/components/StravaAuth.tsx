@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { View } from "react-native";
 import * as WebBrowser from "expo-web-browser";
 import { Chip, Text } from "@rneui/themed";
+import { supabase } from "../lib/supabase";
 
 // Replace with your Strava app credentials
 const STRAVA_CLIENT_ID = "130385";
@@ -18,6 +19,7 @@ export default function StravaAuth({
   onAuthSuccess: (token: string) => void;
 }) {
   const [connected, SetConnected] = useState(false);
+
   const handleStravaLogin = async () => {
     const authUrl = `${STRAVA_AUTHORIZATION_URL}?client_id=${STRAVA_CLIENT_ID}&redirect_uri=${encodeURIComponent(
       STRAVA_REDIRECT_URI
@@ -37,31 +39,30 @@ export default function StravaAuth({
 
       if (code) {
         console.log("Auth Code:", code);
-
-        // TODO: Token exchange should be handled on the backend for security
-
-        fetch(STRAVA_TOKEN_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            client_id: STRAVA_CLIENT_ID,
-            client_secret: "your-strava-client-secret",
-            code: code,
-            grant_type: "authorization_code",
-          }),
-        })
-          .then((res) => res.json())
-          .then((data) => {
-            if (data.access_token) {
-              console.log("Access Token:", data.access_token);
-              onAuthSuccess(data.access_token);
-            } else {
-              console.error("Token exchange failed:", data);
-            }
-          })
-          .catch((err) => console.error("Token request error:", err));
+        const response = await fetch(
+          "https://rfxbrffgxzvgzvwdxwhh.supabase.co/functions/v1/exchange-strava-token",
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${supabase.auth.session()?.access_token}`,
+              "Content-Type": "application/json",
+            },
+            body: { code },
+          }
+        );
       }
     }
+  };
+
+  const testFunction = async () => {
+    const session = await supabase.auth
+      .getSession()
+      .then(({ data }) => data.session);
+    // console.log(session);
+    const { data, error } = await supabase.functions.invoke("hello-world", {
+      body: { name: "Functions" },
+    });
+    console.log(data, error);
   };
 
   return (
@@ -69,7 +70,7 @@ export default function StravaAuth({
       {connected ? (
         <Chip title="Connected!" type="outline" size="md"></Chip>
       ) : (
-        <Chip title="Sign in with Strava" onPress={() => handleStravaLogin()} />
+        <Chip title="Sign in with Strava" onPress={() => testFunction()} />
       )}
     </View>
   );

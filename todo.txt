@@ -1,0 +1,2 @@
+get edge functions to work properly
+reset cookies in modal on close so the user can login with diff account

@@ -1,7 +1,7 @@
 import { StyleSheet, Platform, View } from "react-native";
 import { Card, Text } from "@rneui/themed";
-import StravaAuth from "@/components/StravaAuth";
-import SpotifyAuth from "@/components/ui/SpotifyAuth";
+import StravaAuth from "@/app/components/StravaAuth";
+import SpotifyAuth from "@/app/components/SpotifyAuth";
 
 export default function HomeScreen() {
   return (
