@@ -2,10 +2,15 @@ import { StyleSheet, Platform, View } from "react-native";
 import { Card, Text } from "@rneui/themed";
 import StravaAuth from "@/components/StravaAuth";
 import SpotifyAuth from "@/components/SpotifyAuth";
+import TestButton from "@/components/TestButton";
 
 export default function HomeScreen() {
   return (
     <View style={styles.container}>
+      <Card containerStyle={styles.card}>
+        <Text style={styles.title}>Test button here</Text>
+        <TestButton />
+      </Card>
       <Card containerStyle={styles.card}>
         <Text style={styles.title}>Step 1: Connect your Strava Account</Text>
         <StravaAuth onAuthSuccess={(token) => console.log()} />

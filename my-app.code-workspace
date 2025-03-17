@@ -6,7 +6,7 @@
     },
     {
       "name": "frontend",
-      "path": "app"
+      "path": "my-expo-app"
     },
     {
       "name": "supabase-functions",
@@ -15,9 +15,11 @@
   ],
   "settings": {
     "files.exclude": {
+      "moovment/": true,
       "node_modules/": true,
-      "app/": true,
       "supabase/functions/": true
-    }
+    },
+    "deno.enable": true,
+    "deno.lint": true
   }
 }

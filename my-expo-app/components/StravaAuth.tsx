@@ -11,13 +11,9 @@ const STRAVA_AUTHORIZATION_URL = "https://www.strava.com/oauth/authorize";
 const STRAVA_TOKEN_URL = "https://www.strava.com/oauth/token";
 
 // Required for proper redirect handling in Expo
-// WebBrowser.maybeCompleteAuthSession();
+WebBrowser.maybeCompleteAuthSession();
 
-export default function StravaAuth({
-  onAuthSuccess,
-}: {
-  onAuthSuccess: (token: string) => void;
-}) {
+export default function StravaAuth({ onAuthSuccess }) {
   const [connected, SetConnected] = useState(false);
 
   const handleStravaLogin = async () => {
