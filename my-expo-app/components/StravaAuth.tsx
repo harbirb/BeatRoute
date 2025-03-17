@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { View } from "react-native";
 import * as WebBrowser from "expo-web-browser";
+import { useAuthRequest } from "expo-auth-session";
 import { Chip, Text } from "@rneui/themed";
 import { supabase } from "../lib/supabase";
 
@@ -16,57 +17,52 @@ WebBrowser.maybeCompleteAuthSession();
 export default function StravaAuth({ onAuthSuccess }) {
   const [connected, SetConnected] = useState(false);
 
-  const handleStravaLogin = async () => {
-    const authUrl = `${STRAVA_AUTHORIZATION_URL}?client_id=${STRAVA_CLIENT_ID}&redirect_uri=${encodeURIComponent(
-      STRAVA_REDIRECT_URI
-    )}&response_type=code&approval_prompt=auto&scope=activity:read,profile:read_all`;
+  const [request, response, promptAsync] = useAuthRequest(
+    {
+      clientId: STRAVA_CLIENT_ID,
+      redirectUri: STRAVA_REDIRECT_URI,
+      responseType: "code",
+      extraParams: {
+        scope: "activity:read,profile:read_all",
+        approval_prompt: "force", // Forces re-authorization
+        show_dialog: "true", // Forces login prompt
+      },
+    },
+    { authorizationEndpoint: STRAVA_AUTHORIZATION_URL }
+  );
+  console.log("request", request);
 
-    console.log("Opening URL:", authUrl);
+  useEffect(() => {
+    if (response?.type === "success" && response.params?.code) {
+      const code = response.params.code;
+      alert(code);
 
-    const result = await WebBrowser.openAuthSessionAsync(
-      authUrl,
-      STRAVA_REDIRECT_URI
-    );
-
-    if (result.type === "success" && result.url) {
-      console.log("Redirect URL:", result);
-      const urlParams = new URLSearchParams(result.url.split("?")[1]);
-      const code = urlParams.get("code");
-
-      if (code) {
-        console.log("Auth Code:", code);
-        const response = await fetch(
-          "https://rfxbrffgxzvgzvwdxwhh.supabase.co/functions/v1/exchange-strava-token",
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${supabase.auth.session()?.access_token}`,
-              "Content-Type": "application/json",
-            },
-            body: { code },
-          }
-        );
-      }
+      // fetch(STRAVA_TOKEN_EXCHANGE_URL, {
+      //   method: "POST",
+      //   headers: {
+      //     Authorization: `Bearer ${supabase.auth.session()?.access_token}`,
+      //     "Content-Type": "application/json",
+      //   },
+      //   body: JSON.stringify({ code }),
+      // })
+      //   .then((res) => res.json())
+      //   .then((data) => {
+      //     console.log("Token Exchange Response:", data);
+      //     if (data.access_token) {
+      //       onAuthSuccess(data.access_token);
+      //        (true);
+      //     }
+      //   })
+      //   .catch((error) => console.error("Token exchange error:", error));
     }
-  };
-
-  const testFunction = async () => {
-    const session = await supabase.auth
-      .getSession()
-      .then(({ data }) => data.session);
-    // console.log(session);
-    const { data, error } = await supabase.functions.invoke("hello-world", {
-      body: { name: "Functions" },
-    });
-    console.log(data, error);
-  };
+  }, [response]);
 
   return (
     <View style={{ alignItems: "center" }}>
       {connected ? (
-        <Chip title="Connected!" type="outline" size="md"></Chip>
+        <Chip title="Connected!" type="outline" size="md" />
       ) : (
-        <Chip title="Sign in with Strava" onPress={() => testFunction()} />
+        <Chip title="Sign in with Strava" onPress={() => promptAsync()} />
       )}
     </View>
   );
