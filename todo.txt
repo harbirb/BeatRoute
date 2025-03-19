@@ -1,2 +1,3 @@
-get edge functions to work properly
-reset cookies in modal on close so the user can login with diff account
+- fix td in stravaauth component frontend
+- get spotify auth working (backend and frontend)
+- backend functions
