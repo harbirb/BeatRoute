@@ -6,79 +6,92 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 
-const stravaApiUrl = "https://www.strava.com/api/v3/oauth/token";
-
 Deno.serve(async (req: Request) => {
-  const stravaClientId = Deno.env.get("STRAVA_CLIENT_ID");
-  const stravaClientSecret = Deno.env.get("STRAVA_CLIENT_SECRET");
-  if (!stravaClientId || !stravaClientSecret) {
-    return new Response("Missing Strava client ID or secret.", { status: 500 });
-  }
-
-  const supabaseClient = createClient(
-    Deno.env.get("SUPABASE_URL") ?? "",
-    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
-  );
-
-  const authHeader = req.headers.get("Authorization")!;
-  const token = authHeader.replace("Bearer ", "");
-  const { data: user, error } = await supabaseClient.auth.getUser(token);
-  if (error || !user) {
-    return new Response("Unauthorized", { status: 401 });
-  }
-
-  const { code, athlete_id } = await req.json();
-  if (!code || !athlete_id) {
-    return new Response("Missing authorization code or athlete ID.", {
-      status: 400,
-    });
-  }
-
-  const requestBody = new URLSearchParams({
-    client_id: stravaClientId,
-    client_secret: stravaClientSecret,
-    code: code,
-    grant_type: "authorization_code",
-  });
-
   try {
-    // Make a POST request to exchange the code for the access token
-    const response = await fetch(stravaApiUrl, {
-      method: "POST",
-      body: requestBody,
-    });
+    const stravaClientId = Deno.env.get("STRAVA_CLIENT_ID");
+    const stravaClientSecret = Deno.env.get("STRAVA_CLIENT_SECRET");
 
-    const data = await response.json();
-
-    if (!response.ok) {
-      return new Response(JSON.stringify(data), {
-        status: 400,
-        headers: { "Content-Type": "application/json" },
-      });
-    }
-
-    const { access_token, refresh_token, expires_at } = data;
-    const { error: dbError } = await supabase.from("strava_tokens").upsert(
-      {
-        user_id: user.id,
-        athlete_id,
-        access_token,
-        refresh_token,
-        expires_at,
-      },
-      { onConflict: ["user_id"] }
+    const supabaseClient = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
     );
 
-    if (error) {
-      return new Response("Failed to store tokens in database.", {
-        status: 500,
+    // check env vars
+    if (!stravaClientId || !stravaClientSecret)
+      return jsonResponse(400, { error: "Missing Strava client ID or secret" });
+
+    // get token
+    const token = req.headers.get("Authorization")?.replace("Bearer ", "");
+    if (!token)
+      return jsonResponse(401, { error: "Missing authorization token" });
+
+    // get user
+    const { data: userData, error: authError } =
+      await supabaseClient.auth.getUser(token);
+    if (authError || !userData?.user)
+      return jsonResponse(401, { error: "Unauthorized" });
+
+    const { code } = await req.json();
+    if (!code)
+      return jsonResponse(400, { error: "Missing Strava authorization code" });
+
+    // Exchange code for Strava tokens
+    const response = await fetch("https://www.strava.com/api/v3/oauth/token", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        client_id: stravaClientId,
+        client_secret: stravaClientSecret,
+        code,
+        grant_type: "authorization_code",
+      }),
+    });
+
+    // check response from strava
+    const stravaData = await response.json();
+    if (!response.ok)
+      return jsonResponse(response.status, {
+        error: "Strava token exchange failed",
+        details: stravaData,
       });
-    }
-    return new Response("Tokens stored successfully.", { status: 200 });
+
+    // store tokens
+    const { access_token, refresh_token, expires_at, athlete } = stravaData;
+    const { error: dbError } = await supabaseClient
+      .from("strava_tokens")
+      .upsert(
+        {
+          user_id: userData.user.id,
+          athlete_id: athlete.id,
+          access_token,
+          refresh_token,
+          expires_at,
+        },
+        { onConflict: ["user_id"] }
+      );
+
+    if (dbError)
+      return jsonResponse(500, {
+        error: "Database insert failed",
+        details: dbError.message,
+      });
+
+    return jsonResponse(200, {
+      success: true,
+      message: "Tokens stored successfully",
+    });
   } catch (error) {
-    return new Response("Error exchanging token with Strava.", { status: 500 });
+    console.error("Unexpected error:", error);
+    return jsonResponse(500, { error: "Internal server error" });
   }
 });
+
+function jsonResponse(status: number, body: object): Response {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { "Content-Type": "application/json" },
+  });
+}
 
 /* To invoke locally:
 

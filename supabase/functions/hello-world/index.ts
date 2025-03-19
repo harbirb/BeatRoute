@@ -20,6 +20,15 @@ Deno.serve(async (req) => {
   try {
     // Insert a new row (id and timestamp are handled by the database)
     const { error } = await supabaseClient.from("testtable").insert({});
+    const authHeader = req.headers.get("Authorization")!;
+    const token = authHeader.replace("Bearer ", "");
+    const { data: user, e } = await supabaseClient.auth.getUser(token);
+    if (e || !user) {
+      return new Response("Unauthorized", { status: 401 });
+      console.log(e);
+    }
+    console.log(user);
+    console.log(user.id);
 
     if (error) {
       console.log(error);

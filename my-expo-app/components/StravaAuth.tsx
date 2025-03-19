@@ -4,10 +4,15 @@ import * as WebBrowser from "expo-web-browser";
 import { useAuthRequest } from "expo-auth-session";
 import { Chip, Text } from "@rneui/themed";
 import { supabase } from "../lib/supabase";
+import {
+  FunctionsHttpError,
+  FunctionsRelayError,
+  FunctionsFetchError,
+} from "@supabase/supabase-js";
 
 // Replace with your Strava app credentials
-const STRAVA_CLIENT_ID = "130385";
-const STRAVA_REDIRECT_URI = "exp://localhost"; // Your app's redirect URI
+const STRAVA_CLIENT_ID = "149792";
+const STRAVA_REDIRECT_URI = "exp://localhost:3000"; // Your app's redirect URI
 const STRAVA_AUTHORIZATION_URL = "https://www.strava.com/oauth/authorize";
 const STRAVA_TOKEN_URL = "https://www.strava.com/oauth/token";
 
@@ -15,7 +20,7 @@ const STRAVA_TOKEN_URL = "https://www.strava.com/oauth/token";
 WebBrowser.maybeCompleteAuthSession();
 
 export default function StravaAuth({ onAuthSuccess }) {
-  const [connected, SetConnected] = useState(false);
+  const [connected, setConnected] = useState(false);
 
   const [request, response, promptAsync] = useAuthRequest(
     {
@@ -30,31 +35,38 @@ export default function StravaAuth({ onAuthSuccess }) {
     },
     { authorizationEndpoint: STRAVA_AUTHORIZATION_URL }
   );
-  console.log("request", request);
 
   useEffect(() => {
-    if (response?.type === "success" && response.params?.code) {
-      const code = response.params.code;
-      alert(code);
+    const handleTokenExchange = async () => {
+      if (response?.type !== "success" || !response.params?.code) return;
 
-      // fetch(STRAVA_TOKEN_EXCHANGE_URL, {
-      //   method: "POST",
-      //   headers: {
-      //     Authorization: `Bearer ${supabase.auth.session()?.access_token}`,
-      //     "Content-Type": "application/json",
-      //   },
-      //   body: JSON.stringify({ code }),
-      // })
-      //   .then((res) => res.json())
-      //   .then((data) => {
-      //     console.log("Token Exchange Response:", data);
-      //     if (data.access_token) {
-      //       onAuthSuccess(data.access_token);
-      //        (true);
-      //     }
-      //   })
-      //   .catch((error) => console.error("Token exchange error:", error));
-    }
+      const code = response.params.code;
+      const { data, error } = await supabase.functions.invoke(
+        "exchange-strava-token",
+        {
+          body: { code },
+        }
+      );
+
+      if (error) {
+        console.error("Token exchange failed:", error);
+        if (error instanceof FunctionsHttpError) {
+          const errorMessage = await error.context.json();
+          console.log("Function returned an error", errorMessage);
+        }
+        return;
+      }
+
+      if (data.success) {
+        console.log("Token successfully exchanged");
+        setConnected(true);
+        alert("Connected to Strava!");
+      }
+    };
+
+    handleTokenExchange().catch((error) =>
+      console.error("Token exchange error:", error)
+    );
   }, [response]);
 
   return (
