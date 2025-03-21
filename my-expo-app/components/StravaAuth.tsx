@@ -21,6 +21,7 @@ WebBrowser.maybeCompleteAuthSession();
 
 export default function StravaAuth({ onAuthSuccess }) {
   const [connected, setConnected] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const [request, response, promptAsync] = useAuthRequest(
     {
@@ -40,34 +41,65 @@ export default function StravaAuth({ onAuthSuccess }) {
     const handleTokenExchange = async () => {
       if (response?.type !== "success" || !response.params?.code) return;
 
-      const code = response.params.code;
-      const { data, error } = await supabase.functions.invoke(
-        "exchange-strava-token",
-        {
-          body: { code },
-        }
-      );
+      setLoading(true);
+      try {
+        const { data, error } = await supabase.functions.invoke(
+          "exchange-strava-token",
+          { body: { code: response.params.code } }
+        );
 
-      if (error) {
+        if (error) throw error;
+
+        if (data?.success) {
+          setConnected(true);
+          Alert.alert("Success", "Connected to Strava!");
+        } else {
+          throw new Error("Token exchange failed");
+        }
+      } catch (error) {
         console.error("Token exchange failed:", error);
+
         if (error instanceof FunctionsHttpError) {
           const errorMessage = await error.context.json();
-          console.log("Function returned an error", errorMessage);
+          Alert.alert(
+            "Error",
+            errorMessage?.error || "Strava connection failed."
+          );
+        } else {
+          Alert.alert("Error", error.message);
         }
-        return;
-      }
-
-      if (data.success) {
-        console.log("Token successfully exchanged");
-        setConnected(true);
-        alert("Connected to Strava!");
+      } finally {
+        setLoading(false);
       }
     };
-
-    handleTokenExchange().catch((error) =>
-      console.error("Token exchange error:", error)
-    );
   }, [response]);
+
+  // const code = response.params.code;
+  // const { data, error } = await supabase.functions.invoke(
+  //   "exchange-strava-token",
+  //   {
+  //     body: { code },
+  //   }
+  // );
+
+  // if (error) {
+  //   console.error("Token exchange failed:", error);
+  //   if (error instanceof FunctionsHttpError) {
+  //     const errorMessage = await error.context.json();
+  //     console.log("Function returned an error", errorMessage);
+  //   }
+  //   return;
+  // }
+
+  // if (data.success) {
+  //   console.log("Token successfully exchanged");
+  //   setConnected(true);
+  //   alert("Connected to Strava!");
+  //     }
+  //   };
+
+  //   handleTokenExchange();
+  // }, [response]);
 
   return (
     <View style={{ alignItems: "center" }}>

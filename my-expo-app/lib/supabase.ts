@@ -3,9 +3,10 @@ import { createClient } from "@supabase/supabase-js";
 import { Platform } from "react-native";
 import Constants from "expo-constants";
 
-const supabaseUrl = Constants.expoConfig?.extra?.supabaseUrl;
+const supabaseUrl = "http://192.168.0.69:54321";
 
-const supabaseAnonKey = Constants.expoConfig?.extra?.supabaseAnonKey;
+const supabaseAnonKey =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0";
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
