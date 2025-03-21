@@ -15,9 +15,7 @@
   ],
   "settings": {
     "files.exclude": {
-      "moovment/": true,
-      "node_modules/": true,
-      "supabase/functions/": true
+      "node_modules/": true
     },
     "deno.enable": true,
     "deno.lint": true
