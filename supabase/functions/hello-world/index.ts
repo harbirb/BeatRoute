@@ -9,6 +9,7 @@ import { createClient } from "jsr:@supabase/supabase-js@2";
 Deno.serve(async (req) => {
   const { name } = await req.json();
   console.log("Hello, " + name + "! You've hit the Supabase Functions API.");
+  const token = req.headers.get("Authorization")?.replace("Bearer ", "");
 
   const supabaseClient = createClient(
     Deno.env.get("SUPABASE_URL") ?? "",
