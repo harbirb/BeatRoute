@@ -6,11 +6,9 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 
-console.log("Hello from Functions!");
-
 Deno.serve(async (req) => {
   const { name } = await req.json();
-  console.log(name);
+  console.log("Hello, " + name + "! You've hit the Supabase Functions API.");
 
   const supabaseClient = createClient(
     Deno.env.get("SUPABASE_URL") ?? "",
@@ -19,18 +17,22 @@ Deno.serve(async (req) => {
 
   try {
     // Insert a new row (id and timestamp are handled by the database)
-    const { error } = await supabaseClient.from("testtable").insert({});
+    const { data: data1, error: error1 } = await supabaseClient
+      .from("testtable")
+      .insert({});
+    console.log(data1, error1);
     const authHeader = req.headers.get("Authorization")!;
     const token = authHeader.replace("Bearer ", "");
-    const { data: user, e } = await supabaseClient.auth.getUser(token);
-    if (e || !user) {
+    const { data: data2, error: error2 } = await supabaseClient.auth.getUser(
+      token
+    );
+    if (error2 || !data2.user) {
       return new Response("Unauthorized", { status: 401 });
-      console.log(e);
+      console.log(error2);
     }
-    console.log(user);
-    console.log(user.id);
+    console.log("The user who sent the request: " + data2.user.id);
 
-    if (error) {
+    if (error2) {
       console.log(error);
       return new Response(JSON.stringify({ error: error.message }), {
         status: 500,
@@ -41,11 +43,14 @@ Deno.serve(async (req) => {
       JSON.stringify({ message: "Entry added successfully" }),
       { status: 200 }
     );
-  } catch (err) {
-    console.log(err);
-    return new Response(JSON.stringify({ error: "Internal Server Error" }), {
-      status: 500,
-    });
+  } catch (error) {
+    // console.log(err);
+    return new Response(
+      JSON.stringify({ message: "Internal Server Error" + error }),
+      {
+        status: 500,
+      }
+    );
   }
 });
 

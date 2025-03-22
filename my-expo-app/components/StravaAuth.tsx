@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View } from "react-native";
+import { View, Alert } from "react-native";
 import * as WebBrowser from "expo-web-browser";
 import { useAuthRequest } from "expo-auth-session";
 import { Chip, Text } from "@rneui/themed";
@@ -57,49 +57,22 @@ export default function StravaAuth({ onAuthSuccess }) {
           throw new Error("Token exchange failed");
         }
       } catch (error) {
+        // print to console
         console.error("Token exchange failed:", error);
 
         if (error instanceof FunctionsHttpError) {
           const errorMessage = await error.context.json();
-          Alert.alert(
-            "Error",
-            errorMessage?.error || "Strava connection failed."
-          );
+          Alert.alert("Error", errorMessage);
         } else {
-          Alert.alert("Error", error.message);
+          Alert.alert("Error", error);
         }
       } finally {
         setLoading(false);
       }
     };
+
+    handleTokenExchange();
   }, [response]);
-
-  // const code = response.params.code;
-  // const { data, error } = await supabase.functions.invoke(
-  //   "exchange-strava-token",
-  //   {
-  //     body: { code },
-  //   }
-  // );
-
-  // if (error) {
-  //   console.error("Token exchange failed:", error);
-  //   if (error instanceof FunctionsHttpError) {
-  //     const errorMessage = await error.context.json();
-  //     console.log("Function returned an error", errorMessage);
-  //   }
-  //   return;
-  // }
-
-  // if (data.success) {
-  //   console.log("Token successfully exchanged");
-  //   setConnected(true);
-  //   alert("Connected to Strava!");
-  //     }
-  //   };
-
-  //   handleTokenExchange();
-  // }, [response]);
 
   return (
     <View style={{ alignItems: "center" }}>
