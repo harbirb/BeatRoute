@@ -13,6 +13,7 @@ import {
   FunctionsRelayError,
   FunctionsFetchError,
 } from "@supabase/supabase-js";
+import * as Crypto from "expo-crypto";
 
 // Required for proper redirect handling in Expo
 WebBrowser.maybeCompleteAuthSession();
@@ -22,6 +23,11 @@ const SPOTIFY_CLIENT_ID = "fc42a335e4a747739fe8a8f8fa07c59d"; // Replace with yo
 const SPOTIFY_REDIRECT_URI = "exp://localhost:3000";
 const SPOTIFY_AUTHORIZATION_URL = "https://accounts.spotify.com/authorize";
 const SPOTIFY_TOKEN_URL = "https://accounts.spotify.com/api/token";
+
+const discovery = {
+  authorizationEndpoint: "https://accounts.spotify.com/authorize",
+  tokenEndpoint: "https://accounts.spotify.com/api/token",
+};
 
 export default function SpotifyAuth({ onAuthSuccess }) {
   const [connected, setConnected] = useState(false);
@@ -34,13 +40,15 @@ export default function SpotifyAuth({ onAuthSuccess }) {
       // Delete unused ones
       scopes: ["user-read-email", "user-read-private", "playlist-read-private"],
       redirectUri: SPOTIFY_REDIRECT_URI,
-      responseType: "code",
+      usePKCE: false,
     },
-    { authorizationEndpoint: SPOTIFY_AUTHORIZATION_URL }
+    discovery
   );
 
   useEffect(() => {
     const handleTokenExchange = async () => {
+      console.log(response);
+      console.log(response?.type, response?.params);
       if (response?.type !== "success" || !response.params?.code) return;
 
       setLoading(true);
@@ -86,3 +94,30 @@ export default function SpotifyAuth({ onAuthSuccess }) {
     </View>
   );
 }
+
+const generatePKCE = async () => {
+  const codeVerifier = generateRandomString(128); // Random string
+  const codeChallenge = await generateCodeChallenge(codeVerifier); // Hash it to get the challenge
+  return { codeVerifier, codeChallenge };
+};
+
+const generateRandomString = (length) => {
+  const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~";
+  let result = "";
+  const charactersLength = characters.length;
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+};
+
+// Code challenge generation using SHA256
+const generateCodeChallenge = async (codeVerifier) => {
+  const buffer = await Crypto.digestStringAsync(
+    Crypto.CryptoDigestAlgorithm.SHA256,
+    codeVerifier,
+    { encoding: Crypto.CryptoEncoding.BASE64 }
+  );
+  return buffer.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, ""); // Spotify uses Base64 URL Encoding
+};

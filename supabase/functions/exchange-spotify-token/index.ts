@@ -5,6 +5,7 @@
 // Setup type definitions for built-in Supabase Runtime APIs
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
+const SPOTIFY_REDIRECT_URI = "exp://localhost:3000";
 
 console.log("You called spotify auth endpoint!");
 
@@ -27,7 +28,6 @@ Deno.serve(async (req) => {
       });
 
     // get token
-    console.log(req);
     const token = req.headers.get("Authorization")?.replace("Bearer ", "");
     if (!token)
       return jsonResponse(401, { error: "Missing authorization token" });
@@ -42,17 +42,23 @@ Deno.serve(async (req) => {
     if (!code)
       return jsonResponse(400, { error: "Missing Spotify authorization code" });
 
+    console.log("tset ehre");
     // Exchange code for Spotify tokens
     const response = await fetch(SPOTIFY_TOKEN_URL, {
       method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        Authorization: `Basic ${btoa(
+          `${SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`
+        )}`,
+      },
       body: new URLSearchParams({
         grant_type: "authorization_code",
         code,
-        client_id: SPOTIFY_CLIENT_ID,
-        client_secret: SPOTIFY_CLIENT_SECRET,
+        redirect_uri: SPOTIFY_REDIRECT_URI,
       }),
     });
+    console.log("here now");
 
     const spotifyData = await response.json();
     if (!response.ok)
@@ -61,13 +67,32 @@ Deno.serve(async (req) => {
         details: spotifyData,
       });
 
+    console.log(spotifyData);
+
+    const currTime = Math.floor(Date.now() / 1000) + 3600;
+
     // store tokens
     const { access_token, refresh_token, expires_at } = spotifyData;
-    // const { error: dbError } = await supabaseClient
-    //   .from("spotify_tokens")
-    //   .upsert(
+    const { error: dbError } = await supabaseClient
+      .from("spotify_tokens")
+      .upsert(
+        {
+          user_id: userData.user.id,
+          access_token,
+          refresh_token,
+          expires_at: currTime,
+        },
+        { onConflict: ["user_id"] }
+      );
 
-    //   )
+    console.log(dbError);
+    if (dbError) return jsonResponse(500, { error: dbError.message });
+
+    console.log("Tokens stored successfully");
+    return jsonResponse(200, {
+      success: true,
+      message: "Tokens stored successfully",
+    });
   } catch (error) {
     // print to console
     console.error("Unexpected error:", error);
