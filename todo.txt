@@ -1,3 +1,7 @@
-- fix td in stravaauth component frontend
-- get spotify auth working (backend and frontend)
-- backend functions
+- token refresh logic
+- check if user has their accounts connected
+    what if they revoke access or reset their accounts
+- get deno setup
+
+
+

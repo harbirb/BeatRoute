@@ -19,7 +19,7 @@ import * as Crypto from "expo-crypto";
 WebBrowser.maybeCompleteAuthSession();
 
 // Spotify configuration
-const SPOTIFY_CLIENT_ID = "fc42a335e4a747739fe8a8f8fa07c59d"; // Replace with your Spotify Client ID
+const SPOTIFY_CLIENT_ID = "fc42a335e4a747739fe8a8f8fa07c59d";
 const SPOTIFY_REDIRECT_URI = "exp://localhost:3000";
 const SPOTIFY_AUTHORIZATION_URL = "https://accounts.spotify.com/authorize";
 const SPOTIFY_TOKEN_URL = "https://accounts.spotify.com/api/token";
@@ -41,6 +41,9 @@ export default function SpotifyAuth({ onAuthSuccess }) {
       scopes: ["user-read-email", "user-read-private", "playlist-read-private"],
       redirectUri: SPOTIFY_REDIRECT_URI,
       usePKCE: false,
+      extraParams: {
+        show_dialog: "true",
+      },
     },
     discovery
   );
