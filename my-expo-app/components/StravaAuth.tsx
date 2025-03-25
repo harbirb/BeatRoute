@@ -14,12 +14,11 @@ import {
 const STRAVA_CLIENT_ID = "149792";
 const STRAVA_REDIRECT_URI = "exp://localhost:3000"; // Your app's redirect URI
 const STRAVA_AUTHORIZATION_URL = "https://www.strava.com/oauth/authorize";
-const STRAVA_TOKEN_URL = "https://www.strava.com/oauth/token";
 
 // Required for proper redirect handling in Expo
 WebBrowser.maybeCompleteAuthSession();
 
-export default function StravaAuth({ onAuthSuccess }) {
+export default function StravaAuth({}) {
   const [connected, setConnected] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -63,8 +62,6 @@ export default function StravaAuth({ onAuthSuccess }) {
         if (error instanceof FunctionsHttpError) {
           const errorMessage = await error.context.json();
           Alert.alert("Error", errorMessage);
-        } else {
-          Alert.alert("Error", error);
         }
       } finally {
         setLoading(false);

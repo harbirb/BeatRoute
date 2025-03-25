@@ -3,6 +3,7 @@ import { Card, Text } from "@rneui/themed";
 import StravaAuth from "@/components/StravaAuth";
 import SpotifyAuth from "@/components/SpotifyAuth";
 import TestButton from "@/components/TestButton";
+import TestMap from "@/components/TestMap";
 
 export default function HomeScreen() {
   return (
@@ -13,7 +14,7 @@ export default function HomeScreen() {
       </Card>
       <Card containerStyle={styles.card}>
         <Text style={styles.title}>Step 1: Connect your Strava Account</Text>
-        <StravaAuth onAuthSuccess={(token) => console.log()} />
+        <StravaAuth />
       </Card>
       <Card>
         <Text style={styles.title}>Step 2: Connect your Spotify Account</Text>
@@ -23,6 +24,7 @@ export default function HomeScreen() {
           }}
         />
       </Card>
+      <TestMap />
     </View>
   );
 }
