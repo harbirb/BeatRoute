@@ -2,6 +2,7 @@ import { View, StyleSheet } from "react-native";
 import TestMap from "@/components/TestMap";
 import ImageViewer from "@/components/ImageViewer";
 import Button from "@/components/Button";
+import MapSticker from "@/components/MapSticker";
 import * as ImagePicker from "expo-image-picker";
 import { useState } from "react";
 
@@ -21,7 +22,7 @@ export default function Index() {
 
     if (!result.canceled) {
       setSelectedImage(result.assets[0].uri);
-      console.log(result);
+      //   console.log(result);
     } else {
       alert("You did not select any image.");
     }
@@ -34,6 +35,7 @@ export default function Index() {
           imgSource={PlaceholderImage}
           selectedImage={selectedImage}
         />
+        <MapSticker imageSize={200} />
       </View>
       <View style={styles.footerContainer}>
         <Button label="choose a photo" onPress={pickImageAsync}></Button>
