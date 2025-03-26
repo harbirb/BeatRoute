@@ -22,9 +22,15 @@ export default function PolylineVisualizer() {
     const minLng = Math.min(...coords.map((c) => c[1]));
     const maxLng = Math.max(...coords.map((c) => c[1]));
 
+    // TODO: scale coordinates (cosine correction)
+
+    const width = maxLng - minLng;
+    const height = maxLat - minLat;
+    const maxSize = Math.max(width, height);
+
     return coords.map(([lat, lng]) => ({
-      x: ((lng - minLng) / (maxLng - minLng)) * 300 + 20, // Scale to fit
-      y: ((lat - minLat) / (maxLat - minLat)) * 300 + 20,
+      x: ((lng - minLng) / maxSize) * 300 + 30,
+      y: ((lat - minLat) / maxSize) * 300 + 30,
     }));
   };
 
@@ -48,11 +54,11 @@ export default function PolylineVisualizer() {
     <View style={styles.container}>
       <ViewShot ref={viewShotRef} options={{ format: "png", quality: 1.0 }}>
         <Svg height="400" width="400">
-          <Polyline points={points} fill="none" stroke="red" strokeWidth="3" />
+          <Polyline points={points} fill="none" stroke="blue" strokeWidth="3" />
         </Svg>
       </ViewShot>
 
-      {/* <Button title="Save as PNG" onPress={captureAndSave} /> */}
+      <Button title="Save as PNG" onPress={captureAndSave} />
     </View>
   );
 }
