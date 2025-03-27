@@ -5,6 +5,7 @@ import Button from "@/components/Button";
 import MapSticker from "@/components/MapSticker";
 import * as ImagePicker from "expo-image-picker";
 import { useState } from "react";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 const PlaceholderImage = require("@/assets/images/react-logo.png");
 
@@ -29,7 +30,7 @@ export default function Index() {
   };
 
   return (
-    <View style={styles.container}>
+    <GestureHandlerRootView style={styles.container}>
       <View style={styles.imageContainer}>
         <ImageViewer
           imgSource={PlaceholderImage}
@@ -41,7 +42,7 @@ export default function Index() {
         <Button label="choose a photo" onPress={pickImageAsync}></Button>
         <Button label="use this photo"></Button>
       </View>
-    </View>
+    </GestureHandlerRootView>
   );
 }
 
@@ -53,7 +54,13 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     flex: 1,
-    paddingTop: 28,
+    // paddingTop: 28,
+    // alignItems: "center",
+  },
+  stickerContainer: {
+    position: "absolute",
+    top: 50,
+    left: 50,
   },
   footerContainer: {
     flex: 1 / 3,

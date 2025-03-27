@@ -1,6 +1,11 @@
 import polyline from "@mapbox/polyline";
 import { ImageSource } from "expo-image";
 import { Image, View, StyleSheet } from "react-native";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+} from "react-native-reanimated";
 import Svg, { Polyline } from "react-native-svg";
 
 type Props = {
@@ -26,8 +31,8 @@ const normalizePoints = (coords: any[]) => {
   const maxSize = Math.max(width, height);
 
   return coords.map(([lat, lng]) => ({
-    x: ((lng - minLng) / maxSize) * 300 + 30,
-    y: ((lat - minLat) / maxSize) * 300 + 30,
+    x: ((lng - minLng) / maxSize) * 200 + 30,
+    y: ((lat - minLat) / maxSize) * 200 + 30,
   }));
 };
 
@@ -36,11 +41,33 @@ const points = normalizePoints(coordinates)
   .join(" ");
 
 export default function MapSticker({ imageSize }: Props) {
+  const translateX = useSharedValue(0);
+  const translateY = useSharedValue(0);
+
+  const drag = Gesture.Pan().onChange((event) => {
+    translateX.value += event.changeX;
+    translateY.value += event.changeY;
+    // console.log(translateX.value, translateY.value);
+  });
+
+  const containerStyle = useAnimatedStyle(() => {
+    return {
+      transform: [
+        { translateX: translateX.value },
+        { translateY: translateY.value },
+      ],
+    };
+  });
+
   return (
-    <View>
-      <Svg height="400" width="400">
-        <Polyline points={points} fill="none" stroke="blue" strokeWidth="3" />
-      </Svg>
-    </View>
+    <GestureDetector gesture={drag}>
+      <Animated.View
+        style={[containerStyle, { width: imageSize, height: imageSize }]}
+      >
+        <Svg height="400" width="400">
+          <Polyline points={points} fill="none" stroke="blue" strokeWidth="3" />
+        </Svg>
+      </Animated.View>
+    </GestureDetector>
   );
 }
