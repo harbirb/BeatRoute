@@ -20,6 +20,8 @@ function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max);
 }
 
+const DEFAULT_SIZE = 200;
+
 const { width, height } = Dimensions.get("screen");
 
 const encodedPolyline =
@@ -41,8 +43,8 @@ const normalizePoints = (coords: any[]) => {
   const maxSize = Math.max(mapWidth, mapHeight);
 
   return coords.map(([lat, lng]) => ({
-    x: ((lng - minLng) / maxSize) * 220 + 15,
-    y: ((lat - minLat) / maxSize) * 220 + 30,
+    x: ((lng - minLng) / maxSize) * 220,
+    y: ((lat - minLat) / maxSize) * 220,
   }));
 };
 
@@ -50,7 +52,7 @@ const points = normalizePoints(coordinates)
   .map((p) => `${p.x},${p.y}`)
   .join(" ");
 
-export default function MapSticker({ imageSize }: Props) {
+export default function MapSticker() {
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
   const prevTranslationX = useSharedValue(0);
@@ -63,8 +65,8 @@ export default function MapSticker({ imageSize }: Props) {
       prevTranslationY.value = translateY.value;
     })
     .onUpdate((event) => {
-      const maxTranslateX = width / 2 - imageSize / 2;
-      const maxTranslateY = height / 2 - imageSize / 2;
+      const maxTranslateX = width / 2 - 200 / 2;
+      const maxTranslateY = height / 2 - 200 / 2;
 
       translateX.value = clamp(
         prevTranslationX.value + event.translationX,
@@ -78,6 +80,7 @@ export default function MapSticker({ imageSize }: Props) {
         maxTranslateY
       );
     })
+    // must runOnJS because clamp uses std js functions
     .runOnJS(true);
 
   const animatedStyles = useAnimatedStyle(() => {
@@ -94,7 +97,7 @@ export default function MapSticker({ imageSize }: Props) {
       <GestureDetector gesture={pan}>
         <Animated.View style={[animatedStyles, styles.map]}>
           {/* TODO: make height and width state variables for consistency */}
-          <Svg height="250" width="250">
+          <Svg height="100%" width="100%" viewBox="0 0 200 200">
             <Polyline
               points={points}
               fill="none"
@@ -114,5 +117,5 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  map: { borderStyle: "solid", borderWidth: 1 },
+  map: { borderStyle: "solid", borderWidth: 1, width: 400, height: 400 },
 });

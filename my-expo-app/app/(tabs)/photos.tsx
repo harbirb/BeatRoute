@@ -36,7 +36,7 @@ export default function Index() {
           imgSource={PlaceholderImage}
           selectedImage={selectedImage}
         />
-        <MapSticker imageSize={200} />
+        <MapSticker />
       </View>
       <View style={styles.footerContainer}>
         <Button label="choose a photo" onPress={pickImageAsync}></Button>
