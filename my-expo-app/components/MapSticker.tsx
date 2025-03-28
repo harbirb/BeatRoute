@@ -1,7 +1,11 @@
 import polyline from "@mapbox/polyline";
 import { ImageSource } from "expo-image";
 import { Image, View, StyleSheet } from "react-native";
-import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import {
+  Gesture,
+  GestureDetector,
+  GestureHandlerRootView,
+} from "react-native-gesture-handler";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -31,8 +35,8 @@ const normalizePoints = (coords: any[]) => {
   const maxSize = Math.max(width, height);
 
   return coords.map(([lat, lng]) => ({
-    x: ((lng - minLng) / maxSize) * 200 + 30,
-    y: ((lat - minLat) / maxSize) * 200 + 30,
+    x: ((lng - minLng) / maxSize) * 220 + 15,
+    y: ((lat - minLat) / maxSize) * 220 + 30,
   }));
 };
 
@@ -50,7 +54,7 @@ export default function MapSticker({ imageSize }: Props) {
     // console.log(translateX.value, translateY.value);
   });
 
-  const containerStyle = useAnimatedStyle(() => {
+  const animatedStyles = useAnimatedStyle(() => {
     return {
       transform: [
         { translateX: translateX.value },
@@ -60,14 +64,29 @@ export default function MapSticker({ imageSize }: Props) {
   });
 
   return (
-    <GestureDetector gesture={drag}>
-      <Animated.View
-        style={[containerStyle, { width: imageSize, height: imageSize }]}
-      >
-        <Svg height="400" width="400">
-          <Polyline points={points} fill="none" stroke="blue" strokeWidth="3" />
-        </Svg>
-      </Animated.View>
-    </GestureDetector>
+    <GestureHandlerRootView style={styles.container}>
+      <GestureDetector gesture={drag}>
+        <Animated.View style={[animatedStyles, styles.map]}>
+          {/* TODO: make height and width state variables for consistency */}
+          <Svg height="250" width="250">
+            <Polyline
+              points={points}
+              fill="none"
+              stroke="blue"
+              strokeWidth="3"
+            />
+          </Svg>
+        </Animated.View>
+      </GestureDetector>
+    </GestureHandlerRootView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  map: { borderStyle: "solid", borderWidth: 2 },
+});

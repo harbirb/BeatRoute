@@ -30,7 +30,7 @@ export default function Index() {
   };
 
   return (
-    <GestureHandlerRootView style={styles.container}>
+    <View style={styles.container}>
       <View style={styles.imageContainer}>
         <ImageViewer
           imgSource={PlaceholderImage}
@@ -42,7 +42,7 @@ export default function Index() {
         <Button label="choose a photo" onPress={pickImageAsync}></Button>
         <Button label="use this photo"></Button>
       </View>
-    </GestureHandlerRootView>
+    </View>
   );
 }
 
@@ -54,6 +54,7 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     flex: 1,
+    backgroundColor: "red",
     // paddingTop: 28,
     // alignItems: "center",
   },
