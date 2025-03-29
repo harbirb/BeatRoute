@@ -1,4 +1,4 @@
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, LayoutChangeEvent } from "react-native";
 import TestMap from "@/components/TestMap";
 import ImageViewer from "@/components/ImageViewer";
 import Button from "@/components/Button";
@@ -13,6 +13,10 @@ export default function Index() {
   const [selectedImage, setSelectedImage] = useState<string | undefined>(
     undefined
   );
+  const [canvasDimensions, setCanvasDimensions] = useState({
+    width: 0,
+    height: 0,
+  });
 
   const pickImageAsync = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -29,14 +33,19 @@ export default function Index() {
     }
   };
 
+  function handleLayout(event: LayoutChangeEvent): void {
+    const { width, height } = event.nativeEvent.layout;
+    setCanvasDimensions({ width, height });
+  }
+
   return (
     <View style={styles.container}>
-      <View style={styles.imageContainer}>
+      <View style={styles.imageContainer} onLayout={handleLayout}>
         <ImageViewer
           imgSource={PlaceholderImage}
           selectedImage={selectedImage}
         />
-        <MapSticker />
+        <MapSticker canvasSize={canvasDimensions} />
       </View>
       <View style={styles.footerContainer}>
         <Button label="choose a photo" onPress={pickImageAsync}></Button>
@@ -50,18 +59,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "pink",
-    alignItems: "center",
   },
   imageContainer: {
     flex: 1,
-    backgroundColor: "red",
-    // paddingTop: 28,
-    // alignItems: "center",
-  },
-  stickerContainer: {
-    position: "absolute",
-    top: 50,
-    left: 50,
+    backgroundColor: "orange",
+    alignItems: "center",
+    justifyContent: "center",
+    position: "relative",
+    width: "100%",
+    height: "100%",
   },
   footerContainer: {
     flex: 1 / 3,
