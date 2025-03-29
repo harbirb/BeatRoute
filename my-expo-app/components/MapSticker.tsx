@@ -109,12 +109,9 @@ export default function MapSticker({ canvasSize }: Props) {
 
   return (
     <GestureHandlerRootView style={styles.container}>
-      <TouchableOpacity
-        onPress={() => setIsSelected(!isSelected)}
-        style={styles.map}
-      >
-        <GestureDetector gesture={pan}>
-          <Animated.View style={[animatedStyles, styles.map]}>
+      <GestureDetector gesture={pan}>
+        <Animated.View style={[animatedStyles, styles.map]}>
+          <TouchableOpacity onPress={() => setIsSelected(!isSelected)}>
             <Svg height="100%" width="100%" viewBox={viewBoxSize}>
               <Polyline
                 points={points}
@@ -123,9 +120,9 @@ export default function MapSticker({ canvasSize }: Props) {
                 strokeWidth="3"
               />
             </Svg>
-          </Animated.View>
-        </GestureDetector>
-      </TouchableOpacity>
+          </TouchableOpacity>
+        </Animated.View>
+      </GestureDetector>
     </GestureHandlerRootView>
   );
 }
@@ -139,7 +136,7 @@ const styles = StyleSheet.create({
   },
   map: {
     borderStyle: "solid",
-    borderWidth: 4,
+    borderWidth: 1,
     width: DEFAULT_SIZE,
     height: DEFAULT_SIZE,
   },
