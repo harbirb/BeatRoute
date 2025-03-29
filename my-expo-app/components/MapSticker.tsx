@@ -1,7 +1,13 @@
 import polyline from "@mapbox/polyline";
 import { ImageSource } from "expo-image";
 import { useState } from "react";
-import { Image, View, StyleSheet, Dimensions } from "react-native";
+import {
+  Image,
+  View,
+  StyleSheet,
+  Dimensions,
+  TouchableOpacity,
+} from "react-native";
 import {
   Gesture,
   GestureDetector,
@@ -59,8 +65,10 @@ export default function MapSticker({ canvasSize }: Props) {
   const translateY = useSharedValue(0);
   const prevTranslationX = useSharedValue(0);
   const prevTranslationY = useSharedValue(0);
+  const [isSelected, setIsSelected] = useState(false);
 
   const pan = Gesture.Pan()
+    .enabled(isSelected)
     .minDistance(1)
     .onStart(() => {
       prevTranslationX.value = translateX.value;
@@ -92,6 +100,8 @@ export default function MapSticker({ canvasSize }: Props) {
         { translateX: translateX.value },
         { translateY: translateY.value },
       ],
+      borderColor: isSelected ? "red" : "transparent",
+      borderWidth: isSelected ? 1 : 1,
     };
   });
 
@@ -99,19 +109,23 @@ export default function MapSticker({ canvasSize }: Props) {
 
   return (
     <GestureHandlerRootView style={styles.container}>
-      <GestureDetector gesture={pan}>
-        <Animated.View style={[animatedStyles, styles.map]}>
-          {/* TODO: make height and width state variables for consistency */}
-          <Svg height="100%" width="100%" viewBox={viewBoxSize}>
-            <Polyline
-              points={points}
-              fill="none"
-              stroke="blue"
-              strokeWidth="3"
-            />
-          </Svg>
-        </Animated.View>
-      </GestureDetector>
+      <TouchableOpacity
+        onPress={() => setIsSelected(!isSelected)}
+        style={styles.map}
+      >
+        <GestureDetector gesture={pan}>
+          <Animated.View style={[animatedStyles, styles.map]}>
+            <Svg height="100%" width="100%" viewBox={viewBoxSize}>
+              <Polyline
+                points={points}
+                fill="none"
+                stroke="blue"
+                strokeWidth="3"
+              />
+            </Svg>
+          </Animated.View>
+        </GestureDetector>
+      </TouchableOpacity>
     </GestureHandlerRootView>
   );
 }
@@ -125,7 +139,7 @@ const styles = StyleSheet.create({
   },
   map: {
     borderStyle: "solid",
-    borderWidth: 1,
+    borderWidth: 4,
     width: DEFAULT_SIZE,
     height: DEFAULT_SIZE,
   },
