@@ -51,8 +51,8 @@ const normalizePoints = (coords: any[]) => {
 
   // TODO: scale to fit square properly
   return coords.map(([lat, lng]) => ({
-    x: ((lng - minLng) / maxSize) * 150 + 10,
-    y: ((lat - minLat) / maxSize) * 150 + 10,
+    x: ((lng - minLng) / maxSize) * DEFAULT_SIZE,
+    y: ((lat - minLat) / maxSize) * DEFAULT_SIZE,
   }));
 };
 
@@ -65,7 +65,18 @@ export default function MapSticker({ canvasSize }: Props) {
   const translateY = useSharedValue(0);
   const prevTranslationX = useSharedValue(0);
   const prevTranslationY = useSharedValue(0);
+  const scale = useSharedValue(0.5);
+  const savedScale = useSharedValue(0.5);
   const [isSelected, setIsSelected] = useState(false);
+
+  const pinchGesture = Gesture.Pinch()
+    .enabled(isSelected)
+    .onUpdate((e) => {
+      scale.value = savedScale.value * e.scale;
+    })
+    .onEnd(() => {
+      savedScale.value = scale.value;
+    });
 
   const pan = Gesture.Pan()
     .enabled(isSelected)
@@ -94,11 +105,14 @@ export default function MapSticker({ canvasSize }: Props) {
     // must runOnJS because clamp uses std js functions
     .runOnJS(true);
 
+  const composedGesture = Gesture.Simultaneous(pan, pinchGesture);
+
   const animatedStyles = useAnimatedStyle(() => {
     return {
       transform: [
         { translateX: translateX.value },
         { translateY: translateY.value },
+        { scale: scale.value },
       ],
       borderColor: isSelected ? "red" : "transparent",
       borderWidth: isSelected ? 1 : 1,
@@ -109,7 +123,7 @@ export default function MapSticker({ canvasSize }: Props) {
 
   return (
     <GestureHandlerRootView style={styles.container}>
-      <GestureDetector gesture={pan}>
+      <GestureDetector gesture={composedGesture}>
         <Animated.View style={[animatedStyles, styles.map]}>
           <TouchableOpacity onPress={() => setIsSelected(!isSelected)}>
             <Svg height="100%" width="100%" viewBox={viewBoxSize}>
@@ -137,7 +151,7 @@ const styles = StyleSheet.create({
   map: {
     borderStyle: "solid",
     borderWidth: 1,
-    width: DEFAULT_SIZE,
-    height: DEFAULT_SIZE,
+    width: DEFAULT_SIZE * 2,
+    height: DEFAULT_SIZE * 2,
   },
 });
