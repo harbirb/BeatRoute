@@ -5,7 +5,6 @@ import Button from "@/components/Button";
 import MapSticker from "@/components/MapSticker";
 import * as ImagePicker from "expo-image-picker";
 import { useState } from "react";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 const PlaceholderImage = require("@/assets/images/react-logo.png");
 
@@ -21,7 +20,7 @@ export default function Index() {
   const pickImageAsync = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ["images"],
-      allowsEditing: true,
+      allowsEditing: false,
       quality: 1,
     });
 
