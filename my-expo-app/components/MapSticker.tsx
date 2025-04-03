@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Dimensions,
   TouchableOpacity,
+  TouchableWithoutFeedback,
 } from "react-native";
 import {
   Gesture,
@@ -28,8 +29,6 @@ function clamp(value: number, min: number, max: number) {
 }
 
 const DEFAULT_SIZE = 200;
-
-const { width, height } = Dimensions.get("window");
 
 const encodedPolyline =
   "ki{eFvqfiVqAWQIGEEKAYJgBVqDJ{BHa@jAkNJw@Pw@V{APs@^aABQAOEQGKoJ_FuJkFqAo@{A}@sH{DiAs@Q]?WVy@`@oBt@_CB]KYMMkB{AQEI@WT{BlE{@zAQPI@ICsCqA_BcAeCmAaFmCqIoEcLeG}KcG}A}@cDaBiDsByAkAuBqBi@y@_@o@o@kB}BgIoA_EUkAMcACa@BeBBq@LaAJe@b@uA`@_AdBcD`@iAPq@RgALqAB{@EqAyAoOCy@AmCBmANqBLqAZkB\\iCPiBJwCCsASiCq@iD]eA]y@[i@w@mAa@i@k@g@kAw@i@Ya@Q]EWFMLa@~BYpAFNpA`Aj@n@X`@V`AHh@JfB@xAMvAGZGHIDIAWOEQNcC@sACYK[MSOMe@QKKKYOs@UYQISCQ?Q@WNo@r@OHGAGCKOQ_BU}@MQGG]Io@@c@FYNg@d@s@d@ODQAMOMaASs@_@a@SESAQDqBn@a@RO?KK?UBU\\kA@Y?WMo@Iy@GWQ_@WSSGg@AkABQB_Ap@_A^o@b@Q@o@IS@OHi@n@OFS?OI}@iAQMQGQC}@DOIIUK{@IUOMyBo@kASOKIQCa@L[|AgATWN[He@?QKw@FOPCh@Fx@l@TDLELKl@aAHIJEX@r@ZTDV@LENQVg@RkA@c@MeA?WFOPMf@Ej@Fj@@LGHKDM?_@_@iC?a@HKRIl@NT?FCHMFW?YEYGWQa@GYBiAIq@Gq@L_BHSHK|@WJETSLQZs@z@_A~@uA^U`@G\\CRB\\Tl@p@Th@JZ^bB`@lAHLXVLDP?LGFSKiDBo@d@wBVi@R]VYVE\\@`@Lh@Fh@CzAk@RSDQA]GYe@eAGWSiBAWBWBIJORK`@KPOPSTg@h@}Ad@o@F[E_@EGMKUGmAEYGMIMYKs@?a@J}@@_BD_@HQJMx@e@LKHKHWAo@UoAAWFmAH}@?w@C[YwAAc@HSNM|Ao@rA}@zAq@`@a@j@eAxAuBXQj@MXSR[b@gAFg@?YISOGaAHi@Xw@v@_@d@WRSFqARUHQJc@d@m@`A[VSFUBcAEU@WFULUPa@v@Y~@UrBc@dBI~@?l@P~ABt@N`HEjA]zAEp@@p@TrBCl@CTQb@k@dAg@jAU^KJYLK@k@A[Js@d@a@b@]RgBl@[FMAw@[]G]?m@D_@F]P[Vu@t@[TMF_@Do@E_@@q@P]PWZUZw@vAkAlAGJOj@IlAMd@OR{@p@a@d@sBpD]v@a@`Aa@n@]TODgBVk@Pe@^cBfBc@Rs@La@RSPm@|@wCpDS^Wp@QZML{@l@qBbCYd@k@lAIVCZBZNTr@`@RRHZANIZQPKDW@e@CaASU?I@YTKRQx@@\\VmALYRQLCL?v@P|@D\\GJEFKDM@OCa@COOYIGm@YMUCM@]JYr@uAx@kAt@}@jAeAPWbAkBj@s@bAiAz@oAj@m@VQlAc@VQ~@aA`Au@p@Q`AIv@MZORUV_@p@iB|AoCh@q@dAaANUNWH[N{AJ[^m@t@_Av@wA\\a@`@W`@In@Al@B^E`@Wl@u@\\[VQ\\K`@Eb@?R@dAZP@d@CRExAs@\\Yt@{@LG\\MjAATINOXo@d@kAl@_AHYBOCe@QiBCm@Fq@\\wADo@AyGEeBWuB@YHu@Tu@Lk@VcCTo@d@aA\\WJE`@G~@FP?VI\\U~@sANO`@SfAMj@U\\WjAsAXS`@UNENALBHFFL?^Ml@Uj@]b@q@RUJSPkChEc@XcAb@sA|@]PaA\\OJKNER?TDTNj@Jn@?p@OfC@ZR`B@VCV_@n@{@l@WbACv@OlABnAPl@LNNHbBBNBLFFJ@^GLg@x@i@|AMP[X}@XOJKPET?l@LhAFXp@fBDRCd@S\\_@Ps@PQ@}A]S?QDe@V]b@MR[fAKt@ErAF~CANILYDKGIKe@{@Yy@e@sB[gA[c@e@YUCU?WBUHUNQPq@`AiArAMV[^e@Zc@JQJKNMz@?r@Bb@PfAAfA@VVbADn@E`@KHSEe@SMAKDKFM\\^dDCh@m@LoAQ_@@MFOZLfBEl@QbASd@KLQBOAaAc@QAQ@QHc@v@ONMJOBOCg@c@]O[EMBKFGL?RHv@ARERGNe@h@{@h@WVGNDt@JLNFPFz@LdBf@f@PJNHPF`ADPJJJDl@I`@B^Tp@bALJNDNALIf@i@PGPCt@DNE`@Uv@[dAw@RITGRCtAARBPJLPJRZxB?VEX_@vAAR?RDNHJJBh@UnBm@h@IRDRJNNJPNbBFRJLLBLCzAmAd@Uf@Gf@?P@PFJNHPFTH`BDTHNJJJ@LG`@m@^YPER@RDPHNNJRLn@HRLN^VNPHTFX@\\UlDFb@FHh@NP@HKPsB?}ASkCQ{@[y@q@}@cA{@KOCQDa@t@{CFGJCf@Nl@ZtA~@r@p@`@h@rAxBd@rA\\fARdAPjANrB?f@AtBCd@QfBkAjJOlBChA?rBFrBNlBdAfKFzAC~@Iz@Mz@Sv@s@jBmAxBi@hAWt@Sv@Qx@O`BA`@?dAPfBVpAd@`BfBlFf@fBdA~Cr@pAz@fApBhBjAt@H?IL?FBFJLx@^lHvDvh@~XnElCbAd@pGhDbAb@nAr@`Ad@`GhDnBbAxCbBrWhNJJDPARGP_@t@Qh@]pAUtAoA`Ny@jJApBBNFLJFJBv@Hb@HBF?\\";
@@ -65,30 +64,32 @@ export default function MapSticker({ canvasSize }: Props) {
   const translateY = useSharedValue(0);
   const prevTranslationX = useSharedValue(0);
   const prevTranslationY = useSharedValue(0);
-  const scale = useSharedValue(0.5);
-  const savedScale = useSharedValue(0.5);
-  const [isSelected, setIsSelected] = useState(false);
+  const scale = useSharedValue(1);
+  const startScale = useSharedValue(0.5);
+  const [isPressed, setIsPressed] = useState(false);
 
-  const pinchGesture = Gesture.Pinch()
-    .enabled(isSelected)
-    .onUpdate((e) => {
-      scale.value = savedScale.value * e.scale;
+  const pinch = Gesture.Pinch()
+    .onStart(() => {
+      startScale.value = scale.value;
     })
-    .onEnd(() => {
-      savedScale.value = scale.value;
-    });
+    .onUpdate((e) => {
+      scale.value = clamp(startScale.value * e.scale, 0.2, 1.5);
+    })
+    .runOnJS(true);
 
   const pan = Gesture.Pan()
-    .enabled(isSelected)
     .minDistance(1)
     .onStart(() => {
       prevTranslationX.value = translateX.value;
       prevTranslationY.value = translateY.value;
+      setIsPressed(true);
     })
     .onUpdate((event) => {
       // TODO: clamp bounds to edges of screen
-      const maxTranslateX = canvasSize.width / 2 - DEFAULT_SIZE / 2;
-      const maxTranslateY = canvasSize.height / 2 - DEFAULT_SIZE / 2;
+      const maxTranslateX =
+        canvasSize.width / 2 - (DEFAULT_SIZE * scale.value) / 2;
+      const maxTranslateY =
+        canvasSize.height / 2 - (DEFAULT_SIZE * scale.value) / 2;
 
       translateX.value = clamp(
         prevTranslationX.value + event.translationX,
@@ -103,9 +104,12 @@ export default function MapSticker({ canvasSize }: Props) {
       );
     })
     // must runOnJS because clamp uses std js functions
+    .onEnd(() => {
+      setIsPressed(false);
+    })
     .runOnJS(true);
 
-  const composedGesture = Gesture.Simultaneous(pan, pinchGesture);
+  const composedGesture = Gesture.Simultaneous(pan, pinch);
 
   const animatedStyles = useAnimatedStyle(() => {
     return {
@@ -114,8 +118,8 @@ export default function MapSticker({ canvasSize }: Props) {
         { translateY: translateY.value },
         { scale: scale.value },
       ],
-      borderColor: isSelected ? "red" : "transparent",
-      borderWidth: isSelected ? 1 : 1,
+      borderColor: isPressed ? "red" : "transparent",
+      borderWidth: isPressed ? 1 : 1,
     };
   });
 
@@ -125,16 +129,14 @@ export default function MapSticker({ canvasSize }: Props) {
     <GestureHandlerRootView style={styles.container}>
       <GestureDetector gesture={composedGesture}>
         <Animated.View style={[animatedStyles, styles.map]}>
-          <TouchableOpacity onPress={() => setIsSelected(!isSelected)}>
-            <Svg height="100%" width="100%" viewBox={viewBoxSize}>
-              <Polyline
-                points={points}
-                fill="none"
-                stroke="blue"
-                strokeWidth="3"
-              />
-            </Svg>
-          </TouchableOpacity>
+          <Svg height="100%" width="100%" viewBox={viewBoxSize}>
+            <Polyline
+              points={points}
+              fill="none"
+              stroke="blue"
+              strokeWidth="3"
+            />
+          </Svg>
         </Animated.View>
       </GestureDetector>
     </GestureHandlerRootView>
@@ -151,7 +153,7 @@ const styles = StyleSheet.create({
   map: {
     borderStyle: "solid",
     borderWidth: 1,
-    width: DEFAULT_SIZE * 2,
-    height: DEFAULT_SIZE * 2,
+    width: DEFAULT_SIZE,
+    height: DEFAULT_SIZE,
   },
 });
