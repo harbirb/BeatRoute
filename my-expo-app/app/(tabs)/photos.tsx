@@ -6,7 +6,7 @@ import MapSticker from "@/components/MapSticker";
 import * as ImagePicker from "expo-image-picker";
 import { useState } from "react";
 
-const PlaceholderImage = require("@/assets/images/react-logo.png");
+const PlaceholderImage = require("@/assets/images/IMG_1014.jpg");
 
 export default function Index() {
   const [selectedImage, setSelectedImage] = useState<string | undefined>(
@@ -56,8 +56,8 @@ export default function Index() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     backgroundColor: "pink",
+    flex: 1,
   },
   imageContainer: {
     flex: 1,
