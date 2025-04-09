@@ -5,10 +5,12 @@ import Button from "@/components/Button";
 import MapSticker from "@/components/MapSticker";
 import * as ImagePicker from "expo-image-picker";
 import { useState } from "react";
+import { useRouter } from "expo-router";
 
 const PlaceholderImage = require("@/assets/images/IMG_1014.jpg");
 
 export default function Index() {
+  const router = useRouter();
   const [selectedImage, setSelectedImage] = useState<string | undefined>(
     undefined
   );
@@ -48,7 +50,10 @@ export default function Index() {
       </View>
       <View style={styles.footerContainer}>
         <Button label="choose a photo" onPress={pickImageAsync}></Button>
-        <Button label="use this photo"></Button>
+        <Button
+          label="Open Editor"
+          onPress={() => router.push("/photo-editor")}
+        ></Button>
       </View>
     </View>
   );

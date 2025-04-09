@@ -70,6 +70,10 @@ export default function RootLayout() {
       {session ? (
         <Stack>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen
+            name="photo-editor"
+            options={{ headerShown: false, gestureEnabled: false }}
+          />
           <Stack.Screen name="+not-found" />
         </Stack>
       ) : (
