@@ -1,23 +1,30 @@
 import { usePreventRemove } from "@react-navigation/native";
 import { useRouter } from "expo-router";
-import {
-  View,
-  Text,
-  Image,
-  Button,
-  StyleSheet,
-  Pressable,
-  Modal,
-} from "react-native";
+import { View, Text, Image, Button, StyleSheet, Pressable } from "react-native";
+import Modal from "react-native-modal";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import ViewShot, { captureRef } from "react-native-view-shot";
+import * as Sharing from "expo-sharing";
 
 const richmond = require("../assets/images/IMG_1014.jpg");
 
 export default function PhotoEditor() {
   const router = useRouter();
   const [showStickerModal, setShowStickerModal] = useState(false);
+  const viewShotRef = useRef<ViewShot>(null);
+
+  const handleShare = async () => {
+    try {
+      const uri = await captureRef(viewShotRef, { format: "jpg", quality: 1 });
+      if (!uri) return;
+
+      await Sharing.shareAsync(uri);
+    } catch (error) {
+      console.log("Error sharing image:", error);
+    }
+  };
 
   // usePreventRemove(true, () => {
   //   alert("Are you sure you want to leave?");
@@ -25,7 +32,13 @@ export default function PhotoEditor() {
 
   return (
     <View style={styles.container}>
-      <Image source={richmond} style={styles.image} />
+      <ViewShot
+        ref={viewShotRef}
+        style={styles.imageContainer}
+        options={{ format: "jpg", quality: 1 }}
+      >
+        <Image source={richmond} style={styles.image} />
+      </ViewShot>
       <Pressable style={styles.backButton} onPress={() => router.back()}>
         <Ionicons name="arrow-back-outline" size={24} color="black" />
       </Pressable>
@@ -35,22 +48,29 @@ export default function PhotoEditor() {
       >
         <MaterialCommunityIcons name="sticker-emoji" size={24} color="black" />
       </Pressable>
+      <Pressable style={styles.shareButton} onPress={() => handleShare()}>
+        <Ionicons name="share-social" size={24} color="black" />
+      </Pressable>
       <Modal
-        visible={showStickerModal}
-        onRequestClose={() => setShowStickerModal(false)}
-        animationType="slide"
-        transparent={true}
+        isVisible={showStickerModal}
+        onBackdropPress={() => setShowStickerModal(false)}
+        onSwipeComplete={() => setShowStickerModal(false)}
+        swipeDirection="down"
+        style={{
+          justifyContent: "flex-end",
+          margin: 0,
+        }}
       >
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <Text style={styles.modalText}>Hello World!</Text>
-            <Pressable
-              style={[styles.button, styles.buttonClose]}
-              onPress={() => setShowStickerModal(false)}
-            >
-              <Text style={styles.textStyle}>Hide Modal</Text>
-            </Pressable>
-          </View>
+        <View style={styles.modalView}>
+          <View
+            style={{
+              width: 40,
+              height: 5,
+              backgroundColor: "#ccc",
+              borderRadius: 99,
+              marginBottom: 20,
+            }}
+          />
         </View>
       </Modal>
     </View>
@@ -65,9 +85,16 @@ const styles = StyleSheet.create({
     backgroundColor: "pink",
     position: "relative",
   },
-  image: {
+  imageContainer: {
     width: "90%",
     height: "90%",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "orange",
+  },
+  image: {
+    width: "100%",
+    height: "100%",
     borderRadius: 20,
   },
   backButton: {
@@ -86,46 +113,33 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 99,
   },
+  shareButton: {
+    position: "absolute",
+    backgroundColor: "white",
+    bottom: 50,
+    right: 20,
+    padding: 10,
+    borderRadius: 99,
+  },
 
   centeredView: {
     flex: 1,
-    justifyContent: "center",
+    justifyContent: "flex-end",
     alignItems: "center",
-    backgroundColor: "blue",
   },
   modalView: {
-    margin: 20,
-    backgroundColor: "gainsboro",
+    width: "100%",
+    height: "80%",
+    backgroundColor: "white",
     borderRadius: 20,
-    padding: 50,
+    padding: 5,
     alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
     shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
+    shadowRadius: 10,
   },
   button: {
     borderRadius: 20,
     padding: 10,
     elevation: 2,
-  },
-  buttonOpen: {
-    backgroundColor: "#F194FF",
-  },
-  buttonClose: {
-    backgroundColor: "#2196F3",
-  },
-  textStyle: {
-    color: "white",
-    fontWeight: "bold",
-    textAlign: "center",
-  },
-  modalText: {
-    marginBottom: 15,
-    textAlign: "center",
   },
 });
