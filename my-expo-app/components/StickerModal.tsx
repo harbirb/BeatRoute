@@ -1,10 +1,12 @@
 import { View, StyleSheet } from "react-native";
 import Modal from "react-native-modal";
 
-export const StickerModal: React.FC<{
+type Props = {
   visible: boolean;
   onClose: () => void;
-}> = ({ visible, onClose }) => {
+};
+
+export const StickerModal: React.FC<Props> = ({ visible, onClose }) => {
   return (
     <Modal
       isVisible={visible}

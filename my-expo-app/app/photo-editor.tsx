@@ -1,15 +1,13 @@
-import { usePreventRemove } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import { View, Text, Image, Button, StyleSheet, Pressable } from "react-native";
-import Modal from "react-native-modal";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useRef, useState } from "react";
 import ViewShot, { captureRef } from "react-native-view-shot";
 import * as Sharing from "expo-sharing";
-import Svg, { Circle } from "react-native-svg";
 import { StickerModal } from "@/components/StickerModal";
 import { EditorCanvas } from "@/components/EditorCanvas";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 const richmond = require("../assets/images/IMG_1014.jpg");
 
@@ -17,6 +15,7 @@ export default function PhotoEditor() {
   const router = useRouter();
   const [modalVisible, setModalVisible] = useState(false);
   const viewShotRef = useRef<ViewShot>(null);
+  const [stickers, setStickers] = useState([]);
 
   const handleShare = async () => {
     try {
@@ -34,8 +33,12 @@ export default function PhotoEditor() {
   // });
 
   return (
-    <View style={styles.container}>
-      <EditorCanvas imageSource={richmond} ref={viewShotRef} />
+    <GestureHandlerRootView style={styles.container}>
+      <EditorCanvas
+        imageSource={richmond}
+        ref={viewShotRef}
+        stickers={stickers}
+      />
       <Pressable style={styles.backButton} onPress={() => router.back()}>
         <Ionicons name="arrow-back-outline" size={24} color="black" />
       </Pressable>
@@ -52,7 +55,7 @@ export default function PhotoEditor() {
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
       />
-    </View>
+    </GestureHandlerRootView>
   );
 }
 
