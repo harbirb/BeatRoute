@@ -7,12 +7,15 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { useRef, useState } from "react";
 import ViewShot, { captureRef } from "react-native-view-shot";
 import * as Sharing from "expo-sharing";
+import Svg, { Circle } from "react-native-svg";
+import { StickerModal } from "@/components/StickerModal";
+import { EditorCanvas } from "@/components/EditorCanvas";
 
 const richmond = require("../assets/images/IMG_1014.jpg");
 
 export default function PhotoEditor() {
   const router = useRouter();
-  const [showStickerModal, setShowStickerModal] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
   const viewShotRef = useRef<ViewShot>(null);
 
   const handleShare = async () => {
@@ -32,47 +35,23 @@ export default function PhotoEditor() {
 
   return (
     <View style={styles.container}>
-      <ViewShot
-        ref={viewShotRef}
-        style={styles.imageContainer}
-        options={{ format: "jpg", quality: 1 }}
-      >
-        <Image source={richmond} style={styles.image} />
-      </ViewShot>
+      <EditorCanvas imageSource={richmond} ref={viewShotRef} />
       <Pressable style={styles.backButton} onPress={() => router.back()}>
         <Ionicons name="arrow-back-outline" size={24} color="black" />
       </Pressable>
       <Pressable
         style={styles.stickerButton}
-        onPress={() => setShowStickerModal(true)}
+        onPress={() => setModalVisible(true)}
       >
         <MaterialCommunityIcons name="sticker-emoji" size={24} color="black" />
       </Pressable>
       <Pressable style={styles.shareButton} onPress={() => handleShare()}>
         <Ionicons name="share-social" size={24} color="black" />
       </Pressable>
-      <Modal
-        isVisible={showStickerModal}
-        onBackdropPress={() => setShowStickerModal(false)}
-        onSwipeComplete={() => setShowStickerModal(false)}
-        swipeDirection="down"
-        style={{
-          justifyContent: "flex-end",
-          margin: 0,
-        }}
-      >
-        <View style={styles.modalView}>
-          <View
-            style={{
-              width: 40,
-              height: 5,
-              backgroundColor: "#ccc",
-              borderRadius: 99,
-              marginBottom: 20,
-            }}
-          />
-        </View>
-      </Modal>
+      <StickerModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+      />
     </View>
   );
 }
