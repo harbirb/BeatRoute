@@ -15,19 +15,26 @@ export const StickerWrapper: React.FC<Props> = ({
   initialX,
   initialY,
 }) => {
+  const oldX = useSharedValue(initialX);
+  const oldY = useSharedValue(initialY);
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
-  const panHandler = Gesture.Pan().onUpdate((event) => {
-    translateX.value = initialX + event.translationX;
-    translateY.value = initialY + event.translationY;
-  });
+
+  const panHandler = Gesture.Pan()
+    .onStart(() => {
+      oldX.value = translateX.value;
+      oldY.value = translateY.value;
+    })
+    .onUpdate((event) => {
+      translateX.value = oldX.value + event.translationX;
+      translateY.value = oldY.value + event.translationY;
+    });
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [
       { translateX: translateX.value },
       { translateY: translateY.value },
     ],
-    backgroundColor: "teal",
   }));
 
   return (
