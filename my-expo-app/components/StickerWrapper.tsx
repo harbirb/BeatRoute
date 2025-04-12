@@ -19,6 +19,8 @@ export const StickerWrapper: React.FC<Props> = ({
   const oldY = useSharedValue(initialY);
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
+  const scale = useSharedValue(0.4);
+  const savedScale = useSharedValue(1);
 
   const panHandler = Gesture.Pan()
     .onStart(() => {
@@ -30,15 +32,27 @@ export const StickerWrapper: React.FC<Props> = ({
       translateY.value = oldY.value + event.translationY;
     });
 
+  const pinchHandler = Gesture.Pinch()
+    .onStart(() => {
+      savedScale.value = scale.value;
+    })
+    .onUpdate((e) => {
+      scale.value = savedScale.value * e.scale;
+    });
+
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [
       { translateX: translateX.value },
       { translateY: translateY.value },
+      { scale: scale.value },
     ],
+    backgroundColor: "#aaaaff",
   }));
 
+  const gesture = Gesture.Simultaneous(panHandler, pinchHandler);
+
   return (
-    <GestureDetector gesture={panHandler}>
+    <GestureDetector gesture={gesture}>
       <Animated.View style={animatedStyle}>{children}</Animated.View>
     </GestureDetector>
   );
