@@ -19,16 +19,15 @@ export const EditorCanvas = forwardRef<ViewShot, EditorCanvasProps>(
         options={{ format: "jpg", quality: 1 }}
       >
         <Image source={imageSource} style={styles.image} />
-        {/* <Svg width="100%" height="100%" style={{ position: "absolute" }}>
-          <Circle cx="50%" cy="50%" r="3%" fill="red" />
-        </Svg> */}
         <View style={{ position: "absolute" }}>
-          <StickerWrapper initialX={50} initialY={50}>
-            <PolylineSticker
-              points="50,0 65,30 95,35 75,55 80,85 50,70 20,85 25,55 5,35 35,30 50,0"
-              color="green"
-            />
-          </StickerWrapper>
+          {stickers.map((sticker) => {
+            console.log(sticker.id);
+            return (
+              <StickerWrapper initialX={0} initialY={0} key={sticker.id}>
+                <PolylineSticker points={sticker.data} color={sticker.color} />
+              </StickerWrapper>
+            );
+          })}
         </View>
       </ViewShot>
     );

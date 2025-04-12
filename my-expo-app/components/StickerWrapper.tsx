@@ -46,7 +46,6 @@ export const StickerWrapper: React.FC<Props> = ({
       { translateY: translateY.value },
       { scale: scale.value },
     ],
-    backgroundColor: "#aaaaff",
   }));
 
   const gesture = Gesture.Simultaneous(panHandler, pinchHandler);

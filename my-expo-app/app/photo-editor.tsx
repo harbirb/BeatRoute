@@ -9,13 +9,37 @@ import { StickerModal } from "@/components/StickerModal";
 import { EditorCanvas } from "@/components/EditorCanvas";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
+interface Sticker {
+  id: number;
+  type: "polyline" | "text";
+  data: string;
+  color: string;
+}
+
 const richmond = require("../assets/images/IMG_1014.jpg");
 
 export default function PhotoEditor() {
   const router = useRouter();
   const [modalVisible, setModalVisible] = useState(false);
   const viewShotRef = useRef<ViewShot>(null);
-  const [stickers, setStickers] = useState([]);
+  const [stickers, setStickers] = useState<Sticker[]>([
+    {
+      id: 1,
+      type: "polyline",
+      data: "50,0 65,30 95,35 75,55 80,85 50,70 20,85 25,55 5,35 35,30 50,0",
+      color: "red",
+    },
+    {
+      id: 2,
+      type: "polyline",
+      data: "50,0 65,30 95,35 75,55 80,85 50,70 20,85 25,55 5,35 35,30 50,0",
+      color: "green",
+    },
+  ]);
+
+  const handleAddSticker = (sticker: Sticker) => {
+    setStickers([...stickers, sticker]);
+  };
 
   const handleShare = async () => {
     try {
@@ -102,26 +126,5 @@ const styles = StyleSheet.create({
     right: 20,
     padding: 10,
     borderRadius: 99,
-  },
-
-  centeredView: {
-    flex: 1,
-    justifyContent: "flex-end",
-    alignItems: "center",
-  },
-  modalView: {
-    width: "100%",
-    height: "80%",
-    backgroundColor: "white",
-    borderRadius: 20,
-    padding: 5,
-    alignItems: "center",
-    shadowOpacity: 0.25,
-    shadowRadius: 10,
-  },
-  button: {
-    borderRadius: 20,
-    padding: 10,
-    elevation: 2,
   },
 });
