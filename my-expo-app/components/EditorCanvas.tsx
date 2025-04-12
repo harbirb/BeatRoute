@@ -21,7 +21,6 @@ export const EditorCanvas = forwardRef<ViewShot, EditorCanvasProps>(
         <Image source={imageSource} style={styles.image} />
         <View style={{ position: "absolute" }}>
           {stickers.map((sticker) => {
-            console.log(sticker.id);
             return (
               <StickerWrapper initialX={0} initialY={0} key={sticker.id}>
                 <PolylineSticker points={sticker.data} color={sticker.color} />
