@@ -78,6 +78,7 @@ export default function PhotoEditor() {
       <StickerModal
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
+        onAddSticker={handleAddSticker}
       />
     </GestureHandlerRootView>
   );

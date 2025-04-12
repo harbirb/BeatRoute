@@ -1,12 +1,41 @@
-import { View, StyleSheet } from "react-native";
+import { useState } from "react";
+import { View, StyleSheet, FlatList, Pressable } from "react-native";
 import Modal from "react-native-modal";
+import { PolylineSticker } from "./PolylineSticker";
 
 type Props = {
   visible: boolean;
   onClose: () => void;
+  onAddSticker: (sticker: Sticker) => void;
 };
 
-export const StickerModal: React.FC<Props> = ({ visible, onClose }) => {
+interface Sticker {
+  id: number;
+  type: "polyline" | "text";
+  data: string;
+  color: string;
+}
+
+export const StickerModal: React.FC<Props> = ({
+  visible,
+  onClose,
+  onAddSticker,
+}) => {
+  const [stickers, setStickers] = useState<Sticker[]>([
+    {
+      id: 1,
+      type: "polyline",
+      data: "50,0 65,30 95,35 75,55 80,85 50,70 20,85 25,55 5,35 35,30 50,0",
+      color: "red",
+    },
+    {
+      id: 2,
+      type: "polyline",
+      data: "50,0 65,30 95,35 75,55 80,85 50,70 20,85 25,55 5,35 35,30 50,0",
+      color: "green",
+    },
+  ]);
+
   return (
     <Modal
       isVisible={visible}
@@ -27,6 +56,29 @@ export const StickerModal: React.FC<Props> = ({ visible, onClose }) => {
             borderRadius: 99,
             marginBottom: 20,
           }}
+        />
+        <FlatList
+          data={stickers}
+          renderItem={({ item }) => (
+            <Pressable
+              onPress={() => {
+                console.log(item);
+                onAddSticker({ ...item, id: stickers.length + 1 });
+                onClose();
+              }}
+            >
+              <View
+                style={{
+                  transform: [{ scale: 0.3 }],
+                  marginBottom: -200,
+                  marginTop: -200,
+                }}
+              >
+                <PolylineSticker points={item.data} color={item.color} />
+              </View>
+            </Pressable>
+          )}
+          keyExtractor={(item) => item.id.toString()}
         />
       </View>
     </Modal>
