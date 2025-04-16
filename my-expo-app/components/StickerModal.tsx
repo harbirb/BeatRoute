@@ -63,18 +63,16 @@ export const StickerModal: React.FC<Props> = ({
             <Pressable
               onPress={() => {
                 console.log(item);
-                onAddSticker({ ...item, id: stickers.length + 1 });
+                onAddSticker({ ...item, id: Math.random() * 100 });
                 onClose();
               }}
             >
-              <View
-                style={{
-                  transform: [{ scale: 0.3 }],
-                  marginBottom: -200,
-                  marginTop: -200,
-                }}
-              >
-                <PolylineSticker points={item.data} color={item.color} />
+              <View>
+                <PolylineSticker
+                  points={item.data}
+                  color={item.color}
+                  scale={0.2}
+                />
               </View>
             </Pressable>
           )}
