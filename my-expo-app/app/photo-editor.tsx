@@ -38,6 +38,7 @@ export default function PhotoEditor() {
   ]);
 
   const handleAddSticker = (sticker: Sticker) => {
+    console.log("Adding sticker:", sticker);
     setStickers([...stickers, sticker]);
   };
 

@@ -19,7 +19,15 @@ export const EditorCanvas = forwardRef<ViewShot, EditorCanvasProps>(
         options={{ format: "jpg", quality: 1 }}
       >
         <Image source={imageSource} style={styles.image} />
-        <View style={{ position: "absolute" }}>
+        <View
+          style={{
+            position: "absolute",
+            alignItems: "center",
+            justifyContent: "center",
+            width: "100%",
+            height: "100%",
+          }}
+        >
           {stickers.map((sticker) => {
             return (
               <StickerWrapper initialX={0} initialY={0} key={sticker.id}>

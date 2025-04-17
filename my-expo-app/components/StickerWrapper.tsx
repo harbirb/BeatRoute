@@ -17,8 +17,8 @@ export const StickerWrapper: React.FC<Props> = ({
 }) => {
   const oldX = useSharedValue(initialX);
   const oldY = useSharedValue(initialY);
-  const translateX = useSharedValue(0);
-  const translateY = useSharedValue(0);
+  const translateX = useSharedValue(initialX);
+  const translateY = useSharedValue(initialY);
   const scale = useSharedValue(0.4);
   const savedScale = useSharedValue(1);
 
@@ -46,6 +46,7 @@ export const StickerWrapper: React.FC<Props> = ({
       { translateY: translateY.value },
       { scale: scale.value },
     ],
+    position: "absolute",
   }));
 
   const gesture = Gesture.Simultaneous(panHandler, pinchHandler);

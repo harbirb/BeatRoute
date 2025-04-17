@@ -34,12 +34,32 @@ export const StickerModal: React.FC<Props> = ({
       data: "50,0 65,30 95,35 75,55 80,85 50,70 20,85 25,55 5,35 35,30 50,0",
       color: "green",
     },
+    {
+      id: 3,
+      type: "polyline",
+      data: "50,0 65,30 95,35 75,55 80,85 50,70 20,85 25,55 5,35 35,30 50,0",
+      color: "blue",
+    },
+    {
+      id: 4,
+      type: "polyline",
+      data: "50,0 65,30 95,35 75,55 80,85 50,70 20,85 25,55 5,35 35,30 50,0",
+      color: "green",
+    },
+    {
+      id: 5,
+      type: "polyline",
+      data: "50,0 65,30 95,35 75,55 80,85 50,70 20,85 25,55 5,35 35,30 50,0",
+      color: "red",
+    },
   ]);
 
   return (
     <Modal
       isVisible={visible}
       onBackdropPress={onClose}
+      swipeThreshold={100}
+      // todo: allow scroling in modal without closign it
       onSwipeComplete={onClose}
       swipeDirection="down"
       style={{
@@ -62,21 +82,19 @@ export const StickerModal: React.FC<Props> = ({
           renderItem={({ item }) => (
             <Pressable
               onPress={() => {
-                console.log(item);
                 onAddSticker({ ...item, id: Math.random() * 100 });
                 onClose();
               }}
             >
-              <View>
-                <PolylineSticker
-                  points={item.data}
-                  color={item.color}
-                  scale={0.2}
-                />
-              </View>
+              <PolylineSticker
+                points={item.data}
+                color={item.color}
+                scale={0.3}
+              />
             </Pressable>
           )}
           keyExtractor={(item) => item.id.toString()}
+          numColumns={2}
         />
       </View>
     </Modal>
