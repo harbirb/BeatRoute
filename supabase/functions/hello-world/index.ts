@@ -5,8 +5,10 @@
 // Setup type definitions for built-in Supabase Runtime APIs
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
+import { getTokens } from "../_shared/get-tokens.ts";
 
 Deno.serve(async (req) => {
+  console.log(await getTokens("6969", "strava"));
   const { name } = await req.json();
   console.log("Hello, " + name + "! You've hit the Supabase Functions API.");
   const token = req.headers.get("Authorization")?.replace("Bearer ", "");
@@ -30,13 +32,12 @@ Deno.serve(async (req) => {
     );
     if (error2 || !data2.user) {
       return new Response("Unauthorized", { status: 401 });
-      console.log(error2);
     }
     console.log("The user who sent the request: " + data2.user.id);
 
     if (error2) {
-      console.log(error);
-      return new Response(JSON.stringify({ error: error.message }), {
+      console.log(error2);
+      return new Response(JSON.stringify({ error: error2 }), {
         status: 500,
       });
     }

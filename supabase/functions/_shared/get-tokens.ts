@@ -35,46 +35,35 @@ const refreshTokenMap = {
   spotify: refreshSpotifyToken,
 };
 
-Deno.serve(async (req: Request) => {
+type service = "strava" | "spotify";
+
+export const getTokens = async (userId: string, service: service) => {
+  console.log("hi you just called get tokens", userId, service);
   try {
-    const { service } = await req.json();
-    const jwt = req.headers.get("Authorization")?.replace("Bearer ", "");
-    if (!service || !jwt)
-      return jsonResponse(400, { error: "Missing service or jwt" });
-    if (!refreshTokenMap[service])
-      return jsonResponse(400, { error: `Invalid service: ${service}` });
-
-    const {
-      data: { user },
-    } = await supabase.auth.getUser(jwt);
-    if (!user)
-      return jsonResponse(401, { error: "Unauthorized, user not found" });
-    const userId = user.id;
-
     const table = service + "_tokens";
     const { data, error } = await supabase
       .from(table)
       .select("*")
       .eq("user_id", userId)
       .single();
-    if (error || !data) return jsonResponse(404, { error: "Token not found" });
+    if (error || !data) return { error: "Token not found" };
 
     const { access_token, refresh_token, expires_at } = data;
     const now = getCurrentTimestamp();
     if (expires_at >= now) {
-      return jsonResponse(200, { access_token });
+      return access_token;
     }
 
     const result = await refreshTokenMap[service](refresh_token);
     if (result) {
       await supabase.from(table).update(result).eq("user_id", userId);
-      return jsonResponse(200, { access_token: result.access_token });
+      return result.access_token;
     }
   } catch (error) {
     console.error(error);
-    return jsonResponse(400, { error: error.message });
+    return error;
   }
-});
+};
 
 async function refreshStravaToken(
   refresh_token: string
@@ -117,11 +106,4 @@ async function refreshSpotifyToken(
   const { access_token, expires_in } = await response.json();
   const expires_at = getCurrentTimestamp() + expires_in;
   return { access_token, refresh_token, expires_at };
-}
-
-function jsonResponse(status: number, body: object): Response {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: { "Content-Type": "application/json" },
-  });
 }
