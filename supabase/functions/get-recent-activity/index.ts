@@ -15,10 +15,43 @@ Deno.serve(async (req) => {
     Deno.env.get("SUPABASE_ANON_KEY") ?? ""
   );
 
+  // get user
+  const { data: userData, error: authError } =
+    await supabaseClient.auth.getUser(token);
+  if (authError || !userData?.user)
+    return jsonResponse(401, { error: "Unauthorized" });
+
+  const userId = userData.user.id;
+
+  // get strava token
+  const stravaToken = await getTokens(userId, "strava");
+
+  // get recent activity
+  const NOW = Date.now() / 1000;
+  const WEEK_AGO = NOW - 100 * 24 * 60 * 60;
+  const response = await fetch(
+    `https://www.strava.com/api/v3/athlete/activities?before=${NOW}&after=${WEEK_AGO}`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${stravaToken}`,
+      },
+    }
+  );
+  const data = await response.json();
+  console.log(data);
+
   return new Response(JSON.stringify(data), {
     headers: { "Content-Type": "application/json" },
   });
 });
+
+function jsonResponse(status: number, body: object): Response {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { "Content-Type": "application/json" },
+  });
+}
 
 /* To invoke locally:
 

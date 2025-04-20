@@ -10,9 +10,15 @@ type Props = {
 
 export const PolylineSticker: React.FC<Props> = ({ points, color, scale }) => {
   return (
-    <View style={{ width: 500 * (scale ?? 1), height: 500 * (scale ?? 1) }}>
-      <Svg width="100%" height="100%" viewBox="0 -5 100 100">
-        <Polyline points={points} stroke={color} fill="none" strokeWidth={3} />
+    <View
+      style={{
+        width: 500 * (scale ?? 1),
+        height: 500 * (scale ?? 1),
+        // backgroundColor: "white",
+      }}
+    >
+      <Svg width="100%" height="100%" viewBox="-5 -5 200 200">
+        <Polyline points={points} stroke={color} fill="none" strokeWidth={2} />
       </Svg>
     </View>
   );
