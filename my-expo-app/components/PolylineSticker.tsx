@@ -19,7 +19,6 @@ export const PolylineSticker: React.FC<Props> = ({ data, color, scale }) => {
 
   useEffect(() => {
     setPoints(processPolyline(data));
-    console.log(points);
   }, []);
 
   function processPolyline(encodedPolyline: string) {

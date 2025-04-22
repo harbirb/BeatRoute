@@ -4,6 +4,7 @@ import Svg, { Circle } from "react-native-svg";
 import ViewShot from "react-native-view-shot";
 import { StickerWrapper } from "./StickerWrapper";
 import { PolylineSticker } from "./PolylineSticker";
+import { TextSticker } from "./TextSticker";
 
 type EditorCanvasProps = {
   imageSource: any;
@@ -31,7 +32,11 @@ export const EditorCanvas = forwardRef<ViewShot, EditorCanvasProps>(
           {stickers.map((sticker) => {
             return (
               <StickerWrapper initialX={0} initialY={0} key={sticker.id}>
-                <PolylineSticker data={sticker.data} color={sticker.color} />
+                {sticker.type === "polyline" ? (
+                  <PolylineSticker data={sticker.data} color={sticker.color} />
+                ) : (
+                  <TextSticker data={sticker.data} color={sticker.color} />
+                )}
               </StickerWrapper>
             );
           })}
