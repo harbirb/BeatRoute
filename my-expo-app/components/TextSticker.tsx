@@ -10,13 +10,13 @@ type Props = {
 
 export const TextSticker: React.FC<Props> = ({ data, color, scale }) => {
   return (
-    <View style={{ alignItems: "flex-start" }}>
+    <View style={{ alignItems: "center" }}>
       <Text
         numberOfLines={1}
-        ellipsizeMode="clip"
+        adjustsFontSizeToFit={true}
         style={{
           color,
-          fontSize: 80,
+          fontSize: 100,
           fontStyle: "italic",
           fontWeight: "bold",
         }}

@@ -20,7 +20,7 @@ export const StickerWrapper: React.FC<Props> = ({
   const oldY = useSharedValue(initialY);
   const translateX = useSharedValue(initialX);
   const translateY = useSharedValue(initialY);
-  const scale = useSharedValue(0.4);
+  const scale = useSharedValue(0.6);
   const savedScale = useSharedValue(1);
   const [isPressed, setIsPressed] = useState(false);
 
@@ -52,7 +52,7 @@ export const StickerWrapper: React.FC<Props> = ({
       { scale: scale.value },
     ],
     borderWidth: 2,
-    borderColor: isPressed ? "red" : "transparent",
+    borderColor: isPressed ? "black" : "transparent",
     position: "absolute",
   }));
 

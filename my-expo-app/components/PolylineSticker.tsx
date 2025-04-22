@@ -10,7 +10,7 @@ type Props = {
   scale?: number;
 };
 
-const DEFAULT_SIZE = 500;
+const DEFAULT_SIZE = 400;
 
 export const PolylineSticker: React.FC<Props> = ({ data, color, scale }) => {
   const [width, setWidth] = useState(0);

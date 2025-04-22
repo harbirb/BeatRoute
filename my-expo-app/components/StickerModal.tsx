@@ -104,12 +104,17 @@ export const StickerModal: React.FC<Props> = ({
                 onAddSticker({ ...item, id: Math.random() * 100 });
                 onClose();
               }}
+              style={{
+                width: 150,
+                height: 100,
+                backgroundColor: "lightgray",
+              }}
             >
               {item.type === "polyline" ? (
                 <PolylineSticker
                   data={item.data}
                   color={item.color}
-                  scale={0.6}
+                  scale={0.35}
                 />
               ) : (
                 <TextSticker data={item.data} color={item.color} scale={0.6} />
@@ -117,9 +122,15 @@ export const StickerModal: React.FC<Props> = ({
             </Pressable>
           )}
           keyExtractor={(item) => item.id.toString()}
-          numColumns={1}
-          ItemSeparatorComponent={() => <View style={{ height: 20 }} />}
-          style={{ padding: 50 }}
+          numColumns={2}
+          ItemSeparatorComponent={() => (
+            <View style={{ height: 20, width: 20 }} />
+          )}
+          style={{ padding: 20 }}
+          columnWrapperStyle={{
+            justifyContent: "space-between",
+            columnGap: 20,
+          }}
         />
       </View>
     </Modal>
