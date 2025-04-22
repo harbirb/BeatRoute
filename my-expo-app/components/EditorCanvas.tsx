@@ -31,7 +31,7 @@ export const EditorCanvas = forwardRef<ViewShot, EditorCanvasProps>(
           {stickers.map((sticker) => {
             return (
               <StickerWrapper initialX={0} initialY={0} key={sticker.id}>
-                <PolylineSticker points={sticker.data} color={sticker.color} />
+                <PolylineSticker data={sticker.data} color={sticker.color} />
               </StickerWrapper>
             );
           })}

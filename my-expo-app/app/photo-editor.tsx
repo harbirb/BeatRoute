@@ -26,14 +26,8 @@ export default function PhotoEditor() {
     {
       id: 1,
       type: "polyline",
-      data: "50,0 65,30 95,35 75,55 80,85 50,70 20,85 25,55 5,35 35,30 50,0",
+      data: "}ntkH~u~nVCCwAAs@Gc@?]EaBLM?CB}@@]CGEQk@o@By@Ag@D}ADIAEECQ?aCPiJ?{@BeA?gADgCBkCJeDAoCDsDEmJDuBCu@Dk@EiAEU?sAHmAf@}DQ[M_@Ms@EeA@w@Cq@Bm@@yCF}@@gAEaBDo@CsBHaBFaC?mDGw@PmDHcDCuADwEGaBFk@AyCGmBDi@Aw@FwGAoBJyBEc@Aq@@s@EIKAwCF]AWCu@BSCqADa@CcBBa@EkAAMOIs@?wDDgIQG?jCDTFB|BVj@JdBDj@CdBBp@Dz@C~@Bd@ADFDf@DdBCdEEx@@`E@v@C~@?tCEnABbB?xDC~@?rCIdLCxAEV?tCDz@ExABr@EX?rCGdE?dGI|C@jAAxADl@GZ?f@@b@Lj@b@l@YnASxAItB@|AG|ADvAM`UAbGC~EE~ABxDOnI@nAD\\Tb@JHjBDh@A^B`A?d@BfACnAFlAA",
       color: "red",
-    },
-    {
-      id: 2,
-      type: "polyline",
-      data: "50,0 65,30 95,35 75,55 80,85 50,70 20,85 25,55 5,35 35,30 50,0",
-      color: "green",
     },
   ]);
 

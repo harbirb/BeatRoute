@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, {
   useAnimatedStyle,
@@ -21,16 +22,20 @@ export const StickerWrapper: React.FC<Props> = ({
   const translateY = useSharedValue(initialY);
   const scale = useSharedValue(0.4);
   const savedScale = useSharedValue(1);
+  const [isPressed, setIsPressed] = useState(false);
 
   const panHandler = Gesture.Pan()
     .onStart(() => {
       oldX.value = translateX.value;
       oldY.value = translateY.value;
+      setIsPressed(true);
     })
     .onUpdate((event) => {
       translateX.value = oldX.value + event.translationX;
       translateY.value = oldY.value + event.translationY;
-    });
+    })
+    .onEnd(() => setIsPressed(false))
+    .runOnJS(true);
 
   const pinchHandler = Gesture.Pinch()
     .onStart(() => {
@@ -46,6 +51,8 @@ export const StickerWrapper: React.FC<Props> = ({
       { translateY: translateY.value },
       { scale: scale.value },
     ],
+    borderWidth: 2,
+    borderColor: isPressed ? "red" : "transparent",
     position: "absolute",
   }));
 
