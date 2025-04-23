@@ -1,10 +1,11 @@
-import { useRouter } from "expo-router";
+import { useRouter, useLocalSearchParams } from "expo-router";
 import { View, Text, Image, Button, StyleSheet, Pressable } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ViewShot, { captureRef } from "react-native-view-shot";
 import * as Sharing from "expo-sharing";
+import * as ImagePicker from "expo-image-picker";
 import { StickerModal } from "@/components/StickerModal";
 import { EditorCanvas } from "@/components/EditorCanvas";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -16,20 +17,14 @@ interface Sticker {
   color: string;
 }
 
-const richmond = require("../assets/images/IMG_1014.jpg");
+const notfoundimage = require("../assets/images/IMG_1014.jpg");
 
 export default function PhotoEditor() {
   const router = useRouter();
   const [modalVisible, setModalVisible] = useState(false);
   const viewShotRef = useRef<ViewShot>(null);
-  const [stickers, setStickers] = useState<Sticker[]>([
-    {
-      id: 1,
-      type: "polyline",
-      data: "}ntkH~u~nVCCwAAs@Gc@?]EaBLM?CB}@@]CGEQk@o@By@Ag@D}ADIAEECQ?aCPiJ?{@BeA?gADgCBkCJeDAoCDsDEmJDuBCu@Dk@EiAEU?sAHmAf@}DQ[M_@Ms@EeA@w@Cq@Bm@@yCF}@@gAEaBDo@CsBHaBFaC?mDGw@PmDHcDCuADwEGaBFk@AyCGmBDi@Aw@FwGAoBJyBEc@Aq@@s@EIKAwCF]AWCu@BSCqADa@CcBBa@EkAAMOIs@?wDDgIQG?jCDTFB|BVj@JdBDj@CdBBp@Dz@C~@Bd@ADFDf@DdBCdEEx@@`E@v@C~@?tCEnABbB?xDC~@?rCIdLCxAEV?tCDz@ExABr@EX?rCGdE?dGI|C@jAAxADl@GZ?f@@b@Lj@b@l@YnASxAItB@|AG|ADvAM`UAbGC~EE~ABxDOnI@nAD\\Tb@JHjBDh@A^B`A?d@BfACnAFlAA",
-      color: "red",
-    },
-  ]);
+  const [stickers, setStickers] = useState<Sticker[]>([]);
+  const { imageUri } = useLocalSearchParams();
 
   const handleAddSticker = (sticker: Sticker) => {
     console.log("Adding sticker:", sticker);
@@ -54,7 +49,7 @@ export default function PhotoEditor() {
   return (
     <GestureHandlerRootView style={styles.container}>
       <EditorCanvas
-        imageSource={richmond}
+        imageSource={imageUri ? { uri: imageUri } : notfoundimage}
         ref={viewShotRef}
         stickers={stickers}
       />

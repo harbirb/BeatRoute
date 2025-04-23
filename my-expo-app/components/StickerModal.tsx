@@ -24,6 +24,7 @@ export const StickerModal: React.FC<Props> = ({
   onClose,
   onAddSticker,
 }) => {
+  const [isScrollEnabled, setIsScrollEnabled] = useState(true);
   const [stickers, setStickers] = useState<Sticker[]>([
     {
       id: 2,
@@ -80,7 +81,7 @@ export const StickerModal: React.FC<Props> = ({
       swipeThreshold={100}
       // todo: allow scroling in modal without closign it
       onSwipeComplete={onClose}
-      swipeDirection="down"
+      swipeDirection={isScrollEnabled ? [] : "down"}
       style={{
         justifyContent: "flex-end",
         margin: 0,
@@ -105,8 +106,8 @@ export const StickerModal: React.FC<Props> = ({
                 onClose();
               }}
               style={{
-                width: 150,
-                height: 100,
+                width: 200,
+                height: 200,
                 backgroundColor: "lightgray",
               }}
             >
@@ -122,14 +123,20 @@ export const StickerModal: React.FC<Props> = ({
             </Pressable>
           )}
           keyExtractor={(item) => item.id.toString()}
-          numColumns={2}
+          numColumns={1}
           ItemSeparatorComponent={() => (
             <View style={{ height: 20, width: 20 }} />
           )}
           style={{ padding: 20 }}
-          columnWrapperStyle={{
-            justifyContent: "space-between",
-            columnGap: 20,
+          // columnWrapperStyle={{
+          //   justifyContent: "space-between",
+          //   columnGap: 20,
+          // }}
+          onScrollBeginDrag={() => {
+            setIsScrollEnabled(true);
+          }}
+          onScrollEndDrag={() => {
+            setIsScrollEnabled(false);
           }}
         />
       </View>

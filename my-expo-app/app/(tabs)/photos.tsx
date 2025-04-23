@@ -1,4 +1,10 @@
-import { View, StyleSheet, LayoutChangeEvent } from "react-native";
+import {
+  View,
+  StyleSheet,
+  LayoutChangeEvent,
+  TouchableOpacity,
+  Text,
+} from "react-native";
 import TestMap from "@/components/TestMap";
 import ImageViewer from "@/components/ImageViewer";
 import Button from "@/components/Button";
@@ -28,7 +34,10 @@ export default function Index() {
 
     if (!result.canceled) {
       setSelectedImage(result.assets[0].uri);
-      //   console.log(result);
+      router.push({
+        pathname: "/photo-editor",
+        params: { imageUri: result.assets[0].uri },
+      });
     } else {
       alert("You did not select any image.");
     }
@@ -41,7 +50,7 @@ export default function Index() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.imageContainer} onLayout={handleLayout}>
+      {/* <View style={styles.imageContainer} onLayout={handleLayout}>
         <ImageViewer
           imgSource={PlaceholderImage}
           selectedImage={selectedImage}
@@ -54,7 +63,15 @@ export default function Index() {
           label="Open Editor"
           onPress={() => router.push("/photo-editor")}
         ></Button>
-      </View>
+      </View> */}
+      <TouchableOpacity
+        onPress={() => pickImageAsync()}
+        style={{ backgroundColor: "#2196F3", padding: 12, borderRadius: 8 }}
+      >
+        <Text style={{ color: "white", fontSize: 25, textAlign: "center" }}>
+          Edit Photo
+        </Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -63,6 +80,8 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: "pink",
     flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
   },
   imageContainer: {
     flex: 1,

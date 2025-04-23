@@ -48,8 +48,8 @@ export const EditorCanvas = forwardRef<ViewShot, EditorCanvasProps>(
 
 const styles = StyleSheet.create({
   imageContainer: {
-    width: "90%",
-    height: "90%",
+    width: "95%",
+    height: "95%",
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "orange",
