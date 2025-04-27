@@ -14,6 +14,9 @@ type Props = {
 };
 
 interface SummaryActivity {
+  type: string;
+  average_speed: any;
+  average_heartrate: any;
   map: any;
   total_elevation_gain: any;
   id: number;
@@ -70,7 +73,27 @@ const createTextStickers = (activity: SummaryActivity): Sticker[] => {
     textStickers.push(
       createTextSticker(
         activity.id.toString() + "total_elevation_gain",
-        activity.total_elevation_gain.toString() + " m"
+        activity.total_elevation_gain.toFixed(0) + " m"
+      )
+    );
+  }
+  if (activity.average_heartrate) {
+    textStickers.push(
+      createTextSticker(
+        activity.id.toString() + "average_heartrate",
+        activity.average_heartrate.toFixed(0) + " bpm"
+      )
+    );
+  }
+  if (activity.average_speed) {
+    const kmh = activity.average_speed * 3.6;
+    const pace = 60 / kmh;
+    textStickers.push(
+      createTextSticker(
+        activity.id.toString() + "average_speed",
+        activity.type === "Run"
+          ? `${pace.toFixed(0)}:${((pace % 1) * 60).toFixed(0)} /km`
+          : `${kmh.toFixed(1)} km/h`
       )
     );
   }
@@ -96,7 +119,7 @@ export const StickerModal: React.FC<Props> = ({
       id: "223",
       type: "text",
       data: "106.22 km",
-      color: "black",
+      color: "white",
       thickness: 5,
     },
   ]);
@@ -114,13 +137,10 @@ export const StickerModal: React.FC<Props> = ({
     const data = mockActivityData;
     const newStickers: Sticker[] = [];
     data.forEach((SummaryActivity: any) => {
-      newStickers.push(...createTextStickers(SummaryActivity));
       newStickers.push(createPolylineSticker(SummaryActivity));
+      newStickers.push(...createTextStickers(SummaryActivity));
     });
-    setStickers((prev) => [...prev, ...newStickers]);
-
-    //
-    //
+    setStickers((prev) => [...newStickers, ...prev]);
   }, []);
 
   return (
@@ -155,15 +175,14 @@ export const StickerModal: React.FC<Props> = ({
                 onClose();
               }}
               style={{
-                width: 200,
-                height: 200,
-                backgroundColor: "lightgray",
+                width: 150,
+                backgroundColor: "gray",
               }}
             >
               {item.type === "polyline" ? (
-                <PolylineSticker stickerData={item} scale={0.35} />
+                <PolylineSticker stickerData={item} scale={0.3} />
               ) : (
-                <TextSticker stickerData={item} scale={0.6} />
+                <TextSticker stickerData={item} scale={0.4} />
               )}
             </Pressable>
           )}
