@@ -60,9 +60,6 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
       >
         <Text style={{ color: "#000", fontSize: 14 }}>X</Text>
       </TouchableOpacity>
-      <Text style={{ fontWeight: "bold", fontSize: 16, marginBottom: 10 }}>
-        Edit Sticker
-      </Text>
 
       {/* Color Picker */}
       <View
