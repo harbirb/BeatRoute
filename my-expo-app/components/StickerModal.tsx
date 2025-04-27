@@ -132,11 +132,11 @@ export const StickerModal: React.FC<Props> = ({
     {
       id: "223",
       type: "text",
-      data: "106.22 km",
+      data: "22:33 /km",
       color: "white",
       font: "Arial",
       thickness: 5,
-      caption: "Distance",
+      caption: "Pace",
     },
   ]);
 
@@ -191,15 +191,17 @@ export const StickerModal: React.FC<Props> = ({
                 onClose();
               }}
               style={{
-                width: 150,
+                width: 160,
                 backgroundColor: "gray",
                 borderRadius: 20,
+                alignItems: "center",
+                justifyContent: "center",
               }}
             >
               {item.type === "polyline" ? (
                 <PolylineSticker stickerData={item} scale={0.3} />
               ) : (
-                <TextSticker stickerData={item} scale={0.7} />
+                <TextSticker stickerData={item} scale={0.5} />
               )}
             </Pressable>
           )}

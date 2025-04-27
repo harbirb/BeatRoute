@@ -25,19 +25,19 @@ export const TextSticker: React.FC<Props> = ({ stickerData, scale }) => {
     return weightScale[scaledIndex];
   };
 
-  const baseSize = 100;
-  const smallTextRatio = 0.3;
+  const baseSize = 60;
+  const smallTextRatio = 0.35;
 
   return (
     <View
       style={{
         alignItems: "center",
-        transform: [{ scale: scale ?? 1 }],
+        // transform: [{ scale: scale ?? 1 }],
       }}
     >
       <Text
         numberOfLines={1}
-        adjustsFontSizeToFit={true}
+        // adjustsFontSizeToFit={true}
         // @ts-ignore
         style={{
           fontSize: baseSize * smallTextRatio * (scale ?? 1),
@@ -45,14 +45,13 @@ export const TextSticker: React.FC<Props> = ({ stickerData, scale }) => {
           fontWeight: mapThicknessToWeight(stickerData.thickness),
           fontFamily: stickerData.font,
           fontStyle: "italic",
-          marginBottom: 5,
         }}
       >
         {stickerData.caption}
       </Text>
       <Text
         numberOfLines={1}
-        adjustsFontSizeToFit={true}
+        // adjustsFontSizeToFit={true}
         // @ts-ignore
         style={{
           color: stickerData.color,

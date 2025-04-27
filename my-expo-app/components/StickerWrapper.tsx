@@ -15,7 +15,7 @@ export const StickerWrapper: React.FC<Props> = ({ children, isSelected }) => {
   const oldY = useSharedValue(0);
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
-  const scale = useSharedValue(0.6);
+  const scale = useSharedValue(0.9);
   const savedScale = useSharedValue(1);
 
   const panHandler = Gesture.Pan()
