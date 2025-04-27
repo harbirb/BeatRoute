@@ -7,37 +7,31 @@ import Animated, {
 
 type Props = {
   children: React.ReactNode;
-  initialX: number;
-  initialY: number;
+  isSelected: boolean;
 };
 
-export const StickerWrapper: React.FC<Props> = ({
-  children,
-  initialX,
-  initialY,
-}) => {
-  const oldX = useSharedValue(initialX);
-  const oldY = useSharedValue(initialY);
-  const translateX = useSharedValue(initialX);
-  const translateY = useSharedValue(initialY);
+export const StickerWrapper: React.FC<Props> = ({ children, isSelected }) => {
+  const oldX = useSharedValue(0);
+  const oldY = useSharedValue(0);
+  const translateX = useSharedValue(0);
+  const translateY = useSharedValue(0);
   const scale = useSharedValue(0.6);
   const savedScale = useSharedValue(1);
-  const [isPressed, setIsPressed] = useState(false);
 
   const panHandler = Gesture.Pan()
+    .enabled(isSelected)
     .onStart(() => {
       oldX.value = translateX.value;
       oldY.value = translateY.value;
-      setIsPressed(true);
     })
     .onUpdate((event) => {
       translateX.value = oldX.value + event.translationX;
       translateY.value = oldY.value + event.translationY;
     })
-    .onEnd(() => setIsPressed(false))
     .runOnJS(true);
 
   const pinchHandler = Gesture.Pinch()
+    .enabled(isSelected)
     .onStart(() => {
       savedScale.value = scale.value;
     })
@@ -52,7 +46,7 @@ export const StickerWrapper: React.FC<Props> = ({
       { scale: scale.value },
     ],
     borderWidth: 2,
-    borderColor: isPressed ? "black" : "transparent",
+    borderColor: isSelected ? "red" : "transparent",
     position: "absolute",
   }));
 

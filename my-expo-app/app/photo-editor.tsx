@@ -27,7 +27,6 @@ export default function PhotoEditor() {
   const { imageUri } = useLocalSearchParams();
 
   const handleAddSticker = (sticker: Sticker) => {
-    console.log("Adding sticker:", sticker);
     setStickers([...stickers, sticker]);
   };
 
@@ -42,6 +41,14 @@ export default function PhotoEditor() {
     }
   };
 
+  const handleStickerUpdate = (id: number, changes: any) => {
+    setStickers((prev) =>
+      prev.map((sticker) => {
+        return sticker.id == id ? { ...sticker, ...changes } : sticker;
+      })
+    );
+  };
+
   // usePreventRemove(true, () => {
   //   alert("Are you sure you want to leave?");
   // });
@@ -52,6 +59,7 @@ export default function PhotoEditor() {
         imageSource={imageUri ? { uri: imageUri } : notfoundimage}
         ref={viewShotRef}
         stickers={stickers}
+        onStickerUpdate={handleStickerUpdate}
       />
       <Pressable style={styles.backButton} onPress={() => router.back()}>
         <Ionicons name="arrow-back-outline" size={24} color="black" />

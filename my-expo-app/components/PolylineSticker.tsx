@@ -5,20 +5,19 @@ import Svg, { Polyline } from "react-native-svg";
 
 type Props = {
   // data as an encoded polyline string
-  data: string;
-  color: string;
+  stickerData: any;
   scale?: number;
 };
 
 const DEFAULT_SIZE = 400;
 
-export const PolylineSticker: React.FC<Props> = ({ data, color, scale }) => {
+export const PolylineSticker: React.FC<Props> = ({ stickerData, scale }) => {
   const [width, setWidth] = useState(0);
   const [height, setHeight] = useState(0);
   const [points, setPoints] = useState("");
 
   useEffect(() => {
-    setPoints(processPolyline(data));
+    setPoints(processPolyline(stickerData.data));
   }, []);
 
   function processPolyline(encodedPolyline: string) {
@@ -47,7 +46,6 @@ export const PolylineSticker: React.FC<Props> = ({ data, color, scale }) => {
       style={{
         width: width * (scale ?? 1),
         height: height * (scale ?? 1),
-        // backgroundColor: "gainsboro",
       }}
     >
       <Svg
@@ -55,7 +53,12 @@ export const PolylineSticker: React.FC<Props> = ({ data, color, scale }) => {
         height="100%"
         viewBox={`-5 -5  ${width + 10} ${height + 10}`}
       >
-        <Polyline points={points} stroke={color} fill="none" strokeWidth={4} />
+        <Polyline
+          points={points}
+          stroke={stickerData.color}
+          fill="none"
+          strokeWidth={stickerData.thickness}
+        />
       </Svg>
     </View>
   );

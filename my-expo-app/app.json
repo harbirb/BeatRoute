@@ -27,7 +27,10 @@
     },
     "extra": {
       "supabaseUrl": "https://rfxbrffgxzvgzvwdxwhh.supabase.co",
-      "supabaseAnonKey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJmeGJyZmZneHp2Z3p2d2R4d2hoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzM5NTg2NjMsImV4cCI6MjA0OTUzNDY2M30.EMqa1C3gremVWuqHVc59zv96-H1z9HnZyCrzLEhxwXY"
+      "supabaseAnonKey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJmeGJyZmZneHp2Z3p2d2R4d2hoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzM5NTg2NjMsImV4cCI6MjA0OTUzNDY2M30.EMqa1C3gremVWuqHVc59zv96-H1z9HnZyCrzLEhxwXY",
+      "eas": {
+        "projectId": "45de2bcc-b67f-417f-bc5d-5afb30de1c05"
+      }
     },
     "plugins": [
       "expo-router",
@@ -43,6 +46,12 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/45de2bcc-b67f-417f-bc5d-5afb30de1c05"
     }
   }
 }
