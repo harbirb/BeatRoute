@@ -1,5 +1,4 @@
 import { View, Text } from "react-native";
-import Svg from "react-native-svg";
 
 type Props = {
   // data as an encoded polyline string
@@ -36,6 +35,7 @@ export const TextSticker: React.FC<Props> = ({ stickerData, scale }) => {
           color: stickerData.color,
           fontSize: 100,
           fontStyle: "italic",
+          fontFamily: stickerData.font,
           fontWeight: mapThicknessToWeight(stickerData.thickness),
         }}
       >

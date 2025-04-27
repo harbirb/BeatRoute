@@ -83,6 +83,13 @@ export const EditorCanvas = forwardRef<ViewShot, EditorCanvasProps>(
             onChangeThickness={(newThickness) =>
               onStickerUpdate(selectedStickerId, { thickness: newThickness })
             }
+            font={selectedSticker.type === "text" && selectedSticker.font}
+            onChangeFont={
+              selectedSticker.type === "text"
+                ? (newFont) =>
+                    onStickerUpdate(selectedStickerId, { font: newFont })
+                : undefined
+            }
             onClose={() => {
               setIsToolbarVisible(false);
             }}

@@ -11,11 +11,22 @@ const COLORS = [
   "#ff0000",
 ];
 
+const FONTS = [
+  "Arial",
+  "Verdana",
+  "Helvetica",
+  "Times New Roman",
+  "Courier New",
+  "Georgia",
+];
+
 type EditorToolbarProps = {
   color: string;
   thickness: number;
+  font?: string;
   onChangeColor: (color: string) => void;
   onChangeThickness: (thickness: number) => void;
+  onChangeFont?: (font: string) => void;
   onClose: () => void;
 };
 
@@ -25,6 +36,8 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
   onChangeColor,
   onChangeThickness,
   onClose,
+  font,
+  onChangeFont,
 }) => {
   return (
     <View
@@ -100,6 +113,41 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
           maximumTrackTintColor="#aaa"
         />
       </View>
+
+      {/* Font Picker */}
+      {onChangeFont && (
+        <View>
+          <Text style={{ marginBottom: 8 }}>Font:</Text>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-around", // Distribute fonts evenly
+              marginBottom: 8, // Adjust margin as needed
+              flexWrap: "wrap", // Allow fonts to wrap to the next line
+            }}
+          >
+            {FONTS.map((f) => (
+              <TouchableOpacity
+                key={f}
+                onPress={() => {
+                  onChangeFont(f);
+                }}
+                style={{
+                  width: 80, // Give each font a fixed width
+                  padding: 8,
+                  borderRadius: 8,
+                  backgroundColor: font === f ? "#ddd" : "transparent", // Highlight selected
+                  alignItems: "center",
+                  justifyContent: "center",
+                  margin: 4, // Add some margin between font options
+                }}
+              >
+                <Text style={{ fontFamily: f }}>{f}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+      )}
     </View>
   );
 };

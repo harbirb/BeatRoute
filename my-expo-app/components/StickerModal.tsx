@@ -28,12 +28,14 @@ const defaultPolylineColor = "#fc4c02";
 const defaultPolylineThickness = 5;
 const defaultTextColor = "#ffffff";
 const defaultTextThickness = 5;
+const defaultTextFont = "Arial";
 
 interface Sticker {
   id: string;
   type: "polyline" | "text";
   data: string;
   color: string;
+  font?: string;
   thickness: number;
 }
 
@@ -49,6 +51,7 @@ const createTextSticker = (id: string, data: string): Sticker => ({
   data,
   color: defaultTextColor,
   thickness: defaultTextThickness,
+  font: defaultTextFont,
 });
 
 const createTextStickers = (activity: SummaryActivity): Sticker[] => {
@@ -120,6 +123,7 @@ export const StickerModal: React.FC<Props> = ({
       type: "text",
       data: "106.22 km",
       color: "white",
+      font: "Arial",
       thickness: 5,
     },
   ]);

@@ -45,7 +45,8 @@ export const StickerWrapper: React.FC<Props> = ({ children, isSelected }) => {
       { translateY: translateY.value },
       { scale: scale.value },
     ],
-    borderWidth: 2,
+    borderWidth: 1,
+    borderRadius: 18,
     borderColor: isSelected ? "red" : "transparent",
     position: "absolute",
   }));
