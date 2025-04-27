@@ -3,12 +3,12 @@ import Slider from "@react-native-community/slider";
 import { useState } from "react";
 
 const COLORS = [
-  "#FF0000",
-  "#00FF00",
-  "#0000FF",
-  "#FFFF00",
-  "#FFFFFF",
   "#000000",
+  "#FFFFFF",
+  "#fc4c02",
+  "#00a4e4",
+  "#279b37",
+  "#ff0000",
 ];
 
 type EditorToolbarProps = {
@@ -81,7 +81,7 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
               height: 32,
               borderRadius: 16,
               backgroundColor: c,
-              borderWidth: color === c ? 2 : 0,
+              borderWidth: color === c ? 2 : 1,
               borderColor: "black",
             }}
           />
