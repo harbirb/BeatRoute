@@ -56,6 +56,8 @@ export const PolylineSticker: React.FC<Props> = ({ stickerData, scale }) => {
         <Polyline
           points={points}
           stroke={stickerData.color}
+          strokeLinecap="round"
+          strokeLinejoin="bevel"
           fill="none"
           strokeWidth={stickerData.thickness}
         />

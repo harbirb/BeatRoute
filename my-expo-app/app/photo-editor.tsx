@@ -11,7 +11,7 @@ import { EditorCanvas } from "@/components/EditorCanvas";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 interface Sticker {
-  id: number;
+  id: string;
   type: "polyline" | "text";
   data: string;
   color: string;
@@ -41,7 +41,7 @@ export default function PhotoEditor() {
     }
   };
 
-  const handleStickerUpdate = (id: number, changes: any) => {
+  const handleStickerUpdate = (id: string, changes: any) => {
     setStickers((prev) =>
       prev.map((sticker) => {
         return sticker.id == id ? { ...sticker, ...changes } : sticker;

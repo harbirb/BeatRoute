@@ -28,7 +28,7 @@ export default function StravaAuth({}) {
       redirectUri: STRAVA_REDIRECT_URI,
       responseType: "code",
       extraParams: {
-        scope: "activity:read,profile:read_all",
+        scope: "activity:read_all,profile:read_all",
         approval_prompt: "force", // Forces re-authorization
         show_dialog: "true", // Forces login prompt
       },

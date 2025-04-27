@@ -16,7 +16,7 @@ import { EditorToolbar } from "./EditorToolbar";
 type EditorCanvasProps = {
   imageSource: any;
   stickers: any[];
-  onStickerUpdate: (id: number, changes: any) => void;
+  onStickerUpdate: (id: string, changes: any) => void;
 };
 
 export const EditorCanvas = forwardRef<ViewShot, EditorCanvasProps>(
