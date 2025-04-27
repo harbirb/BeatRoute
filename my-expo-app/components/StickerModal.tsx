@@ -36,6 +36,7 @@ interface Sticker {
   data: string;
   color: string;
   font?: string;
+  caption?: string;
   thickness: number;
 }
 
@@ -45,13 +46,18 @@ function processMovingTime(movingTime: number): string {
   return `${hours}h ${minutes}m`;
 }
 
-const createTextSticker = (id: string, data: string): Sticker => ({
+const createTextSticker = (
+  id: string,
+  data: string,
+  caption: string
+): Sticker => ({
   id,
   type: "text",
   data,
   color: defaultTextColor,
   thickness: defaultTextThickness,
   font: defaultTextFont,
+  caption,
 });
 
 const createTextStickers = (activity: SummaryActivity): Sticker[] => {
@@ -60,7 +66,8 @@ const createTextStickers = (activity: SummaryActivity): Sticker[] => {
     textStickers.push(
       createTextSticker(
         activity.id.toString() + "distance",
-        (activity.distance / 1000).toFixed(1) + " km"
+        (activity.distance / 1000).toFixed(1) + " km",
+        "Distance"
       )
     );
   }
@@ -68,7 +75,8 @@ const createTextStickers = (activity: SummaryActivity): Sticker[] => {
     textStickers.push(
       createTextSticker(
         activity.id.toString() + "moving_time",
-        processMovingTime(activity.moving_time)
+        processMovingTime(activity.moving_time),
+        "Time"
       )
     );
   }
@@ -76,7 +84,8 @@ const createTextStickers = (activity: SummaryActivity): Sticker[] => {
     textStickers.push(
       createTextSticker(
         activity.id.toString() + "total_elevation_gain",
-        activity.total_elevation_gain.toFixed(0) + " m"
+        activity.total_elevation_gain.toFixed(0) + " m",
+        "Elevation"
       )
     );
   }
@@ -84,7 +93,8 @@ const createTextStickers = (activity: SummaryActivity): Sticker[] => {
     textStickers.push(
       createTextSticker(
         activity.id.toString() + "average_heartrate",
-        activity.average_heartrate.toFixed(0) + " bpm"
+        activity.average_heartrate.toFixed(0) + " bpm",
+        "Heart Rate"
       )
     );
   }
@@ -96,7 +106,8 @@ const createTextStickers = (activity: SummaryActivity): Sticker[] => {
         activity.id.toString() + "average_speed",
         activity.type === "Run"
           ? `${pace.toFixed(0)}:${((pace % 1) * 60).toFixed(0)} /km`
-          : `${kmh.toFixed(1)} km/h`
+          : `${kmh.toFixed(1)} km/h`,
+        activity.type === "Run" ? "Pace" : "Speed"
       )
     );
   }
@@ -125,6 +136,7 @@ export const StickerModal: React.FC<Props> = ({
       color: "white",
       font: "Arial",
       thickness: 5,
+      caption: "Distance",
     },
   ]);
 
@@ -181,12 +193,13 @@ export const StickerModal: React.FC<Props> = ({
               style={{
                 width: 150,
                 backgroundColor: "gray",
+                borderRadius: 20,
               }}
             >
               {item.type === "polyline" ? (
                 <PolylineSticker stickerData={item} scale={0.3} />
               ) : (
-                <TextSticker stickerData={item} scale={0.4} />
+                <TextSticker stickerData={item} scale={0.7} />
               )}
             </Pressable>
           )}
