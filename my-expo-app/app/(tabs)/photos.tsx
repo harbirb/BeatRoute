@@ -8,7 +8,6 @@ import {
 import TestMap from "@/components/TestMap";
 import ImageViewer from "@/components/ImageViewer";
 import Button from "@/components/Button";
-import MapSticker from "@/components/MapSticker";
 import * as ImagePicker from "expo-image-picker";
 import { useState } from "react";
 import { useRouter } from "expo-router";

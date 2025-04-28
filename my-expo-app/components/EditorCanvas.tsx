@@ -18,6 +18,7 @@ type EditorCanvasProps = {
   imageSource: any;
   stickers: any[];
   onStickerUpdate: (id: string, changes: any) => void;
+  onStickerRemove: (id: string) => void;
 };
 
 const stickerComponents = {
@@ -36,7 +37,7 @@ const stickerRenderer = (sticker: any) => {
 };
 
 export const EditorCanvas = forwardRef<ViewShot, EditorCanvasProps>(
-  ({ imageSource, stickers, onStickerUpdate }, ref) => {
+  ({ imageSource, stickers, onStickerUpdate, onStickerRemove }, ref) => {
     const [selectedStickerId, setSelectedStickerId] = useState(null);
     const [isToolbarVisible, setIsToolbarVisible] = useState(false);
     const selectedSticker = useMemo(
@@ -68,7 +69,6 @@ export const EditorCanvas = forwardRef<ViewShot, EditorCanvasProps>(
             }}
           >
             {stickers.map((sticker) => {
-              const isSelected = sticker.id === selectedStickerId;
               const stickerTap = Gesture.Tap()
                 .onStart(() => {
                   setSelectedStickerId(sticker.id);
@@ -77,7 +77,7 @@ export const EditorCanvas = forwardRef<ViewShot, EditorCanvasProps>(
                 .runOnJS(true);
               return (
                 <GestureDetector key={sticker.id} gesture={stickerTap}>
-                  <StickerWrapper isSelected={isSelected}>
+                  <StickerWrapper isSelected={sticker.id === selectedStickerId}>
                     {stickerRenderer(sticker)}
                   </StickerWrapper>
                 </GestureDetector>
@@ -104,6 +104,10 @@ export const EditorCanvas = forwardRef<ViewShot, EditorCanvasProps>(
             }
             onClose={() => {
               setIsToolbarVisible(false);
+            }}
+            onStickerRemove={() => {
+              setIsToolbarVisible(false);
+              onStickerRemove(selectedStickerId);
             }}
           />
         )}

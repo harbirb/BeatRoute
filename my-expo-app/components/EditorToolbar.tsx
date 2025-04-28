@@ -1,6 +1,7 @@
 import { View, Text, TouchableOpacity } from "react-native";
 import Slider from "@react-native-community/slider";
 import { useState } from "react";
+import Ionicons from "@expo/vector-icons/Ionicons";
 
 const COLORS = [
   "#000000",
@@ -28,6 +29,7 @@ type EditorToolbarProps = {
   onChangeThickness: (thickness: number) => void;
   onChangeFont?: (font: string) => void;
   onClose: () => void;
+  onStickerRemove: () => void;
 };
 
 export const EditorToolbar: React.FC<EditorToolbarProps> = ({
@@ -38,6 +40,7 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
   onClose,
   font,
   onChangeFont,
+  onStickerRemove,
 }) => {
   return (
     <View
@@ -47,38 +50,63 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
         left: 20,
         right: 20,
         backgroundColor: "white",
-        opacity: 0.7,
+        opacity: 0.8,
         borderRadius: 12,
-        padding: 16,
-        shadowColor: "#000",
-        shadowOpacity: 0.1,
-        shadowOffset: { width: 0, height: 4 },
-        shadowRadius: 8,
-        elevation: 5,
+        padding: 14,
       }}
     >
-      <TouchableOpacity
-        onPress={onClose}
+      {/* Toolbar Header (Trash Icon, Edit Text, Close Button) */}
+      <View
         style={{
-          position: "absolute",
-          top: 0,
-          right: 0,
-          height: 30,
-          width: 30,
+          flexDirection: "row",
+          justifyContent: "space-evenly",
           alignItems: "center",
-          justifyContent: "center",
-          padding: 6,
-          borderRadius: 50,
+          marginBottom: 14, // Add space between header and color picker
         }}
       >
-        <Text style={{ color: "#000", fontSize: 14 }}>X</Text>
-      </TouchableOpacity>
+        {/* Trash Icon (Top Left) */}
+        <TouchableOpacity
+          onPress={onStickerRemove}
+          style={{
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Ionicons name="trash-outline" size={24} color="black" />
+        </TouchableOpacity>
+
+        {/* "Edit" Text (Center) */}
+        <Text
+          style={{
+            fontSize: 18,
+            textAlign: "center", // Center the text
+            flex: 1, // This will take all the remaining space
+          }}
+        >
+          Edit
+        </Text>
+
+        {/* X Button (Top Right) */}
+        <TouchableOpacity
+          onPress={onClose}
+          style={{
+            // height: 30,
+            // width: 30,
+            alignItems: "center",
+            justifyContent: "center",
+            borderRadius: 50,
+            // backgroundColor: "red",
+          }}
+        >
+          <Ionicons name="close-outline" size={24} color="black" />
+        </TouchableOpacity>
+      </View>
 
       {/* Color Picker */}
       <View
         style={{
           flexDirection: "row",
-          justifyContent: "space-around",
+          justifyContent: "space-evenly", // Color options closer together
           marginBottom: 16,
         }}
       >
@@ -87,8 +115,8 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
             key={c}
             onPress={() => onChangeColor(c)}
             style={{
-              width: 32,
-              height: 32,
+              width: 28,
+              height: 28,
               borderRadius: 16,
               backgroundColor: c,
               borderWidth: color === c ? 2 : 1,
@@ -99,10 +127,15 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
       </View>
 
       {/* Thickness Slider */}
-      <View>
-        <Text style={{ marginBottom: 8 }}>
-          Thickness: {thickness.toFixed(1)}
-        </Text>
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          marginRight: 30,
+          gap: 10,
+        }}
+      >
+        <Text>Thickness: {thickness.toFixed(1)}</Text>
         <Slider
           minimumValue={0.5}
           maximumValue={10}
@@ -111,6 +144,7 @@ export const EditorToolbar: React.FC<EditorToolbarProps> = ({
           onValueChange={(value: number) => onChangeThickness(value)}
           minimumTrackTintColor="#333"
           maximumTrackTintColor="#aaa"
+          style={{ flex: 1 }}
         />
       </View>
 

@@ -59,6 +59,10 @@ export default function PhotoEditor() {
     );
   };
 
+  const handleStickerRemove = (id: string) => {
+    setStickers((prev) => prev.filter((sticker) => sticker.id !== id));
+  };
+
   // usePreventRemove(true, () => {
   //   alert("Are you sure you want to leave?");
   // });
@@ -70,6 +74,7 @@ export default function PhotoEditor() {
         ref={viewShotRef}
         stickers={stickers}
         onStickerUpdate={handleStickerUpdate}
+        onStickerRemove={handleStickerRemove}
       />
       <Pressable style={styles.backButton} onPress={() => router.back()}>
         <Ionicons name="arrow-back-outline" size={24} color="black" />
