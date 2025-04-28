@@ -12,11 +12,27 @@ import { PolylineSticker } from "./PolylineSticker";
 import { TextSticker } from "./TextSticker";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { EditorToolbar } from "./EditorToolbar";
+import { MapSticker } from "./MapSticker";
 
 type EditorCanvasProps = {
   imageSource: any;
   stickers: any[];
   onStickerUpdate: (id: string, changes: any) => void;
+};
+
+const stickerComponents = {
+  polyline: PolylineSticker,
+  text: TextSticker,
+  map: MapSticker,
+};
+
+const stickerRenderer = (sticker: any) => {
+  // @ts-ignore
+  const StickerComponent = stickerComponents[sticker.type];
+  if (!StickerComponent) {
+    return null;
+  }
+  return <StickerComponent stickerData={sticker} />;
 };
 
 export const EditorCanvas = forwardRef<ViewShot, EditorCanvasProps>(
@@ -62,11 +78,7 @@ export const EditorCanvas = forwardRef<ViewShot, EditorCanvasProps>(
               return (
                 <GestureDetector key={sticker.id} gesture={stickerTap}>
                   <StickerWrapper isSelected={isSelected}>
-                    {sticker.type === "polyline" ? (
-                      <PolylineSticker stickerData={sticker} />
-                    ) : (
-                      <TextSticker stickerData={sticker} />
-                    )}
+                    {stickerRenderer(sticker)}
                   </StickerWrapper>
                 </GestureDetector>
               );

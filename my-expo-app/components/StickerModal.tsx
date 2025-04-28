@@ -6,6 +6,7 @@ import { supabase } from "../lib/supabase";
 import polyline from "@mapbox/polyline";
 import { TextSticker } from "./TextSticker";
 import { mockActivityData } from "@/mockActivityData";
+import { MapSticker } from "./MapSticker";
 
 type Props = {
   visible: boolean;
@@ -25,14 +26,14 @@ interface SummaryActivity {
 }
 
 const defaultPolylineColor = "#fc4c02";
-const defaultPolylineThickness = 5;
+const defaultPolylineThickness = 2;
 const defaultTextColor = "#ffffff";
 const defaultTextThickness = 5;
 const defaultTextFont = "Arial";
 
 interface Sticker {
   id: string;
-  type: "polyline" | "text";
+  type: "polyline" | "text" | "map";
   data: string;
   color: string;
   font?: string;
@@ -122,6 +123,14 @@ const createPolylineSticker = (activity: SummaryActivity): Sticker => ({
   thickness: defaultPolylineThickness,
 });
 
+const createMapSticker = (activity: SummaryActivity): Sticker => ({
+  id: activity.id.toString() + "map",
+  type: "map",
+  data: activity.map.summary_polyline,
+  color: defaultPolylineColor,
+  thickness: defaultPolylineThickness,
+});
+
 export const StickerModal: React.FC<Props> = ({
   visible,
   onClose,
@@ -153,6 +162,7 @@ export const StickerModal: React.FC<Props> = ({
     const data = mockActivityData;
     const newStickers: Sticker[] = [];
     data.forEach((SummaryActivity: any) => {
+      newStickers.push(createMapSticker(SummaryActivity));
       newStickers.push(createPolylineSticker(SummaryActivity));
       newStickers.push(...createTextStickers(SummaryActivity));
     });
@@ -200,8 +210,10 @@ export const StickerModal: React.FC<Props> = ({
             >
               {item.type === "polyline" ? (
                 <PolylineSticker stickerData={item} scale={0.3} />
-              ) : (
+              ) : item.type === "text" ? (
                 <TextSticker stickerData={item} scale={0.5} />
+              ) : (
+                <MapSticker stickerData={item} scale={0.4} />
               )}
             </Pressable>
           )}

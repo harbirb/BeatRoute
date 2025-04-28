@@ -12,8 +12,10 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 interface Sticker {
   id: string;
-  type: "polyline" | "text";
+  type: "polyline" | "text" | "map";
   data: string;
+  thickness: number;
+  font?: string;
   color: string;
 }
 
@@ -23,7 +25,15 @@ export default function PhotoEditor() {
   const router = useRouter();
   const [modalVisible, setModalVisible] = useState(false);
   const viewShotRef = useRef<ViewShot>(null);
-  const [stickers, setStickers] = useState<Sticker[]>([]);
+  const [stickers, setStickers] = useState<Sticker[]>([
+    // {
+    //   id: "1",
+    //   type: "map",
+    //   data: "}ntkH~u~nVCCwAAs@Gc@?]EaBLM?CB}@@]CGEQk@o@By@Ag@D}ADIAEECQ?aCPiJ?{@BeA?gADgCBkCJeDAoCDsDEmJDuBCu@Dk@EiAEU?sAHmAf@}DQ[M_@Ms@EeA@w@Cq@Bm@@yCF}@@gAEaBDo@CsBHaBFaC?mDGw@PmDHcDCuADwEGaBFk@AyCGmBDi@Aw@FwGAoBJyBEc@Aq@@s@EIKAwCF]AWCu@BSCqADa@CcBBa@EkAAMOIs@?wDDgIQG?jCDTFB|BVj@JdBDj@CdBBp@Dz@C~@Bd@ADFDf@DdBCdEEx@@`E@v@C~@?tCEnABbB?xDC~@?rCIdLCxAEV?tCDz@ExABr@EX?rCGdE?dGI|C@jAAxADl@GZ?f@@b@Lj@b@l@YnASxAItB@|AG|ADvAM`UAbGC~EE~ABxDOnI@nAD\\Tb@JHjBDh@A^B`A?d@BfACnAFlAA",
+    //   color: "red",
+    //   thickness: 2,
+    // },
+  ]);
   const { imageUri } = useLocalSearchParams();
 
   const handleAddSticker = (sticker: Sticker) => {

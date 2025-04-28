@@ -4,6 +4,8 @@ import StravaAuth from "@/components/StravaAuth";
 import SpotifyAuth from "@/components/SpotifyAuth";
 import TestButton from "@/components/TestButton";
 import TestMap from "@/components/TestMap";
+import { MapSticker } from "@/components/MapSticker";
+import { mockActivityData } from "@/mockActivityData";
 
 export default function HomeScreen() {
   return (
@@ -24,7 +26,6 @@ export default function HomeScreen() {
           }}
         />
       </Card>
-      <TestMap />
     </View>
   );
 }

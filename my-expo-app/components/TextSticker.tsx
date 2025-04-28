@@ -32,7 +32,6 @@ export const TextSticker: React.FC<Props> = ({ stickerData, scale }) => {
     <View
       style={{
         alignItems: "center",
-        // transform: [{ scale: scale ?? 1 }],
       }}
     >
       <Text
