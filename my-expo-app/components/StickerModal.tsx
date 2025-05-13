@@ -155,6 +155,7 @@ export const StickerModal: React.FC<Props> = ({
     //     data.forEach((SummaryActivity: any) => {
     //       newStickers.push(...createTextStickers(SummaryActivity));
     //       newStickers.push(createPolylineSticker(SummaryActivity));
+    //       newStickers.push(createMapSticker(SummaryActivity));
     //     });
     //     setStickers((prev) => [...prev, ...newStickers]);
     //   });

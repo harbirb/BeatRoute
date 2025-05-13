@@ -10,9 +10,14 @@ import {
   FunctionsFetchError,
 } from "@supabase/supabase-js";
 
-// Replace with your Strava app credentials
+// Dev credentials
 const STRAVA_CLIENT_ID = "149792";
-const STRAVA_REDIRECT_URI = "exp://localhost:3000"; // Your app's redirect URI
+const STRAVA_REDIRECT_URI = "exp://localhost:3000";
+
+// Prod credentials
+// const STRAVA_CLIENT_ID = "130385";
+// const STRAVA_REDIRECT_URI = "exp://moovit.onrender.com";
+
 const STRAVA_AUTHORIZATION_URL = "https://www.strava.com/oauth/authorize";
 
 // Required for proper redirect handling in Expo
