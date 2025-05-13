@@ -30,7 +30,7 @@ Deno.serve(async (req) => {
   const NOW = Date.now() / 1000;
   const WEEK_AGO = NOW - 100 * 24 * 60 * 60;
   const response = await fetch(
-    `https://www.strava.com/api/v3/athlete/activities?before=${NOW}&after=${WEEK_AGO}`,
+    `https://www.strava.com/api/v3/athlete/activities?before=${NOW}&after=${WEEK_AGO}&per_page=5`,
     {
       method: "GET",
       headers: {
