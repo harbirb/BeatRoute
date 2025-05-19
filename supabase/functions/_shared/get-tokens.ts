@@ -38,7 +38,7 @@ const refreshTokenMap = {
 type service = "strava" | "spotify";
 
 export const getTokens = async (userId: string, service: service) => {
-  console.log("hi you just called get tokens", userId, service);
+  // console.log("hi you just called get tokens", userId, service);
   try {
     const table = service + "_tokens";
     const { data, error } = await supabase
