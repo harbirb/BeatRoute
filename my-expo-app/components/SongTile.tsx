@@ -4,6 +4,7 @@ import {
   TouchableOpacity,
   Pressable,
   StyleSheet,
+  Linking,
 } from "react-native";
 
 type SongTileProps = {
@@ -31,7 +32,7 @@ export const SongTile: React.FC<SongTileProps> = ({
           {checked && <Text style={styles.checkmark}>✓</Text>}
         </View>
       </Pressable>
-      <TouchableOpacity onPress={() => alert("opening spotify")}>
+      <TouchableOpacity onPress={() => Linking.openURL(uri)}>
         <Text style={styles.songTitle}>{track_name}</Text>
         <Text style={styles.songArtist}>{track_artists.join(", ")}</Text>
       </TouchableOpacity>

@@ -1,14 +1,15 @@
-import { act, useState } from "react";
+import { useState } from "react";
 import {
   View,
   Text,
   FlatList,
-  Button,
   TouchableOpacity,
   StyleSheet,
   Pressable,
+  Linking,
 } from "react-native";
 import { SongTile } from "./SongTile";
+import { supabase } from "@/lib/supabase";
 
 type Props = {
   activity_id: number;
@@ -17,8 +18,6 @@ type Props = {
   tracklist: any[];
   start_date: string;
 };
-
-const textColor = "white";
 
 export const ActivityTracklist: React.FC<Props> = ({
   activity_id,
@@ -33,10 +32,15 @@ export const ActivityTracklist: React.FC<Props> = ({
     const selectedTracks = tracklist.filter((track) => {
       return selectedItems.includes(track.played_at);
     });
-    const shareMessage = selectedTracks.map((track) => {
-      track.track_name - track.track_artists.join(", ");
+    const shareMessage = selectedTracks
+      .map((track) => {
+        return track.track_name + " - " + track.track_artists.join(", ");
+      })
+      .join("\n");
+    console.log(shareMessage);
+    supabase.functions.invoke("strava-post", {
+      body: { message: shareMessage, activity_id },
     });
-    // upload this by calling edge fn
   };
 
   const handleCheckboxPress = (played_at: string) => {
@@ -58,8 +62,15 @@ export const ActivityTracklist: React.FC<Props> = ({
 
   return (
     <View>
-      {/* link to actual activity */}
-      <Pressable onPress={() => alert("opening strava")}>
+      <Pressable
+        style={({ pressed }) => [
+          pressed && { opacity: 0.5 },
+          styles.activityLink,
+        ]}
+        onPress={() =>
+          Linking.openURL("https://www.strava.com/activities/" + activity_id)
+        }
+      >
         <Text style={styles.activityTitle}>{name}</Text>
       </Pressable>
       <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
@@ -69,15 +80,24 @@ export const ActivityTracklist: React.FC<Props> = ({
         >
           <Text>Select all songs</Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.shareButton}
-          onPress={() => alert("Shared to Strava")}
+        <Pressable
+          disabled={selectedItems.length === 0}
+          style={[
+            styles.shareButton,
+            selectedItems.length === 0 && { opacity: 0.5 },
+          ]}
+          onPress={() => {
+            handleShare();
+            alert("Shared to Strava");
+          }}
         >
           <Text>Share to Strava</Text>
-        </TouchableOpacity>
+        </Pressable>
       </View>
 
-      {tracklist.length === 0 && <Text>No songs for this activity</Text>}
+      {tracklist.length === 0 && (
+        <Text style={{ color: "#fff" }}>No songs for this activity</Text>
+      )}
       <FlatList
         data={tracklist}
         renderItem={({ item }) => (
@@ -103,10 +123,13 @@ const styles = StyleSheet.create({
     padding: 11,
     borderRadius: 5,
   },
-  activityTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
+  activityLink: {
+    alignSelf: "flex-start",
     marginBottom: 10,
-    color: "white",
+  },
+  activityTitle: {
+    fontSize: 28,
+    fontWeight: "bold",
+    color: "#fc4c02",
   },
 });
