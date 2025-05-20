@@ -49,20 +49,6 @@ export default function Index() {
 
   return (
     <View style={styles.container}>
-      {/* <View style={styles.imageContainer} onLayout={handleLayout}>
-        <ImageViewer
-          imgSource={PlaceholderImage}
-          selectedImage={selectedImage}
-        />
-        <MapSticker canvasSize={canvasDimensions} />
-      </View>
-      <View style={styles.footerContainer}>
-        <Button label="choose a photo" onPress={pickImageAsync}></Button>
-        <Button
-          label="Open Editor"
-          onPress={() => router.push("/photo-editor")}
-        ></Button>
-      </View> */}
       <TouchableOpacity
         onPress={() => pickImageAsync()}
         style={{ backgroundColor: "#2196F3", padding: 12, borderRadius: 8 }}

@@ -41,7 +41,7 @@ Deno.serve(async (req) => {
   const tracklists = await Promise.all(tracklistPromises);
   // console.log(tracklists);
 
-  return new Response(JSON.stringify({ tracklists }), {
+  return new Response(JSON.stringify(tracklists), {
     headers: { "Content-Type": "application/json" },
   });
 });
@@ -55,10 +55,6 @@ async function getTracklist(activity: any, userId: string) {
     .select("*")
     .eq("activity_id", activity_id)
     .single();
-  if (error) {
-    console.log("error fetching tracklist", error);
-    return null;
-  }
   if (data) {
     return data.tracklist;
   }

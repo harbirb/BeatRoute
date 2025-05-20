@@ -1,56 +1,41 @@
-import { StyleSheet, Platform, View, TouchableOpacity } from "react-native";
-import { Card, Text } from "@rneui/themed";
-import StravaAuth from "@/components/StravaAuth";
-import SpotifyAuth from "@/components/SpotifyAuth";
-import TestButton from "@/components/TestButton";
-import TestMap from "@/components/TestMap";
-import { MapSticker } from "@/components/MapSticker";
-import { mockActivityData } from "@/mockActivityData";
-import Button from "@/components/Button";
+import { StyleSheet, View, Text, FlatList } from "react-native";
 import { supabase } from "@/lib/supabase";
+import { useEffect, useState } from "react";
+import { ActivityTracklist } from "@/components/ActivityTracklist";
 
 export default function HomeScreen() {
+  const [ActivityTracklists, setActivityTracklists] = useState<any>([]);
+
+  useEffect(() => {
+    const fetchTracklists = async () => {
+      const { data, error } = await supabase.functions.invoke("get-tracklists");
+      setActivityTracklists(data);
+      console.log(data);
+    };
+
+    fetchTracklists();
+  }, []);
+
   return (
     <View style={styles.container}>
-      <Card containerStyle={styles.card}>
-        <Text style={styles.title}>Test button here</Text>
-        <TestButton />
-      </Card>
-      <Card containerStyle={styles.card}>
-        <Text style={styles.title}>Step 1: Connect your Strava Account</Text>
-        <StravaAuth />
-      </Card>
-      <Card>
-        <Text style={styles.title}>Step 2: Connect your Spotify Account</Text>
-        <SpotifyAuth
-          onAuthSuccess={function (token: string): void {
-            console.log("Auth token:", token);
-          }}
-        />
-      </Card>
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => {
-          supabase.functions.invoke("get-tracklists");
-        }}
-      >
-        <Text style={styles.title}>Test Tracklists</Text>
-      </TouchableOpacity>
+      <View>
+        <Text style={styles.title}>My Songs</Text>
+      </View>
+
+      <FlatList
+        data={ActivityTracklists}
+        renderItem={({ item }) => <ActivityTracklist {...item} />}
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, paddingTop: 50 },
-  card: { borderRadius: 8, padding: 16 },
-  title: { fontSize: 18, fontWeight: "600", marginBottom: 12 },
-  button: {
-    backgroundColor: "green",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 5,
-    alignItems: "center",
-    justifyContent: "center",
-    margin: 10,
+  container: {
+    flex: 1,
+    paddingTop: 40,
+    padding: 12,
+    backgroundColor: "rgb(17, 24, 39)",
   },
+  title: { fontSize: 28, fontWeight: "600", color: "white" },
 });
