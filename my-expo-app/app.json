@@ -12,9 +12,12 @@
       "supportsTablet": true,
       "infoPlist": {
         "LSApplicationQueriesSchemes": [
+          "strava",
           "strava"
-        ]
-      }
+        ],
+        "ITSAppUsesNonExemptEncryption": false
+      },
+      "bundleIdentifier": "com.bharbir.Pacer"
     },
     "android": {
       "adaptiveIcon": {

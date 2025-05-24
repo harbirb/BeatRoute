@@ -52,26 +52,12 @@ export default function Settings() {
       </View>
       <View>
         <Text style={styles.title}>Step 1: Connect your Strava Account</Text>
-        <StravaAuth />
+        <StravaAuth onAuthSuccess={() => {}} />
       </View>
       <View>
         <Text style={styles.title}>Step 2: Connect your Spotify Account</Text>
-        <SpotifyAuth
-          onAuthSuccess={function (token: string): void {
-            console.log("Auth token:", token);
-          }}
-        />
+        <SpotifyAuth />
       </View>
-      <TouchableOpacity
-        style={{ backgroundColor: "#33aaff", padding: 12, borderRadius: 8 }}
-        onPress={() => {
-          // supabase.functions.invoke("get-tracklists");
-          alert("Pressed!");
-        }}
-      >
-        <Text style={styles.title}>Test Tracklists</Text>
-      </TouchableOpacity>
-
       <Button title="sign out" onPress={() => supabase.auth.signOut()} />
     </View>
   );

@@ -141,7 +141,7 @@ async function getRecentActivities(userId: string) {
   const NOW = Date.now() / 1000;
   const WEEKS_AGO = NOW - 100 * 24 * 60 * 60;
   const response = await fetch(
-    `https://www.strava.com/api/v3/athlete/activities?before=${NOW}&after=${WEEKS_AGO}&per_page=2`,
+    `https://www.strava.com/api/v3/athlete/activities?before=${NOW}&after=${WEEKS_AGO}&per_page=5`,
     {
       method: "GET",
       headers: {

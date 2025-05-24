@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { View, Alert } from "react-native";
+import { View, Alert, Pressable, Text } from "react-native";
 import * as WebBrowser from "expo-web-browser";
 import { useAuthRequest } from "expo-auth-session";
-import { Chip, Text } from "@rneui/themed";
 import { supabase } from "../lib/supabase";
 import {
   FunctionsHttpError,
@@ -22,8 +21,11 @@ const STRAVA_AUTHORIZATION_URL = "https://www.strava.com/oauth/authorize";
 
 // Required for proper redirect handling in Expo
 WebBrowser.maybeCompleteAuthSession();
+type StravaAuthProps = {
+  onAuthSuccess: () => void;
+};
 
-export default function StravaAuth({}) {
+export default function StravaAuth({ onAuthSuccess }: StravaAuthProps) {
   const [connected, setConnected] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -46,31 +48,22 @@ export default function StravaAuth({}) {
       if (response?.type !== "success" || !response.params?.code) return;
 
       setLoading(true);
-      try {
-        const { data, error } = await supabase.functions.invoke(
-          "exchange-strava-token",
-          { body: { code: response.params.code } }
-        );
+      const { data, error } = await supabase.functions.invoke(
+        "exchange-strava-token",
+        { body: { code: response.params.code } }
+      );
 
-        if (error) throw error;
-
-        if (data?.success) {
-          setConnected(true);
-          Alert.alert("Success", "Connected to Strava!");
-        } else {
-          throw new Error("Token exchange failed");
-        }
-      } catch (error) {
-        // print to console
-        console.error("Token exchange failed:", error);
-
-        if (error instanceof FunctionsHttpError) {
-          const errorMessage = await error.context.json();
-          Alert.alert("Error", errorMessage);
-        }
-      } finally {
-        setLoading(false);
+      if (error instanceof FunctionsHttpError) {
+        const errorMessage = await error.context.json();
+        Alert.alert("Error", errorMessage);
       }
+
+      if (data) {
+        console.log(data);
+        onAuthSuccess();
+      }
+
+      setLoading(false);
     };
 
     handleTokenExchange();
@@ -79,9 +72,20 @@ export default function StravaAuth({}) {
   return (
     <View style={{ alignItems: "center" }}>
       {connected ? (
-        <Chip title="Connected!" type="outline" size="md" />
+        <Pressable
+          disabled
+          style={{
+            pointerEvents: "none",
+            backgroundColor: "green",
+            padding: 10,
+          }}
+        >
+          <Text>Connected!</Text>
+        </Pressable>
       ) : (
-        <Chip title="Sign in with Strava" onPress={() => promptAsync()} />
+        <Pressable onPress={() => promptAsync()}>
+          <Text>Sign in with Strava</Text>
+        </Pressable>
       )}
     </View>
   );

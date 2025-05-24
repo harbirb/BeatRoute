@@ -29,7 +29,7 @@ const discovery = {
   tokenEndpoint: "https://accounts.spotify.com/api/token",
 };
 
-export default function SpotifyAuth({ onAuthSuccess }) {
+export default function SpotifyAuth({}) {
   const [connected, setConnected] = useState(false);
   const [loading, setLoading] = useState(false);
 

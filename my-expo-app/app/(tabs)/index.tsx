@@ -2,18 +2,31 @@ import { StyleSheet, View, Text, FlatList } from "react-native";
 import { supabase } from "@/lib/supabase";
 import { useEffect, useState } from "react";
 import { ActivityTracklist } from "@/components/ActivityTracklist";
+import { isStravaConnected } from "@/lib/connectedServices";
+import { useRouter } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function HomeScreen() {
   const [ActivityTracklists, setActivityTracklists] = useState<any>([]);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchTracklists = async () => {
       const { data, error } = await supabase.functions.invoke("get-tracklists");
       setActivityTracklists(data);
-      console.log(data);
     };
 
-    fetchTracklists();
+    const checkOnboardingStatus = async () => {
+      const status = await AsyncStorage.getItem("hasCompletedOnboarding");
+      if (status === "true") {
+        console.log("already onboarded");
+        fetchTracklists();
+      } else {
+        console.log("sending to onboarding");
+        router.replace("/onboard");
+      }
+    };
+    checkOnboardingStatus();
   }, []);
 
   return (
@@ -25,6 +38,7 @@ export default function HomeScreen() {
       <FlatList
         data={ActivityTracklists}
         renderItem={({ item }) => <ActivityTracklist {...item} />}
+        showsVerticalScrollIndicator={false}
       />
     </View>
   );

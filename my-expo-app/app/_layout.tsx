@@ -69,6 +69,8 @@ export default function RootLayout() {
     <ThemeProvider value={DefaultTheme}>
       {session ? (
         <Stack>
+          <Stack.Screen name="index" options={{ headerShown: false }} />
+          <Stack.Screen name="onboard" options={{ headerShown: false }} />
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen
             name="photo-editor"
