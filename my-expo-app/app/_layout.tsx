@@ -70,11 +70,15 @@ export default function RootLayout() {
       {session ? (
         <Stack>
           <Stack.Screen name="index" options={{ headerShown: false }} />
-          <Stack.Screen name="onboard" options={{ headerShown: false }} />
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen
             name="photo-editor"
-            options={{ headerShown: false, gestureEnabled: false }}
+            options={{
+              headerShown: false,
+              gestureEnabled: false,
+              presentation: "fullScreenModal",
+              animation: "slide_from_bottom",
+            }}
           />
           <Stack.Screen name="+not-found" />
         </Stack>

@@ -1,32 +1,27 @@
-import { StyleSheet, View, Text, FlatList } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Text,
+  FlatList,
+  ActivityIndicator,
+} from "react-native";
 import { supabase } from "@/lib/supabase";
 import { useEffect, useState } from "react";
 import { ActivityTracklist } from "@/components/ActivityTracklist";
-import { isStravaConnected } from "@/lib/connectedServices";
 import { useRouter } from "expo-router";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function HomeScreen() {
   const [ActivityTracklists, setActivityTracklists] = useState<any>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
     const fetchTracklists = async () => {
       const { data, error } = await supabase.functions.invoke("get-tracklists");
       setActivityTracklists(data);
+      setIsLoading(false);
     };
-
-    const checkOnboardingStatus = async () => {
-      const status = await AsyncStorage.getItem("hasCompletedOnboarding");
-      if (status === "true") {
-        console.log("already onboarded");
-        fetchTracklists();
-      } else {
-        console.log("sending to onboarding");
-        router.replace("/onboard");
-      }
-    };
-    checkOnboardingStatus();
+    fetchTracklists();
   }, []);
 
   return (
@@ -34,6 +29,8 @@ export default function HomeScreen() {
       <View>
         <Text style={styles.title}>My Songs</Text>
       </View>
+
+      {isLoading && <ActivityIndicator style={{ flex: 1 / 2 }} />}
 
       <FlatList
         data={ActivityTracklists}

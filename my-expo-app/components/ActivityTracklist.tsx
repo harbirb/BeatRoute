@@ -73,27 +73,29 @@ export const ActivityTracklist: React.FC<Props> = ({
       >
         <Text style={styles.activityTitle}>{name}</Text>
       </Pressable>
-      <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-        <TouchableOpacity
-          style={styles.selectAllButton}
-          onPress={handleSelectAll}
-        >
-          <Text>Select all songs</Text>
-        </TouchableOpacity>
-        <Pressable
-          disabled={selectedItems.length === 0}
-          style={[
-            styles.shareButton,
-            selectedItems.length === 0 && { opacity: 0.5 },
-          ]}
-          onPress={() => {
-            handleShare();
-            alert("Shared to Strava");
-          }}
-        >
-          <Text>Share to Strava</Text>
-        </Pressable>
-      </View>
+      {tracklist.length > 0 && (
+        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+          <TouchableOpacity
+            style={styles.selectAllButton}
+            onPress={handleSelectAll}
+          >
+            <Text>Select all songs</Text>
+          </TouchableOpacity>
+          <Pressable
+            disabled={selectedItems.length === 0}
+            style={[
+              styles.shareButton,
+              selectedItems.length === 0 && { opacity: 0.5 },
+            ]}
+            onPress={() => {
+              handleShare();
+              alert("Shared to Strava");
+            }}
+          >
+            <Text>Share to Strava</Text>
+          </Pressable>
+        </View>
+      )}
 
       {tracklist.length === 0 && (
         <Text style={{ color: "#fff" }}>No songs for this activity</Text>
@@ -125,7 +127,7 @@ const styles = StyleSheet.create({
   },
   activityLink: {
     alignSelf: "flex-start",
-    marginBottom: 10,
+    marginBottom: 5,
   },
   activityTitle: {
     fontSize: 28,

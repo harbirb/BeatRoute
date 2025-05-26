@@ -14,6 +14,8 @@ const MAPPING = {
   "photo.fill.on.rectangle.fill": "photo",
   "chevron.left.forwardslash.chevron.right": "code",
   "chevron.right": "chevron-right",
+  "music.note": "music-note",
+  "gear.circle.fill": "settings",
 } as Partial<
   Record<
     import("expo-symbols").SymbolViewProps["name"],
