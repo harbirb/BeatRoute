@@ -174,10 +174,9 @@ export const StickerModal: React.FC<Props> = ({
     <Modal
       isVisible={visible}
       onBackdropPress={onClose}
-      swipeThreshold={100}
-      // todo: allow scroling in modal without closign it
       onSwipeComplete={onClose}
-      swipeDirection={isScrollEnabled ? [] : "down"}
+      propagateSwipe={true}
+      swipeDirection={["down"]}
       style={{
         justifyContent: "flex-end",
         margin: 0,
@@ -227,12 +226,6 @@ export const StickerModal: React.FC<Props> = ({
           columnWrapperStyle={{
             justifyContent: "space-between",
             columnGap: 20,
-          }}
-          onScrollBeginDrag={() => {
-            setIsScrollEnabled(true);
-          }}
-          onScrollEndDrag={() => {
-            setIsScrollEnabled(false);
           }}
         />
       </View>
