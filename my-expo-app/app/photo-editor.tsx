@@ -24,20 +24,29 @@ const notfoundimage = require("../assets/images/IMG_1014.jpg");
 export default function PhotoEditor() {
   const router = useRouter();
   const [modalVisible, setModalVisible] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | undefined>(
+    undefined
+  );
   const viewShotRef = useRef<ViewShot>(null);
-  const [stickers, setStickers] = useState<Sticker[]>([
-    // {
-    //   id: "1",
-    //   type: "map",
-    //   data: "}ntkH~u~nVCCwAAs@Gc@?]EaBLM?CB}@@]CGEQk@o@By@Ag@D}ADIAEECQ?aCPiJ?{@BeA?gADgCBkCJeDAoCDsDEmJDuBCu@Dk@EiAEU?sAHmAf@}DQ[M_@Ms@EeA@w@Cq@Bm@@yCF}@@gAEaBDo@CsBHaBFaC?mDGw@PmDHcDCuADwEGaBFk@AyCGmBDi@Aw@FwGAoBJyBEc@Aq@@s@EIKAwCF]AWCu@BSCqADa@CcBBa@EkAAMOIs@?wDDgIQG?jCDTFB|BVj@JdBDj@CdBBp@Dz@C~@Bd@ADFDf@DdBCdEEx@@`E@v@C~@?tCEnABbB?xDC~@?rCIdLCxAEV?tCDz@ExABr@EX?rCGdE?dGI|C@jAAxADl@GZ?f@@b@Lj@b@l@YnASxAItB@|AG|ADvAM`UAbGC~EE~ABxDOnI@nAD\\Tb@JHjBDh@A^B`A?d@BfACnAFlAA",
-    //   color: "red",
-    //   thickness: 2,
-    // },
-  ]);
+  const [stickers, setStickers] = useState<Sticker[]>([]);
   const { imageUri } = useLocalSearchParams();
 
   const handleAddSticker = (sticker: Sticker) => {
     setStickers([...stickers, sticker]);
+  };
+
+  const pickImageAsync = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ["images"],
+      allowsEditing: false,
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setSelectedImage(result.assets[0].uri);
+    } else {
+      alert("You did not select any image.");
+    }
   };
 
   const handleShare = async () => {
@@ -63,31 +72,43 @@ export default function PhotoEditor() {
     setStickers((prev) => prev.filter((sticker) => sticker.id !== id));
   };
 
-  // usePreventRemove(true, () => {
-  //   alert("Are you sure you want to leave?");
-  // });
-
   return (
     <GestureHandlerRootView style={styles.container}>
-      <EditorCanvas
-        imageSource={imageUri ? { uri: imageUri } : notfoundimage}
-        ref={viewShotRef}
-        stickers={stickers}
-        onStickerUpdate={handleStickerUpdate}
-        onStickerRemove={handleStickerRemove}
-      />
+      {selectedImage ? (
+        <EditorCanvas
+          imageSource={selectedImage ? { uri: selectedImage } : notfoundimage}
+          ref={viewShotRef}
+          stickers={stickers}
+          onStickerUpdate={handleStickerUpdate}
+          onStickerRemove={handleStickerRemove}
+        />
+      ) : (
+        <View style={styles.defaultView}>
+          <Pressable onPress={pickImageAsync} style={styles.choosePhotoButton}>
+            <Text style={styles.choosePhotoText}>Choose Photo</Text>
+          </Pressable>
+        </View>
+      )}
       <Pressable style={styles.backButton} onPress={() => router.back()}>
-        <Ionicons name="arrow-back-outline" size={24} color="black" />
+        <Ionicons name="close" size={24} color="black" />
       </Pressable>
-      <Pressable
-        style={styles.stickerButton}
-        onPress={() => setModalVisible(true)}
-      >
-        <MaterialCommunityIcons name="sticker-emoji" size={24} color="black" />
-      </Pressable>
-      <Pressable style={styles.shareButton} onPress={() => handleShare()}>
-        <Ionicons name="share-social" size={24} color="black" />
-      </Pressable>
+      {selectedImage && (
+        <Pressable
+          style={styles.stickerButton}
+          onPress={() => setModalVisible(true)}
+        >
+          <MaterialCommunityIcons
+            name="sticker-emoji"
+            size={24}
+            color="black"
+          />
+        </Pressable>
+      )}
+      {selectedImage && (
+        <Pressable style={styles.shareButton} onPress={() => handleShare()}>
+          <Ionicons name="share-social" size={24} color="black" />
+        </Pressable>
+      )}
       <StickerModal
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
@@ -102,7 +123,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "pink",
+    backgroundColor: "#111827",
     position: "relative",
   },
   imageContainer: {
@@ -140,5 +161,24 @@ const styles = StyleSheet.create({
     right: 20,
     padding: 10,
     borderRadius: 99,
+  },
+  defaultView: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  choosePhotoButton: {
+    width: 320,
+    height: 68,
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 3,
+    backgroundColor: "dodgerblue",
+    borderRadius: 20,
+  },
+  choosePhotoText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });
