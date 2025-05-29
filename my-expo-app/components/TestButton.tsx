@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { View } from "react-native";
+import { Pressable, View, Text } from "react-native";
 import * as WebBrowser from "expo-web-browser";
-import { Chip, Text } from "@rneui/themed";
 import { supabase } from "../lib/supabase";
 import {
   FunctionsHttpError,
@@ -30,7 +29,9 @@ export default function TestButton() {
 
   return (
     <View style={{ alignItems: "center" }}>
-      {<Chip title="Add entry to testtable" onPress={() => testFunction()} />}
+      <Pressable onPress={() => testFunction()}>
+        <Text>Add entry test</Text>
+      </Pressable>
     </View>
   );
 }

@@ -5,17 +5,14 @@ import {
   View,
   Text,
   TouchableOpacity,
+  Pressable,
 } from "react-native";
 
 import { Collapsible } from "@/components/Collapsible";
 import { ExternalLink } from "@/components/ExternalLink";
-import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-import { IconSymbol } from "@/components/ui/IconSymbol";
-import { Button } from "@rneui/themed/dist/Button";
 import { supabase } from "@/lib/supabase";
-import { Card } from "react-native-paper";
 import TestButton from "@/components/TestButton";
 import StravaAuth from "@/components/StravaAuth";
 import SpotifyAuth from "@/components/SpotifyAuth";
@@ -58,7 +55,9 @@ export default function Settings() {
         <Text style={styles.title}>Step 2: Connect your Spotify Account</Text>
         <SpotifyAuth />
       </View>
-      <Button title="sign out" onPress={() => supabase.auth.signOut()} />
+      <Pressable onPress={() => supabase.auth.signOut()}>
+        <Text>Sign out</Text>
+      </Pressable>
     </View>
   );
 }

@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { View, Alert } from "react-native";
+import { View, Alert, Pressable, Text } from "react-native";
 import * as WebBrowser from "expo-web-browser";
 import {
   makeRedirectUri,
   useAuthRequest,
   ResponseType,
 } from "expo-auth-session";
-import { Chip } from "@rneui/themed";
 import { supabase } from "../lib/supabase";
 import {
   FunctionsHttpError,
@@ -90,9 +89,13 @@ export default function SpotifyAuth({}) {
   return (
     <View style={{ alignItems: "center" }}>
       {connected ? (
-        <Chip title="Connected!" type="outline" size="md" />
+        <Pressable>
+          <Text>Connected!</Text>
+        </Pressable>
       ) : (
-        <Chip title="Sign in with Spotify" onPress={() => promptAsync()} />
+        <Pressable onPress={() => promptAsync()}>
+          <Text>Sign in with Spotify</Text>
+        </Pressable>
       )}
     </View>
   );
