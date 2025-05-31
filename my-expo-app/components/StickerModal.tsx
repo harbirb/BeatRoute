@@ -7,6 +7,7 @@ import polyline from "@mapbox/polyline";
 import { TextSticker } from "./TextSticker";
 import { mockActivityData } from "@/mockActivityData";
 import { MapSticker } from "./MapSticker";
+import { mockActivityData2 } from "@/mockActivityData2";
 
 type Props = {
   visible: boolean;
@@ -160,10 +161,10 @@ export const StickerModal: React.FC<Props> = ({
     //     setStickers((prev) => [...prev, ...newStickers]);
     //   });
 
-    const data = mockActivityData;
+    const data = mockActivityData2;
     const newStickers: Sticker[] = [];
     data.forEach((SummaryActivity: any) => {
-      newStickers.push(createMapSticker(SummaryActivity));
+      // newStickers.push(createMapSticker(SummaryActivity));
       newStickers.push(createPolylineSticker(SummaryActivity));
       newStickers.push(...createTextStickers(SummaryActivity));
     });

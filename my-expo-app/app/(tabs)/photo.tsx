@@ -4,27 +4,69 @@ import {
   LayoutChangeEvent,
   TouchableOpacity,
   Text,
+  FlatList,
+  ScrollView,
 } from "react-native";
 import ViewShot, { captureRef } from "react-native-view-shot";
 import * as Clipboard from "expo-clipboard";
+import { mockActivityData } from "@/mockActivityData";
 
 import { useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
+import ClipboardSticker from "@/components/ClipboardSticker";
+import generateStickers from "@/utils/generateStickers";
+import { TextSticker } from "@/components/TextSticker";
+import { PolylineSticker } from "@/components/PolylineSticker";
+import { supabase } from "@/lib/supabase";
+import { mockActivityData2 } from "@/mockActivityData2";
 
 const PlaceholderImage = require("@/assets/images/IMG_1014.jpg");
+
+type StickerObject = {
+  id: string;
+  name: string;
+  stickers: any[];
+};
 
 export default function Index() {
   const [showToast, setShowToast] = useState(false);
   const router = useRouter();
-  const ref = useRef<View>(null);
+  const [stickers, setStickers] = useState<any[]>([]);
+  // save styling preferences to users local device
+  // fetch styling preferences from users local device
+  const [styling, setStyling] = useState<any>(null);
 
   useEffect(() => {
-    if (showToast) {
-      setTimeout(() => {
-        setShowToast(false);
-      }, 1000);
-    }
-  }, [showToast]);
+    // const activities = mockActivityData;
+
+    const populateStickers = async () => {
+      // const { data, error } = await supabase.functions.invoke(
+      //   "get-recent-activity"
+      // );
+      const data = mockActivityData2;
+
+      const newStickers: any[] = [];
+      for (const activity of data) {
+        const activityStickers = generateStickers(activity);
+        newStickers.push({
+          id: activity.id,
+          name: activity.name,
+          stickers: activityStickers,
+        });
+      }
+      // console.log(newStickers);
+      setStickers(newStickers);
+    };
+    populateStickers();
+  }, []);
+
+  // useEffect(() => {
+  //   if (showToast) {
+  //     setTimeout(() => {
+  //       setShowToast(false);
+  //     }, 1500);
+  //   }
+  // }, [showToast]);
 
   const launchPhotoEditor = () => {
     router.push({
@@ -36,42 +78,99 @@ export default function Index() {
     <View style={styles.container}>
       {showToast && (
         <View style={styles.toast}>
-          <Text>Copied!</Text>
+          <Text style={{ fontFamily: "Inter", fontWeight: "bold" }}>
+            Copied!
+          </Text>
         </View>
       )}
-
-      <TouchableOpacity
-        onPress={() => launchPhotoEditor()}
-        style={{ backgroundColor: "#2196F3", padding: 12, borderRadius: 18 }}
-      >
-        <Text
+      <View style={styles.buttonView}>
+        <TouchableOpacity
+          onPress={() => launchPhotoEditor()}
           style={{
-            color: "white",
-            fontSize: 25,
-            fontWeight: "bold",
-            textAlign: "center",
+            backgroundColor: "dodgerblue",
+            padding: 10,
+            borderRadius: 18,
           }}
         >
-          Launch Editor
-        </Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        onPress={async () => {
-          console.log("COPYING");
-          const uri = await captureRef(ref, {
-            format: "png",
-            result: "base64",
-          });
-          console.log("saved image uri:");
-          await Clipboard.setImageAsync(uri);
-          setShowToast(true);
+          <Text
+            style={{
+              color: "white",
+              fontWeight: "bold",
+            }}
+          >
+            Launch Editor
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            alert("TODO");
+          }}
+          style={{
+            backgroundColor: "dodgerblue",
+            padding: 10,
+            borderRadius: 18,
+          }}
+        >
+          <Text style={{ color: "white", fontWeight: "bold" }}>
+            Customize Stickers
+          </Text>
+        </TouchableOpacity>
+      </View>
+      <Text
+        style={{
+          color: "white",
+          fontSize: 20,
+          margin: 10,
+          textAlign: "center",
+          fontFamily: "Inter",
+          fontWeight: "bold",
         }}
       >
-        <ViewShot ref={ref}>
-          <Text style={{ fontSize: 90, color: "red" }}>ViewShot</Text>
-        </ViewShot>
-      </TouchableOpacity>
+        Tap to copy a sticker
+      </Text>
+      {stickers.length > 0 && (
+        <FlatList
+          data={stickers}
+          renderItem={({ item }) => (
+            <View style={{ margin: 10 }}>
+              <Text style={{ color: "white", fontSize: 20 }}>{item.name}</Text>
+              <FlatList
+                data={item.stickers}
+                renderItem={({ item }) => drawSticker(item)}
+                ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
+                scrollEnabled={false} // Disable inner scroll
+              />
+            </View>
+          )}
+        />
+      )}
     </View>
+  );
+}
+
+function drawSticker(item: any) {
+  return (
+    <ClipboardSticker>
+      {item.type === "text" && (
+        <TextSticker
+          stickerData={{
+            caption: item.caption,
+            data: item.data,
+            color: "white",
+            thickness: 8,
+          }}
+        />
+      )}
+      {item.type === "polyline" && (
+        <PolylineSticker
+          stickerData={{
+            data: item.data,
+            color: "white",
+            thickness: 5,
+          }}
+        />
+      )}
+    </ClipboardSticker>
   );
 }
 
@@ -79,16 +178,25 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: "#111827",
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  footerContainer: {
-    flex: 1 / 3,
-    alignItems: "center",
   },
   toast: {
-    backgroundColor: "white",
+    position: "absolute",
+    top: 100,
+    zIndex: 9999,
+    justifyContent: "center",
+    backgroundColor: "gainsboro",
     padding: 20,
     borderRadius: 10,
+  },
+  buttonView: {
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+    width: "100%",
+    marginTop: 50,
+  },
+  stickerContainer: {
+    // alignItems: "center",
+    // justifyContent: "center",
+    // gap: 30,
   },
 });

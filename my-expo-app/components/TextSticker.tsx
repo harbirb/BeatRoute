@@ -1,7 +1,6 @@
 import { View, Text } from "react-native";
 
 type Props = {
-  // data as an encoded polyline string
   stickerData: any;
   scale?: number;
 };
@@ -32,6 +31,7 @@ export const TextSticker: React.FC<Props> = ({ stickerData, scale }) => {
     <View
       style={{
         alignItems: "center",
+        // backgroundColor: "white",
       }}
     >
       <Text
@@ -42,7 +42,6 @@ export const TextSticker: React.FC<Props> = ({ stickerData, scale }) => {
           fontSize: baseSize * smallTextRatio * (scale ?? 1),
           color: stickerData.color,
           fontWeight: mapThicknessToWeight(stickerData.thickness),
-          fontFamily: stickerData.font,
           fontStyle: "italic",
         }}
       >
