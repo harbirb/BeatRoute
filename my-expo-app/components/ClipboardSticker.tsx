@@ -1,11 +1,19 @@
 import { useEffect, useRef } from "react";
-import { View, Text, StyleSheet, Pressable } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Pressable,
+  ImageBackground,
+} from "react-native";
 import ViewShot, { captureRef } from "react-native-view-shot";
 import * as Clipboard from "expo-clipboard";
 
 type Props = {
   children: any;
 };
+
+const tinycb = require("../assets/images/tinycb.png");
 
 export default function ClipboardSticker({ children }: Props) {
   const ref = useRef<View>(null);
@@ -21,7 +29,11 @@ export default function ClipboardSticker({ children }: Props) {
   };
 
   return (
-    <View style={styles.container}>
+    <ImageBackground
+      style={styles.container}
+      source={tinycb}
+      resizeMode="repeat"
+    >
       <Pressable
         onPress={handleCopy}
         style={({ pressed }) => [
@@ -31,16 +43,17 @@ export default function ClipboardSticker({ children }: Props) {
       >
         <ViewShot ref={ref}>{children}</ViewShot>
       </Pressable>
-    </View>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     alignSelf: "center",
+    borderRadius: 20,
+    overflow: "hidden",
   },
   stickerContainer: {
-    // backgroundColor: "gainsboro",
     alignSelf: "center",
     borderRadius: 20,
     borderColor: "gainsboro",
