@@ -19,6 +19,7 @@ import { TextSticker } from "@/components/TextSticker";
 import { PolylineSticker } from "@/components/PolylineSticker";
 import { supabase } from "@/lib/supabase";
 import { mockActivityData2 } from "@/mockActivityData2";
+import ClipboardStickerGrid from "@/components/ClipboardStickerGrid";
 
 const PlaceholderImage = require("@/assets/images/IMG_1014.jpg");
 
@@ -131,17 +132,9 @@ export default function Index() {
       {stickers.length > 0 && (
         <FlatList
           data={stickers}
-          renderItem={({ item }) => (
-            <View style={{ margin: 10 }}>
-              <Text style={{ color: "white", fontSize: 20 }}>{item.name}</Text>
-              <FlatList
-                data={item.stickers}
-                renderItem={({ item }) => drawSticker(item)}
-                ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
-                scrollEnabled={false} // Disable inner scroll
-              />
-            </View>
-          )}
+          renderItem={({ item }) => {
+            return <ClipboardStickerGrid stickerData={item} />;
+          }}
         />
       )}
     </View>
@@ -149,6 +142,7 @@ export default function Index() {
 }
 
 function drawSticker(item: any) {
+  console.log(item.type);
   return (
     <ClipboardSticker>
       {item.type === "text" && (
@@ -159,15 +153,17 @@ function drawSticker(item: any) {
             color: "white",
             thickness: 8,
           }}
+          scale={0.6}
         />
       )}
       {item.type === "polyline" && (
         <PolylineSticker
           stickerData={{
             data: item.data,
-            color: "white",
+            color: "#fc4c02",
             thickness: 5,
           }}
+          scale={1}
         />
       )}
     </ClipboardSticker>
