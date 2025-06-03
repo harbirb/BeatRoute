@@ -20,6 +20,7 @@ import { PolylineSticker } from "@/components/PolylineSticker";
 import { supabase } from "@/lib/supabase";
 import { mockActivityData2 } from "@/mockActivityData2";
 import ClipboardStickerGrid from "@/components/ClipboardStickerGrid";
+import CustomizeStickerModal from "@/components/CustomizeStickerModal";
 
 const PlaceholderImage = require("@/assets/images/IMG_1014.jpg");
 
@@ -33,9 +34,16 @@ export default function Index() {
   const [showToast, setShowToast] = useState(false);
   const router = useRouter();
   const [stickers, setStickers] = useState<any[]>([]);
+  const [modalVisible, setModalVisible] = useState(false);
   // save styling preferences to users local device
   // fetch styling preferences from users local device
-  const [styling, setStyling] = useState<any>(null);
+  const [styling, setStyling] = useState<any>({
+    textColor: "white",
+    // textFont: "Inter",
+    textWeight: "7",
+    lineColor: "#fc4c02",
+    lineWidth: 7,
+  });
 
   useEffect(() => {
     // const activities = mockActivityData;
@@ -104,7 +112,7 @@ export default function Index() {
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => {
-            alert("TODO");
+            setModalVisible(true);
           }}
           style={{
             backgroundColor: "dodgerblue",
@@ -133,8 +141,21 @@ export default function Index() {
         <FlatList
           data={stickers}
           renderItem={({ item }) => {
-            return <ClipboardStickerGrid stickerData={item} />;
+            return (
+              <ClipboardStickerGrid stickerData={item} styling={styling} />
+            );
           }}
+        />
+      )}
+      {stickers.length > 0 && (
+        <CustomizeStickerModal
+          visible={modalVisible}
+          onClose={() => {
+            setModalVisible(false);
+          }}
+          styling={styling}
+          setStyling={setStyling}
+          sampleStickers={stickers.length > 0 && stickers[0].stickers}
         />
       )}
     </View>

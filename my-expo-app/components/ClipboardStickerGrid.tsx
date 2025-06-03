@@ -5,9 +5,10 @@ import { PolylineSticker } from "./PolylineSticker";
 
 type Props = {
   stickerData: any;
+  styling: any;
 };
 
-export default function ClipboardStickerGrid({ stickerData }: Props) {
+export default function ClipboardStickerGrid({ stickerData, styling }: Props) {
   const polyline = stickerData.stickers.find(
     (sticker: any) => sticker.type === "polyline"
   );
@@ -19,10 +20,10 @@ export default function ClipboardStickerGrid({ stickerData }: Props) {
       <Text style={{ color: "gray", fontSize: 20, fontWeight: "bold" }}>
         {stickerData.name}
       </Text>
-      {polyline && drawPolyline(polyline)}
+      {polyline && drawPolyline(polyline, styling)}
       <FlatList
         data={texts}
-        renderItem={({ item }) => drawText(item)}
+        renderItem={({ item }) => drawText(item, styling)}
         style={{
           marginTop: 20,
           alignItems: "center",
@@ -39,7 +40,7 @@ export default function ClipboardStickerGrid({ stickerData }: Props) {
   );
 }
 
-function drawText(item: any) {
+function drawText(item: any, styling: any) {
   return (
     <ImageBackground
       style={{
@@ -58,8 +59,8 @@ function drawText(item: any) {
           stickerData={{
             caption: item.caption,
             data: item.data,
-            color: "white",
-            thickness: 8,
+            color: styling.textColor,
+            thickness: styling.textWeight,
           }}
           scale={0.6}
         />
@@ -68,7 +69,7 @@ function drawText(item: any) {
   );
 }
 
-function drawPolyline(item: any) {
+function drawPolyline(item: any, styling: any) {
   return (
     <ImageBackground
       style={{
@@ -76,8 +77,8 @@ function drawPolyline(item: any) {
         height: 300,
         overflow: "hidden",
         borderRadius: 30,
-        borderColor: "#fc4c02",
-        borderWidth: 2,
+        borderColor: "black",
+        borderWidth: 1,
       }}
       source={require("../assets/images/tinycbdark.png")}
       resizeMode="repeat"
@@ -86,8 +87,8 @@ function drawPolyline(item: any) {
         <PolylineSticker
           stickerData={{
             data: item.data,
-            color: "#fc4c02",
-            thickness: 7,
+            color: styling.lineColor,
+            thickness: styling.lineWidth,
           }}
           scale={0.72}
         />
