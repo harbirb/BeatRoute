@@ -1,7 +1,16 @@
-- token refresh logic
-- check if user has their accounts connected
-    what if they revoke access or reset their accounts
-- get deno setup
+- Don't worry about UI for now
+
+RELEARN HOW TO RUN THIS SHIT LOCALLY 
+UNFUCK THE EDGE FUNCTION FOR STRAVA login
+ASYNCSTORAGE IS NOT A GOOD WAY TO TRACK ONBOARDING STATUS, THE LOGIC FOR IS-STRAVACONNECTED DOES NOT WORK
+
+
+
+
+
+- Cleaner login page and logic
+- More robust logic for strava/spotify connections
+- Rendering stickers off screen at higher resolution before copying to clipboard
 
 
 

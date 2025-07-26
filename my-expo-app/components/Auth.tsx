@@ -6,8 +6,10 @@ import {
   AppState,
   TextInput,
   Button,
+  Keyboard,
 } from "react-native";
 import { supabase } from "@/lib/supabase";
+import { TouchableWithoutFeedback } from "react-native";
 
 // Tells Supabase Auth to continuously refresh the session automatically if
 // the app is in the foreground. When this is added, you will continue to receive
@@ -55,10 +57,13 @@ export default function Auth() {
   }
 
   return (
-    <View style={styles.container}>
+    <TouchableWithoutFeedback
+      onPress={() => Keyboard.dismiss()}
+      style={styles.container}
+    >
       <View style={[styles.verticallySpaced, styles.mt20]}>
         <TextInput
-          // leftIcon={{ type: "font-awesome", name: "envelope" }}
+          style={styles.input}
           onChangeText={(text) => setEmail(text)}
           value={email}
           placeholder="email@address.com"
@@ -67,7 +72,7 @@ export default function Auth() {
       </View>
       <View style={styles.verticallySpaced}>
         <TextInput
-          // leftIcon={{ type: "font-awesome", name: "lock" }}
+          style={styles.input}
           onChangeText={(text) => setPassword(text)}
           value={password}
           secureTextEntry={true}
@@ -89,16 +94,16 @@ export default function Auth() {
           onPress={() => signUpWithEmail()}
         />
       </View>
-    </View>
+    </TouchableWithoutFeedback>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    marginTop: 40,
-    padding: 12,
+    paddingVertical: 80,
+    paddingHorizontal: 20,
+    backgroundColor: "#333",
   },
   verticallySpaced: {
     paddingTop: 4,
@@ -107,5 +112,15 @@ const styles = StyleSheet.create({
   },
   mt20: {
     marginTop: 20,
+  },
+  input: {
+    height: 50,
+    borderColor: "#555555",
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 15,
+    color: "#FFFFFF",
+    backgroundColor: "#282828",
+    fontSize: 16,
   },
 });

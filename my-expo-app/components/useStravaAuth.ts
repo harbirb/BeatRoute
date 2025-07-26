@@ -50,9 +50,14 @@ export default function StravaAuth() {
         { body: { code: response.params.code } }
       );
 
+      console.log(data);
+      console.log(error);
+
       if (error instanceof FunctionsHttpError) {
-        const errorMessage = await error.context.json();
-        Alert.alert("Error", errorMessage);
+        console.log("HI THERE");
+        console.log(await error.context.json());
+        // const errorMessage = await error.context.json();
+        // Alert.alert("Error", errorMessage);
       }
 
       if (data) {

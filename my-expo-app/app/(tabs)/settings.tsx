@@ -56,7 +56,7 @@ export default function Settings() {
         <SpotifyAuth />
       </View>
       <Pressable onPress={() => supabase.auth.signOut()}>
-        <Text>Sign out</Text>
+        <Text style={{ color: "#fff" }}>Sign out</Text>
       </Pressable>
     </View>
   );
