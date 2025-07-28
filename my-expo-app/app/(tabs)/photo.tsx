@@ -31,7 +31,6 @@ type StickerObject = {
 };
 
 export default function Index() {
-  const [showToast, setShowToast] = useState(false);
   const router = useRouter();
   const [stickers, setStickers] = useState<any[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
@@ -46,8 +45,6 @@ export default function Index() {
   });
 
   useEffect(() => {
-    // const activities = mockActivityData;
-
     const populateStickers = async () => {
       // const { data, error } = await supabase.functions.invoke(
       //   "get-recent-activity"
@@ -69,14 +66,6 @@ export default function Index() {
     populateStickers();
   }, []);
 
-  // useEffect(() => {
-  //   if (showToast) {
-  //     setTimeout(() => {
-  //       setShowToast(false);
-  //     }, 1500);
-  //   }
-  // }, [showToast]);
-
   const launchPhotoEditor = () => {
     router.push({
       pathname: "/photo-editor",
@@ -85,13 +74,6 @@ export default function Index() {
 
   return (
     <View style={styles.container}>
-      {showToast && (
-        <View style={styles.toast}>
-          <Text style={{ fontFamily: "Inter", fontWeight: "bold" }}>
-            Copied!
-          </Text>
-        </View>
-      )}
       <View style={styles.buttonView}>
         <TouchableOpacity
           onPress={() => launchPhotoEditor()}

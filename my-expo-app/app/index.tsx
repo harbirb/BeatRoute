@@ -14,7 +14,7 @@ export default () => {
       const status = await AsyncStorage.getItem("hasCompletedOnboarding");
       if (status === "true") {
         console.log("already onboarded");
-        // router.replace("/(tabs)");
+        router.replace("/(tabs)");
       }
     };
     checkOnboardingStatus();
@@ -24,7 +24,7 @@ export default () => {
     <View style={styles.container}>
       <Text style={styles.title}>FitFlow</Text>
       <Text style={styles.subtitle}>
-        Welcome to FitFlow! Connect your accounts to unlock your workout
+        Welcome to Sticka! Connect your accounts to unlock your workout
         soundtracks
       </Text>
 

@@ -9,6 +9,7 @@ import {
 import ClipboardSticker from "./ClipboardSticker";
 import { PolylineSticker } from "./PolylineSticker";
 import ColorPicker from "./ColorPicker";
+import Slider from "@react-native-community/slider";
 
 type Props = {
   visible: boolean;
@@ -28,6 +29,10 @@ export default function CustomizeStickerModal({
   const setColor = (color: string) => {
     setStyling({ ...styling, lineColor: color });
   };
+
+  const updateStyling = (key: string, value: any) => {
+    setStyling({ ...styling, [key]: value });
+  };
   // console.log(sampleStickers);
   const polylineImage = sampleStickers.find((s) => s.type === "polyline");
   const textImage = sampleStickers.find((s) => s.type === "text");
@@ -45,9 +50,20 @@ export default function CustomizeStickerModal({
         <TouchableOpacity
           onPress={() => setStyling({ ...styling, lineColor: "red" })}
         >
-          <Text>updatestyles</Text>
+          <Text>Select a Color</Text>
         </TouchableOpacity>
         <ColorPicker setColor={setColor} currentColor={styling.lineColor} />
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+          <Text>Line Width:</Text>
+          <Slider
+            value={styling.lineWidth}
+            minimumValue={1}
+            maximumValue={10}
+            step={1}
+            onValueChange={(value) => updateStyling("lineWidth", value)}
+            style={{ width: 200, height: 40 }}
+          />
+        </View>
       </View>
     </Modal>
   );
