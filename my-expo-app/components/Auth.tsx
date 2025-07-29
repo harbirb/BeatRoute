@@ -57,11 +57,8 @@ export default function Auth() {
   }
 
   return (
-    <TouchableWithoutFeedback
-      onPress={() => Keyboard.dismiss()}
-      style={styles.container}
-    >
-      <View>
+    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+      <View style={styles.container}>
         <View style={[styles.verticallySpaced, styles.mt20]}>
           <TextInput
             style={styles.input}

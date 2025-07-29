@@ -59,6 +59,7 @@ function drawText(item: any, styling: any) {
           stickerData={{
             caption: item.caption,
             data: item.data,
+            font: styling.textFont,
             color: styling.textColor,
             thickness: styling.textWeight,
           }}

@@ -22,6 +22,7 @@ export default function RootLayout() {
   const colorScheme = useColorScheme();
   const [loaded] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
+    PermanentMarker: require("../assets/fonts/PermanentMarker-Regular.ttf"),
   });
   const [session, setSession] = useState<any>(null);
   const router = useRouter();

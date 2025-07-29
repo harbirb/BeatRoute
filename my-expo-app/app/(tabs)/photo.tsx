@@ -38,7 +38,7 @@ export default function Index() {
   // fetch styling preferences from users local device
   const [styling, setStyling] = useState<any>({
     textColor: "white",
-    // textFont: "Inter",
+    textFont: "Helvetica",
     textWeight: "7",
     lineColor: "#fc4c02",
     lineWidth: 7,

@@ -5,6 +5,7 @@ import {
   StyleSheet,
   ImageBackground,
   TouchableOpacity,
+  Pressable,
 } from "react-native";
 import ClipboardSticker from "./ClipboardSticker";
 import { PolylineSticker } from "./PolylineSticker";
@@ -27,7 +28,7 @@ export default function CustomizeStickerModal({
   sampleStickers,
 }: Props) {
   const setColor = (color: string) => {
-    setStyling({ ...styling, lineColor: color });
+    setStyling({ ...styling, lineColor: color, textColor: color });
   };
 
   const updateStyling = (key: string, value: any) => {
@@ -36,6 +37,10 @@ export default function CustomizeStickerModal({
   // console.log(sampleStickers);
   const polylineImage = sampleStickers.find((s) => s.type === "polyline");
   const textImage = sampleStickers.find((s) => s.type === "text");
+
+  const handleFontChange = (textFont: string) => {
+    setStyling({ ...styling, textFont });
+  };
 
   return (
     <Modal
@@ -46,12 +51,7 @@ export default function CustomizeStickerModal({
       style={{ margin: 0, justifyContent: "flex-end" }}
     >
       <View style={styles.modalContainer}>
-        {polylineImage && drawPolyline(polylineImage, styling)}
-        <TouchableOpacity
-          onPress={() => setStyling({ ...styling, lineColor: "red" })}
-        >
-          <Text>Select a Color</Text>
-        </TouchableOpacity>
+        {/* {polylineImage && drawPolyline(polylineImage, styling)} */}
         <ColorPicker setColor={setColor} currentColor={styling.lineColor} />
         <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
           <Text>Line Width:</Text>
@@ -64,6 +64,27 @@ export default function CustomizeStickerModal({
             style={{ width: 200, height: 40 }}
           />
         </View>
+        {/* TODO: refactor this into textpicker component */}
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 20 }}>
+          <Pressable onPress={() => handleFontChange("PermanentMarker")}>
+            <Text style={{ fontFamily: "PermanentMarker" }}>Marker</Text>
+          </Pressable>
+          <Pressable onPress={() => handleFontChange("Times New Roman")}>
+            <Text style={{ fontFamily: "Times New Roman" }}>Times</Text>
+          </Pressable>
+          <Pressable onPress={() => handleFontChange("Arial")}>
+            <Text style={{ fontFamily: "Arial" }}>Arial</Text>
+          </Pressable>
+          <Pressable onPress={() => handleFontChange("Comic Sans MS")}>
+            <Text style={{ fontFamily: "Comic Sans MS" }}>Comic</Text>
+          </Pressable>
+          <Pressable onPress={() => handleFontChange("Courier")}>
+            <Text style={{ fontFamily: "Courier" }}>Courier</Text>
+          </Pressable>
+          <Pressable onPress={() => handleFontChange("Helvetica")}>
+            <Text style={{ fontFamily: "Helvetica" }}>Helvetica</Text>
+          </Pressable>
+        </View>
       </View>
     </Modal>
   );
@@ -71,7 +92,7 @@ export default function CustomizeStickerModal({
 
 const styles = StyleSheet.create({
   modalContainer: {
-    height: "75%",
+    height: "30%",
     borderRadius: 30,
     backgroundColor: "white",
     alignItems: "center",
