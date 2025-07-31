@@ -60,8 +60,9 @@ function drawText(item: any, styling: any) {
             caption: item.caption,
             data: item.data,
             font: styling.textFont,
+            style: styling.textStyle,
             color: styling.textColor,
-            thickness: styling.textWeight,
+            weight: styling.textWeight,
           }}
           scale={0.6}
         />

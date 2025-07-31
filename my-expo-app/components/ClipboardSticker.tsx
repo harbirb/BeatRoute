@@ -25,7 +25,7 @@ export default function ClipboardSticker({ children }: Props) {
     });
     await Clipboard.setImageAsync(uri);
     Alert.alert("Copied");
-    console.log("copied");
+    // console.log("copied");
   };
 
   return (

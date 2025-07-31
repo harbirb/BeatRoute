@@ -41,8 +41,8 @@ export const TextSticker: React.FC<Props> = ({ stickerData, scale }) => {
         style={{
           fontSize: baseSize * smallTextRatio * (scale ?? 1),
           color: stickerData.color,
-          fontWeight: mapThicknessToWeight(stickerData.thickness),
-          fontStyle: "italic",
+          fontWeight: stickerData.weight,
+          fontStyle: stickerData.style,
         }}
       >
         {stickerData.caption}
@@ -54,9 +54,9 @@ export const TextSticker: React.FC<Props> = ({ stickerData, scale }) => {
         style={{
           color: stickerData.color,
           fontSize: baseSize * (scale ?? 1),
-          fontStyle: "italic",
+          fontStyle: stickerData.style,
           fontFamily: stickerData.font,
-          fontWeight: mapThicknessToWeight(stickerData.thickness),
+          fontWeight: stickerData.weight,
         }}
       >
         {" " + stickerData.data + " "}

@@ -40,16 +40,17 @@ export default function Index() {
     textColor: "white",
     textFont: "Helvetica",
     textWeight: "7",
+    textStyle: "normal",
     lineColor: "#fc4c02",
     lineWidth: 7,
   });
 
   useEffect(() => {
     const populateStickers = async () => {
-      // const { data, error } = await supabase.functions.invoke(
-      //   "get-recent-activity"
-      // );
-      const data = mockActivityData2;
+      const { data, error } = await supabase.functions.invoke(
+        "get-recent-activity"
+      );
+      // const data = mockActivityData2;
 
       const newStickers: any[] = [];
       for (const activity of data) {

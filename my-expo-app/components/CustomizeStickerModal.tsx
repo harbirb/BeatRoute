@@ -6,11 +6,14 @@ import {
   ImageBackground,
   TouchableOpacity,
   Pressable,
+  Switch,
 } from "react-native";
 import ClipboardSticker from "./ClipboardSticker";
 import { PolylineSticker } from "./PolylineSticker";
 import ColorPicker from "./ColorPicker";
 import Slider from "@react-native-community/slider";
+import FontPicker from "./FontPicker";
+import ToggleButton from "./ToggleButton";
 
 type Props = {
   visible: boolean;
@@ -38,10 +41,6 @@ export default function CustomizeStickerModal({
   const polylineImage = sampleStickers.find((s) => s.type === "polyline");
   const textImage = sampleStickers.find((s) => s.type === "text");
 
-  const handleFontChange = (textFont: string) => {
-    setStyling({ ...styling, textFont });
-  };
-
   return (
     <Modal
       isVisible={visible}
@@ -64,26 +63,32 @@ export default function CustomizeStickerModal({
             style={{ width: 200, height: 40 }}
           />
         </View>
-        {/* TODO: refactor this into textpicker component */}
-        <View style={{ flexDirection: "row", alignItems: "center", gap: 20 }}>
-          <Pressable onPress={() => handleFontChange("PermanentMarker")}>
-            <Text style={{ fontFamily: "PermanentMarker" }}>Marker</Text>
-          </Pressable>
-          <Pressable onPress={() => handleFontChange("Times New Roman")}>
-            <Text style={{ fontFamily: "Times New Roman" }}>Times</Text>
-          </Pressable>
-          <Pressable onPress={() => handleFontChange("Arial")}>
-            <Text style={{ fontFamily: "Arial" }}>Arial</Text>
-          </Pressable>
-          <Pressable onPress={() => handleFontChange("Comic Sans MS")}>
-            <Text style={{ fontFamily: "Comic Sans MS" }}>Comic</Text>
-          </Pressable>
-          <Pressable onPress={() => handleFontChange("Courier")}>
-            <Text style={{ fontFamily: "Courier" }}>Courier</Text>
-          </Pressable>
-          <Pressable onPress={() => handleFontChange("Helvetica")}>
-            <Text style={{ fontFamily: "Helvetica" }}>Helvetica</Text>
-          </Pressable>
+        <FontPicker
+          setFont={(font: string) => updateStyling("textFont", font)}
+          currentFont={styling.textFont}
+        />
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 10,
+            marginTop: 10,
+          }}
+        >
+          <ToggleButton
+            value={styling.textStyle}
+            activeValue="italic"
+            inactiveValue="normal"
+            onChange={(value: string) => updateStyling("textStyle", value)}
+            label="Italic"
+          />
+          <ToggleButton
+            value={styling.textWeight}
+            activeValue="bold"
+            inactiveValue="normal"
+            onChange={(value: string) => updateStyling("textWeight", value)}
+            label="Bold"
+          />
         </View>
       </View>
     </Modal>
@@ -92,11 +97,12 @@ export default function CustomizeStickerModal({
 
 const styles = StyleSheet.create({
   modalContainer: {
-    height: "30%",
+    // height: "30%",
     borderRadius: 30,
     backgroundColor: "white",
     alignItems: "center",
     padding: 20,
+    paddingBottom: 60,
   },
 });
 
