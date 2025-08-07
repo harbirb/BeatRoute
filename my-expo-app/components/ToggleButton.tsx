@@ -16,8 +16,6 @@ const ToggleButton = ({
 }: any) => {
   const isActive = activeValue === value;
 
-  console.log(isActive);
-
   return (
     <View>
       <TouchableOpacity

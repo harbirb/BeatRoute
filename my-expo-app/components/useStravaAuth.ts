@@ -50,20 +50,17 @@ export default function StravaAuth() {
         { body: { code: response.params.code } }
       );
 
-      console.log(data);
-      console.log(error);
+      // console.log(data);
+      // console.log(error);
 
       if (error instanceof FunctionsHttpError) {
-        console.log("HI THERE");
         console.log(await error.context.json());
-        // const errorMessage = await error.context.json();
-        // Alert.alert("Error", errorMessage);
       }
 
       if (data) {
         setConnected(true);
-        console.log(connected);
-        console.log(data);
+        // console.log(connected);
+        // console.log(data);
       }
 
       setLoading(false);

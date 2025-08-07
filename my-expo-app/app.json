@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Pacer",
-    "slug": "Pacer",
+    "name": "BeatRoute",
+    "slug": "BeatRoute",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -11,13 +11,10 @@
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
-        "LSApplicationQueriesSchemes": [
-          "strava",
-          "strava"
-        ],
+        "LSApplicationQueriesSchemes": ["strava", "strava"],
         "ITSAppUsesNonExemptEncryption": false
       },
-      "bundleIdentifier": "com.bharbir.Pacer"
+      "bundleIdentifier": "com.bharbir.BeatRoute"
     },
     "android": {
       "adaptiveIcon": {

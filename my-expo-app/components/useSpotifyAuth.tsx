@@ -1,18 +1,8 @@
-import React, { useState, useEffect } from "react";
+import { supabase } from "@/lib/supabase";
+import { useAuthRequest } from "expo-auth-session";
+import React, { useCallback, useEffect, useState } from "react";
 import { View, Alert, Pressable, Text } from "react-native";
 import * as WebBrowser from "expo-web-browser";
-import {
-  makeRedirectUri,
-  useAuthRequest,
-  ResponseType,
-} from "expo-auth-session";
-import { supabase } from "../lib/supabase";
-import {
-  FunctionsHttpError,
-  FunctionsRelayError,
-  FunctionsFetchError,
-} from "@supabase/supabase-js";
-import * as Crypto from "expo-crypto";
 
 // Required for proper redirect handling in Expo
 WebBrowser.maybeCompleteAuthSession();
@@ -20,23 +10,21 @@ WebBrowser.maybeCompleteAuthSession();
 // Spotify configuration
 const SPOTIFY_CLIENT_ID = "fc42a335e4a747739fe8a8f8fa07c59d";
 const SPOTIFY_REDIRECT_URI = "exp://localhost:3000";
-const SPOTIFY_AUTHORIZATION_URL = "https://accounts.spotify.com/authorize";
-const SPOTIFY_TOKEN_URL = "https://accounts.spotify.com/api/token";
 
+// Note: Removed redundant URLs from discovery object.
 const discovery = {
   authorizationEndpoint: "https://accounts.spotify.com/authorize",
   tokenEndpoint: "https://accounts.spotify.com/api/token",
 };
 
-export default function SpotifyAuth({}) {
+// Renamed the component to useSpotifyAuth
+export default function useSpotifyAuth() {
   const [connected, setConnected] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const [request, response, promptAsync] = useAuthRequest(
     {
       clientId: SPOTIFY_CLIENT_ID,
-      // TODO: what scopes are required?
-      // Delete unused ones
       scopes: ["user-read-email", "user-read-private", "playlist-read-private"],
       redirectUri: SPOTIFY_REDIRECT_URI,
       usePKCE: false,
@@ -49,8 +37,6 @@ export default function SpotifyAuth({}) {
 
   useEffect(() => {
     const handleTokenExchange = async () => {
-      console.log(response);
-      console.log(response?.type, response?.params);
       if (response?.type !== "success" || !response.params?.code) return;
 
       setLoading(true);
@@ -64,20 +50,12 @@ export default function SpotifyAuth({}) {
 
         if (data?.success) {
           setConnected(true);
-          Alert.alert("Success", "Connected to Spotify!");
         } else {
           throw new Error("Token exchange failed");
         }
       } catch (error) {
-        // print to console
         console.error("Token exchange failed:", error);
-
-        if (error) {
-          const errorMessage = await error.context.json();
-          console.log(errorMessage);
-        } else {
-          alert("Error", error);
-        }
+        // Error handling should be moved to the parent component
       } finally {
         setLoading(false);
       }
@@ -86,17 +64,11 @@ export default function SpotifyAuth({}) {
     handleTokenExchange();
   }, [response]);
 
-  return (
-    <View style={{ alignItems: "center" }}>
-      {connected ? (
-        <Pressable>
-          <Text>Connected!</Text>
-        </Pressable>
-      ) : (
-        <Pressable onPress={() => promptAsync()}>
-          <Text>Sign in with Spotify</Text>
-        </Pressable>
-      )}
-    </View>
-  );
+  // Wrapped promptAsync in useCallback
+  const connectSpotify = useCallback(async () => {
+    await promptAsync();
+  }, [promptAsync]);
+
+  // Changed the return statement to return state and a function
+  return { connected, connectSpotify, loading };
 }
