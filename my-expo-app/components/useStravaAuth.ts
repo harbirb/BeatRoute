@@ -22,9 +22,34 @@ const STRAVA_AUTHORIZATION_URL = "https://www.strava.com/oauth/authorize";
 // Required for proper redirect handling in Expo
 WebBrowser.maybeCompleteAuthSession();
 
+// Utility function to check database for existing Strava connection
+const checkStravaConnection = async () => {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return false;
+
+  const { data } = await supabase
+    .from("strava_tokens")
+    .select("user_id") // Select only the necessary column
+    .eq("user_id", user.id)
+    .maybeSingle(); // Use maybeSingle to get null if no row is found
+
+  return !!data; // Return true if data exists, false otherwise
+};
+
 export default function StravaAuth() {
   const [connected, setConnected] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchConnectionStatus = async () => {
+      const isConnected = await checkStravaConnection();
+      setConnected(isConnected);
+      setLoading(false);
+    };
+    fetchConnectionStatus();
+  }, []);
 
   const [request, response, promptAsync] = useAuthRequest(
     {

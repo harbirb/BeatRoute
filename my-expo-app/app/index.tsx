@@ -149,6 +149,7 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 16,
     marginBottom: 20,
+    textAlign: "center",
   },
   buttonText: {
     fontSize: 16,
