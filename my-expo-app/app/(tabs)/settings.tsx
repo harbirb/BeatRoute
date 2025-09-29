@@ -1,77 +1,96 @@
 import {
   StyleSheet,
-  Image,
-  Platform,
   View,
-  Text,
-  TouchableOpacity,
   Pressable,
 } from "react-native";
-
-import { Collapsible } from "@/components/Collapsible";
-import { ExternalLink } from "@/components/ExternalLink";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { supabase } from "@/lib/supabase";
-import TestButton from "@/components/TestButton";
-import StravaAuth from "@/components/StravaAuth";
-import SpotifyAuth from "@/components/SpotifyAuth";
+import useStravaAuth from "@/components/useStravaAuth";
+import useSpotifyAuth from "@/components/useSpotifyAuth";
 
 export default function Settings() {
+  const { connected: isStravaConnected, connectStrava } = useStravaAuth();
+  const { connected: isSpotifyConnected, connectSpotify } = useSpotifyAuth();
+
   return (
-    <View
-      style={{
-        flex: 1,
-        backgroundColor: "#000",
-        paddingTop: 50,
-        gap: 20,
-        alignItems: "center",
-      }}
-    >
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Explore</ThemedText>
-      </ThemedView>
-      <Collapsible title="Custom fonts">
-        <ThemedText>
-          Open <ThemedText type="defaultSemiBold">app/_layout.tsx</ThemedText>{" "}
-          to see how to load{" "}
-          <ThemedText style={{ fontFamily: "SpaceMono" }}>
-            custom fonts such as this one.
-          </ThemedText>
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/versions/latest/sdk/font">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <View>
-        <Text>Test button here</Text>
-        <TestButton />
+    <ThemedView style={styles.container}>
+      <ThemedText type="title" style={styles.title}>
+        Settings
+      </ThemedText>
+
+      <View style={styles.section}>
+        <ThemedText type="subtitle">Connected Services</ThemedText>
+        <View style={styles.serviceWrapper}>
+          <ThemedText style={styles.serviceTitle}>Strava</ThemedText>
+          <View style={styles.serviceContainer}>
+            <ThemedText>Status: {isStravaConnected ? "Connected" : "Not Connected"}</ThemedText>
+            <Pressable style={styles.button} onPress={() => connectStrava()}>
+              <ThemedText style={styles.buttonText}>Reconnect</ThemedText>
+            </Pressable>
+          </View>
+        </View>
+        <View style={styles.serviceWrapper}>
+          <ThemedText style={styles.serviceTitle}>Spotify</ThemedText>
+          <View style={styles.serviceContainer}>
+            <ThemedText>Status: {isSpotifyConnected ? "Connected" : "Not Connected"}</ThemedText>
+            <Pressable style={styles.button} onPress={() => connectSpotify()}>
+              <ThemedText style={styles.buttonText}>Reconnect</ThemedText>
+            </Pressable>
+          </View>
+        </View>
       </View>
-      <View>
-        <Text style={styles.title}>Step 1: Connect your Strava Account</Text>
-        <StravaAuth onAuthSuccess={() => {}} />
+
+      <View style={styles.section}>
+        <ThemedText type="subtitle">User</ThemedText>
+        <Pressable style={styles.button} onPress={() => supabase.auth.signOut()}>
+          <ThemedText style={styles.buttonText}>Sign out</ThemedText>
+        </Pressable>
       </View>
-      <View>
-        <Text style={styles.title}>Step 2: Connect your Spotify Account</Text>
-        <SpotifyAuth />
-      </View>
-      <Pressable onPress={() => supabase.auth.signOut()}>
-        <Text style={{ color: "#fff" }}>Sign out</Text>
-      </Pressable>
-    </View>
+    </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
-  headerImage: {
-    color: "#808080",
-    bottom: -90,
-    left: -35,
-    position: "absolute",
+  container: {
+    flex: 1,
+    padding: 20,
+    paddingTop: 50,
   },
-  titleContainer: {
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 20,
+    textAlign: "center",
+  },
+  section: {
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    padding: 20,
+    borderRadius: 10,
+  },
+  serviceWrapper: {
+    marginBottom: 15,
+  },
+  serviceTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  serviceContainer: {
     flexDirection: "row",
-    gap: 8,
+    justifyContent: "space-between",
+    alignItems: "center",
   },
-  title: { fontSize: 18, fontWeight: "600", marginBottom: 12, color: "#fff" },
+  button: {
+    backgroundColor: "#FF5733",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+  },
+  buttonText: {
+    color: "#fff",
+    fontWeight: "bold",
+  },
 });
