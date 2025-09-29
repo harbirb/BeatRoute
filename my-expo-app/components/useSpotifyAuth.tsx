@@ -17,10 +17,33 @@ const discovery = {
   tokenEndpoint: "https://accounts.spotify.com/api/token",
 };
 
-// Renamed the component to useSpotifyAuth
+const checkSpotifyConnection = async () => {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return false;
+
+  const { data } = await supabase
+    .from("spotify_tokens")
+    .select("user_id")
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  return !!data;
+};
+
 export default function useSpotifyAuth() {
   const [connected, setConnected] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchConnectionStatus = async () => {
+      const isConnected = await checkSpotifyConnection();
+      setConnected(isConnected);
+      setLoading(false);
+    };
+    fetchConnectionStatus();
+  }, []);
 
   const [request, response, promptAsync] = useAuthRequest(
     {

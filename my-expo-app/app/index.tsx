@@ -23,8 +23,7 @@ export default () => {
       // Check if the user has completed onboarding call db instead of async storage
       const status = await AsyncStorage.getItem("hasCompletedOnboarding");
       if (status === "true") {
-        console.log("already onboarded");
-        // router.replace("/(tabs)");
+        router.replace("/(tabs)");
       }
     };
     checkOnboardingStatus();
@@ -77,9 +76,9 @@ export default () => {
             style={[
               styles.spotifyButton,
               styles.sharedButton,
-              { opacity: isStravaConnected ? 1 : 0.5 },
+              { opacity: isSpotifyConnected ? 0.5 : 0.5 },
             ]}
-            disabled={!isStravaConnected}
+            disabled={isSpotifyConnected}
             onPress={connectSpotify}
           >
             <Text style={styles.buttonText}>

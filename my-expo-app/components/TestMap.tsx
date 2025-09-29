@@ -22,8 +22,6 @@ export default function PolylineVisualizer() {
     const minLng = Math.min(...coords.map((c) => c[1]));
     const maxLng = Math.max(...coords.map((c) => c[1]));
 
-    // TODO: scale coordinates (cosine correction)
-
     const width = maxLng - minLng;
     const height = maxLat - minLat;
     const maxSize = Math.max(width, height);
