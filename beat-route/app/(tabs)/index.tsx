@@ -1,5 +1,4 @@
-import { router } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { router } from "expo-router";
 import {
   View,
   Text,
@@ -7,76 +6,97 @@ import {
   Pressable,
   StyleSheet,
   ActivityIndicator,
-} from 'react-native';
-import { getActivities } from '@/lib/mock-db';
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { useData, Activity } from "@/context/DataContext";
 
-// Define the shape of the lightweight activity object
-interface LightweightActivity {
-  id: string;
-  name: string;
-  artist: string;
-  songCount: number;
-}
-
-// The distinct component for rendering a single activity preview card.
-const ActivityPreview = ({ item }: { item: LightweightActivity }) => {
+const ActivityPreview = ({ item }: { item: Activity }) => {
   return (
     <Pressable
       style={styles.card}
       onPress={() => router.push(`/activity/${item.id}`)}
     >
-      <Text style={styles.cardTitle}>{item.name}</Text>
-      <Text style={styles.cardSubtitle}>{item.artist}</Text>
-      <Text style={styles.cardInfo}>{item.songCount} songs</Text>
+      <View style={styles.topRow}>
+        <View style={styles.titleLocationContainer}>
+          <Text style={styles.cardTitle}>{item.name}</Text>
+          <Text style={styles.cardSubtitle}>{"Vancouver, BC"}</Text>
+        </View>
+        <Text style={styles.cardSubtitle}>
+          {new Date(item.date).toLocaleDateString()}
+        </Text>
+      </View>
+      <View style={styles.bottomRow}>
+        <Text style={styles.cardSubtitle}>5.4 km</Text>
+        <Text style={styles.cardSubtitle}>3 songs</Text>
+      </View>
     </Pressable>
   );
 };
 
 export default function HomeScreen() {
-  const [activities, setActivities] = useState<LightweightActivity[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchActivities = async () => {
-      setLoading(true);
-      const data = await getActivities();
-      setActivities(data as LightweightActivity[]);
-      setLoading(false);
-    };
-    fetchActivities();
-  }, []);
+  const { activities, loading } = useData();
 
   if (loading) {
     return <ActivityIndicator style={styles.centered} />;
   }
 
   return (
-    <View style={styles.container}>
-      <FlatList
-        data={activities}
-        renderItem={({ item }) => <ActivityPreview item={item} />}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={{ padding: 16 }}
-      />
-    </View>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.contentContainer}>
+        <View style={styles.header}>
+          <Text style={styles.title}>Activities</Text>
+        </View>
+        <FlatList
+          data={activities}
+          renderItem={({ item }) => <ActivityPreview item={item} />}
+          keyExtractor={(item) => item.id}
+        />
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  centered: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  container: { flex: 1 },
-  card: {
-    backgroundColor: 'white',
+  container: {
+    flex: 1,
+  },
+  contentContainer: {
+    flex: 1,
+    // paddingHorizontal: 16,
+  },
+  header: {
     padding: 16,
-    borderRadius: 8,
-    marginBottom: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+  },
+  card: {
+    backgroundColor: "white",
+    padding: 16,
+    gap: 30,
+    borderRadius: 16,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 3,
+    margin: 16,
   },
-  cardTitle: { fontSize: 18, fontWeight: 'bold' },
-  cardSubtitle: { fontSize: 16, color: 'gray', marginTop: 4 },
-  cardInfo: { fontSize: 14, color: 'darkgray', marginTop: 8 },
+  cardTitle: { fontSize: 20, fontWeight: "bold" },
+  cardSubtitle: { fontSize: 16, color: "gray" },
+  cardInfo: { fontSize: 14, color: "darkgray" },
+  centered: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  topRow: { flexDirection: "row", justifyContent: "space-between" },
+  titleLocationContainer: {
+    // flexDirection: "column",
+  },
+  bottomRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
 });
