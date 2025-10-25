@@ -1,81 +1,84 @@
+import React, { createContext, useContext, useState, ReactNode, useEffect, use } from 'react';
+import { getActivities } from '@/lib/mock-db';
 
-import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
-import { useAuth } from './AuthContext';
 
-// --- 1. Define the shapes of your data ---
-export interface Profile {
-  username: string;
-  bio: string;
-  website: string;
+export interface Song {
+  id: string;
+  title: string;
+  artist: string;
+  album?: string;
+  artworkUrl?: string;
 }
 
-export interface Post {
-  id: number;
-  text: string;
-  createdAt: Date;
+export type Tracklist = Song[];
+
+// Base interface with common fields for all activities
+interface ActivityBase {
+  id: string;
+  name: string;
+  date: string; // ISO 8601 format
+  tracklist: Tracklist;
 }
+
+// Specific interface for a 'run' activity
+export interface RunActivity extends ActivityBase {
+  type: 'run';
+  distanceInMeters: number;
+  durationInSeconds: number;
+  pace: string; // e.g., "8'30\"/km"
+}
+
+// Specific interface for a 'ride' activity
+export interface RideActivity extends ActivityBase {
+  type: 'ride';
+  distanceInMeters: number;
+  durationInSeconds: number;
+  averageSpeedKph: number;
+  elevationGainInMeters: number;
+}
+
+// The final Activity type is a union of all possible activity types
+export type Activity = RunActivity | RideActivity;
+
 
 interface DataContextType {
-  profile: Profile | null;
-  posts: Post[];
-  addPost: (text: string) => void;
+  activities: Activity[];
   loading: boolean;
+  // In the future, could add functions like:
+  // addActivity: (activity: Activity) => void;
 }
 
-// --- 2. Create the Context ---
+
 const DataContext = createContext<DataContextType | undefined>(undefined);
 
-// --- 3. Create the Provider with Mock Data and Logic ---
+// --- 4. Create the Provider ---
+
 export const DataProvider = ({ children }: { children: ReactNode }) => {
-  const { user } = useAuth(); // Get the current user
+  const [activities, setActivities] = useState<Activity[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const [profile, setProfile] = useState<Profile | null>(null);
-  const [posts, setPosts] = useState<Post[]>([]);
-  const [loading, setLoading] = useState(false);
-
-  // This effect simulates fetching data when the user logs in
   useEffect(() => {
-    if (user) {
+    const fetchMockActivities = async () => {
       setLoading(true);
-      // Simulate a network call to fetch data
-      setTimeout(() => {
-        // Mock profile data for the logged-in user
-        setProfile({
-          username: 'beat-route-user',
-          bio: 'Building a new app with a solid plan!',
-          website: 'https://example.com',
-        });
-        // Mock posts data
-        setPosts([
-          { id: 1, text: 'This is my first post on the new app!', createdAt: new Date() },
-          { id: 2, text: 'Using mock data is making development so much faster.', createdAt: new Date() },
-        ]);
-        setLoading(false);
-      }, 1200);
-    } else {
-      // If user logs out, clear the data
-      setProfile(null);
-      setPosts([]);
-    }
-  }, [user]); // This effect re-runs whenever the user object changes
 
-  const addPost = (text: string) => {
-    const newPost: Post = {
-      id: Math.random(), // Not a great ID, but fine for mock data
-      text,
-      createdAt: new Date(),
+      // TODO: 1. Replace this mock call with a real Supabase API call.
+      const mockData = await getActivities();
+
+      // TODO: 2. When using a real API, need an adapter function here
+      // to map the raw API response to app's data types 
+
+      setActivities(mockData);
+      setLoading(false);
     };
-    setPosts(currentPosts => [newPost, ...currentPosts]);
-  };
 
-  return (
-    <DataContext.Provider value={{ profile, posts, addPost, loading }}>
-      {children}
-    </DataContext.Provider>
-  );
+    fetchMockActivities();
+  }, []);
+
+  const value = { activities, loading };
+
+  return <DataContext.Provider value={value}>{children}</DataContext.Provider>;
 };
 
-// --- 4. Create the custom hook ---
 export const useData = () => {
   const context = useContext(DataContext);
   if (context === undefined) {

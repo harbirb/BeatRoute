@@ -15,17 +15,17 @@ export default function RootLayout() {
 
   return (
     <AuthProvider>
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+      {/* <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}> */}
         <Stack>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="modal" options={{ presentation: 'card', title: 'Modal' }} />
           <Stack.Screen
             name="activity/[id]"
-            options={{ presentation: 'modal', headerShown: true }}
+            options={{ presentation: 'card', headerShown: true }}
           />
         </Stack>
         <StatusBar style="auto" />  
-      </ThemeProvider>
+      {/* </ThemeProvider> */}
     </AuthProvider>
   );
 }

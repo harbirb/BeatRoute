@@ -1,50 +1,45 @@
+import { Activity, RunActivity, RideActivity } from "@/context/DataContext";
 
-// This file acts as a mock database for our activities.
-
-export interface Activity {
-  id: string;
-  name: string;
-  artist: string;
-  songCount: number;
-  tracklist: { song: string; artist: string }[];
-}
-
-// --- The full, detailed data ---
-const ACTIVITIES_DB: Activity[] = [
+// --- The full, detailed data, conforming to the new types ---
+const MOCK_ACTIVITIES: Activity[] = [
   {
-    id: '1',
-    name: 'Boiler Room: London',
-    artist: 'Fred Again..',
-    songCount: 12,
+    id: 'run1',
+    type: 'run',
+    name: 'Morning 5k Run',
+    date: '2023-10-24T08:00:00Z',
+    distanceInMeters: 5000,
+    durationInSeconds: 1500, // 25 minutes
+    pace: '5\'00"/km',
     tracklist: [
-      { song: 'Marea (We’ve Lost Dancing)', artist: 'Fred Again..' },
-      { song: 'Billie (Loving Arms)', artist: 'Fred Again..' },
-      { song: 'Kammy (Like I Do)', artist: 'Fred Again..' },
-      // ... more songs
+      { id: 'song1', title: 'Blinding Lights', artist: 'The Weeknd' },
+      { id: 'song2', title: 'Levitating', artist: 'Dua Lipa' },
     ],
   },
   {
-    id: '2',
-    name: 'EDC Las Vegas 2023',
-    artist: 'John Summit',
-    songCount: 18,
+    id: 'ride1',
+    type: 'ride',
+    name: 'City Loop Ride',
+    date: '2023-10-23T17:00:00Z',
+    distanceInMeters: 20000,
+    durationInSeconds: 3600, // 1 hour
+    averageSpeedKph: 20,
+    elevationGainInMeters: 150,
     tracklist: [
-      { song: 'Where You Are', artist: 'John Summit' },
-      { song: 'La Danza', artist: 'John Summit' },
-      { song: 'What A Life', artist: 'John Summit' },
-      // ... more songs
+      { id: 'song3', title: 'As It Was', artist: 'Harry Styles' },
+      { id: 'song4', title: 'Good 4 U', artist: 'Olivia Rodrigo' },
+      { id: 'song5', title: 'Bad Habits', artist: 'Ed Sheeran' },
     ],
   },
   {
-    id: '3',
-    name: 'Live at Red Rocks',
-    artist: 'Odesza',
-    songCount: 22,
+    id: 'run2',
+    type: 'run',
+    name: 'Rainy Afternoon Jog',
+    date: '2023-10-22T15:30:00Z',
+    distanceInMeters: 3000,
+    durationInSeconds: 960, // 16 minutes
+    pace: '5\'20"/km',
     tracklist: [
-      { song: 'A Moment Apart', artist: 'Odesza' },
-      { song: 'Bloom', artist: 'Odesza' },
-      { song: 'Say My Name', artist: 'Odesza' },
-      // ... more songs
+      { id: 'song6', title: 'Shivers', artist: 'Ed Sheeran' },
     ],
   },
 ];
@@ -52,27 +47,21 @@ const ACTIVITIES_DB: Activity[] = [
 // --- API Functions ---
 
 /**
- * Simulates fetching the lightweight list of activities for the home screen.
- * Note: It omits the heavy `tracklist` field.
+ * Simulates fetching the full list of activities.
  */
-export const getActivities = async () => {
-  console.log('FETCHING: Lightweight activity list...');
-  // In a real app, this would be: supabase.from('activities').select('id, name, artist, songCount')
-  const lightweightActivities = ACTIVITIES_DB.map(({ id, name, artist, songCount }) => ({
-    id,
-    name,
-    artist,
-    songCount,
-  }));
-  return new Promise(resolve => setTimeout(() => resolve(lightweightActivities), 500));
+export const getActivities = async (): Promise<Activity[]> => {
+  console.log('FETCHING: Full mock activity list...');
+  // In a real app, this would be: supabase.from('activities').select('*')
+  return new Promise(resolve => setTimeout(() => resolve(MOCK_ACTIVITIES), 500));
 };
 
 /**
  * Simulates fetching the full details for a single activity.
+ * In our new pattern, this is less likely to be used if the provider is caching,
+ * but it's good to have for the list-detail pattern.
  */
-export const getActivityById = async (id: string) => {
+export const getActivityById = async (id: string): Promise<Activity | null> => {
   console.log(`FETCHING: Full details for activity ID: ${id}...`);
-  // In a real app, this would be: supabase.from('activities').select('*').eq('id', id).single()
-  const activity = ACTIVITIES_DB.find(a => a.id === id);
-  return new Promise(resolve => setTimeout(() => resolve(activity || null), 800));
+  const activity = MOCK_ACTIVITIES.find(a => a.id === id) || null;
+  return new Promise(resolve => setTimeout(() => resolve(activity), 200)); // Faster since it's a 'find'
 };

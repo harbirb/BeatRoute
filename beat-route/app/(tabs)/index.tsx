@@ -18,6 +18,20 @@ interface LightweightActivity {
   songCount: number;
 }
 
+// The distinct component for rendering a single activity preview card.
+const ActivityPreview = ({ item }: { item: LightweightActivity }) => {
+  return (
+    <Pressable
+      style={styles.card}
+      onPress={() => router.push(`/activity/${item.id}`)}
+    >
+      <Text style={styles.cardTitle}>{item.name}</Text>
+      <Text style={styles.cardSubtitle}>{item.artist}</Text>
+      <Text style={styles.cardInfo}>{item.songCount} songs</Text>
+    </Pressable>
+  );
+};
+
 export default function HomeScreen() {
   const [activities, setActivities] = useState<LightweightActivity[]>([]);
   const [loading, setLoading] = useState(true);
@@ -32,17 +46,6 @@ export default function HomeScreen() {
     fetchActivities();
   }, []);
 
-  const renderItem = ({ item }: { item: LightweightActivity }) => (
-    <Pressable
-      style={styles.card}
-      onPress={() => router.push(`/activity/${item.id}`)}
-    >
-      <Text style={styles.cardTitle}>{item.name}</Text>
-      <Text style={styles.cardSubtitle}>{item.artist}</Text>
-      <Text style={styles.cardInfo}>{item.songCount} songs</Text>
-    </Pressable>
-  );
-
   if (loading) {
     return <ActivityIndicator style={styles.centered} />;
   }
@@ -51,7 +54,7 @@ export default function HomeScreen() {
     <View style={styles.container}>
       <FlatList
         data={activities}
-        renderItem={renderItem}
+        renderItem={({ item }) => <ActivityPreview item={item} />}
         keyExtractor={(item) => item.id}
         contentContainerStyle={{ padding: 16 }}
       />

@@ -14,7 +14,7 @@ export default function ActivityDetailScreen() {
       const fetchActivity = async () => {
         setLoading(true);
         const data = await getActivityById(id);
-        setActivity(data);
+        setActivity(data as Activity);
         setLoading(false);
       };
       fetchActivity();
