@@ -13,6 +13,8 @@ import {
 import { Activity, Song, RunActivity, useData } from "@/context/DataContext";
 import { Image } from "expo-image";
 import * as Clipboard from "expo-clipboard";
+import Card from "@/components/ui/Card";
+import { TrackItem } from "@/components/TrackItem";
 
 const PropertyValuePair = ({
   label,
@@ -28,7 +30,7 @@ const PropertyValuePair = ({
 );
 
 const RunDetailCard = ({ item }: { item: RunActivity }) => (
-  <View style={styles.card}>
+  <Card>
     <View style={styles.activityDetailContainer}>
       <PropertyValuePair
         label="Distance"
@@ -52,29 +54,17 @@ const RunDetailCard = ({ item }: { item: RunActivity }) => (
         />
       )}
     </View>
-  </View>
-);
-
-const TrackItem = ({ song }: { song: Song }) => (
-  <Pressable onPress={() => Linking.openURL(song.url)}>
-    <View style={styles.trackContainer}>
-      <Image source={song.imageUrl} style={styles.trackImage} />
-      <View style={styles.trackInfo}>
-        <Text style={styles.trackTitle}>{song.title}</Text>
-        <Text style={styles.trackArtist}>{song.artists.join(", ")}</Text>
-      </View>
-    </View>
-  </Pressable>
+  </Card>
 );
 
 const TrackList = ({ tracks }: { tracks: Song[] }) => (
-  <View style={styles.card}>
+  <Card>
     <View style={styles.trackListContainer}>
       {tracks.map((song) => (
         <TrackItem key={song.id} song={song} />
       ))}
     </View>
-  </View>
+  </Card>
 );
 
 export default function ActivityDetailScreen() {
@@ -138,16 +128,6 @@ const styles = StyleSheet.create({
     padding: 16,
     gap: 16,
   },
-  card: {
-    padding: 16,
-    backgroundColor: "#ffffff",
-    borderRadius: 16,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 3,
-  },
   activityDetailContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
@@ -165,26 +145,6 @@ const styles = StyleSheet.create({
   pvpValue: {
     fontSize: 20,
     fontWeight: "bold",
-  },
-  trackContainer: {
-    flexDirection: "row",
-  },
-  trackImage: {
-    width: 40,
-    height: 40,
-    borderRadius: 4,
-    marginRight: 12,
-  },
-  trackInfo: {
-    gap: 4,
-    justifyContent: "center",
-  },
-  trackTitle: {
-    fontSize: 16,
-  },
-  trackArtist: {
-    fontSize: 14,
-    color: "gray",
   },
   trackListContainer: {
     gap: 8,

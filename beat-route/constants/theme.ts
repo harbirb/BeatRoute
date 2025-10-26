@@ -65,12 +65,13 @@ export const FONT_WEIGHT = {
   medium: "500",
   bold: "700",
 };
-export const BORDER_RADIUS = {
+export const RADIUS = {
   small: 4,
   medium: 8,
   large: 16,
 };
 export const SPACING = {
+  xsmall: 4,
   small: 8,
   medium: 16,
   large: 24,
