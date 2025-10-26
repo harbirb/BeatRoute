@@ -64,7 +64,7 @@ export const FONT_WEIGHT = {
   regular: "400",
   medium: "500",
   bold: "700",
-};
+} as const;
 export const RADIUS = {
   small: 4,
   medium: 8,

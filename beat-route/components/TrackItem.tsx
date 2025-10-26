@@ -1,7 +1,13 @@
 import { View, Text, StyleSheet, Pressable, Linking } from "react-native";
 import { Image } from "expo-image";
 import { Song } from "@/context/DataContext";
-import { Colors, FONT_SIZE, RADIUS, SPACING } from "@/constants/theme";
+import {
+  Colors,
+  FONT_SIZE,
+  FONT_WEIGHT,
+  RADIUS,
+  SPACING,
+} from "@/constants/theme";
 
 export const TrackItem = ({ song }: { song: Song }) => (
   <Pressable onPress={() => Linking.openURL(song.url)}>
@@ -31,7 +37,6 @@ const styles = StyleSheet.create({
   },
   trackTitle: {
     fontSize: FONT_SIZE.medium,
-    fontWeight: "400",
     color: Colors.light.text,
   },
   trackArtist: {

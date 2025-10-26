@@ -4,68 +4,14 @@ import {
   Text,
   ActivityIndicator,
   StyleSheet,
-  Pressable,
-  Linking,
   ScrollView,
   Button,
   Alert,
 } from "react-native";
-import { Activity, Song, RunActivity, useData } from "@/context/DataContext";
-import { Image } from "expo-image";
+import { Activity, RunActivity, useData } from "@/context/DataContext";
 import * as Clipboard from "expo-clipboard";
-import Card from "@/components/ui/Card";
-import { TrackItem } from "@/components/TrackItem";
-
-const PropertyValuePair = ({
-  label,
-  value,
-}: {
-  label: string;
-  value: string;
-}) => (
-  <View style={styles.pvpContainer}>
-    <Text style={styles.pvpLabel}>{label}</Text>
-    <Text style={styles.pvpValue}>{value}</Text>
-  </View>
-);
-
-const RunDetailCard = ({ item }: { item: RunActivity }) => (
-  <Card>
-    <View style={styles.activityDetailContainer}>
-      <PropertyValuePair
-        label="Distance"
-        value={item.distanceInMeters.toString()}
-      />
-      <PropertyValuePair
-        label="Time"
-        value={item.durationInSeconds.toString()}
-      />
-      <PropertyValuePair label="Pace" value={item?.pace} />
-      {item.elevationGainInMeters && (
-        <PropertyValuePair
-          label="Elevation Gain"
-          value={item.elevationGainInMeters.toString()}
-        />
-      )}
-      {item.averageHeartRate && (
-        <PropertyValuePair
-          label="Avg Heart Rate"
-          value={item.averageHeartRate.toString()}
-        />
-      )}
-    </View>
-  </Card>
-);
-
-const TrackList = ({ tracks }: { tracks: Song[] }) => (
-  <Card>
-    <View style={styles.trackListContainer}>
-      {tracks.map((song) => (
-        <TrackItem key={song.id} song={song} />
-      ))}
-    </View>
-  </Card>
-);
+import { RunDetailCard } from "@/components/RunDetailCard";
+import { TrackList } from "@/components/TrackList";
 
 export default function ActivityDetailScreen() {
   const { activities, loading } = useData();
@@ -100,8 +46,8 @@ export default function ActivityDetailScreen() {
 
   return (
     <View style={{ flex: 1 }}>
+      <Stack.Screen options={{ title: activity.name }} />
       <ScrollView contentContainerStyle={styles.container}>
-        <Stack.Screen options={{ title: activity.name }} />
         {activity.type === "run" && (
           <RunDetailCard item={activity as RunActivity} />
         )}
@@ -127,27 +73,6 @@ const styles = StyleSheet.create({
   container: {
     padding: 16,
     gap: 16,
-  },
-  activityDetailContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "center",
-  },
-  pvpContainer: {
-    alignItems: "center",
-    width: "50%", // 2 items per row
-    marginVertical: 8,
-  },
-  pvpLabel: {
-    fontSize: 16,
-    color: "gray",
-  },
-  pvpValue: {
-    fontSize: 20,
-    fontWeight: "bold",
-  },
-  trackListContainer: {
-    gap: 8,
   },
   playlistContainer: {},
   playlistHeaderContainer: {
