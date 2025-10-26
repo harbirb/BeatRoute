@@ -7,9 +7,12 @@ import {
   Pressable,
   Linking,
   ScrollView,
+  Button,
+  Alert,
 } from "react-native";
 import { Activity, Song, RunActivity, useData } from "@/context/DataContext";
 import { Image } from "expo-image";
+import * as Clipboard from "expo-clipboard";
 
 const PropertyValuePair = ({
   label,
@@ -79,6 +82,20 @@ export default function ActivityDetailScreen() {
   const { id } = useLocalSearchParams();
   const activity = activities.find((act: Activity) => act.id === id);
 
+  const handleCopy = async () => {
+    if (!activity) return;
+
+    try {
+      const trackListText = activity.tracklist
+        .map((song) => `${song.title} - ${song.artists.join(", ")}`)
+        .join("\n");
+      await Clipboard.setStringAsync(trackListText);
+      Alert.alert("Copied playlist to clipboard");
+    } catch (error) {
+      Alert.alert("Error");
+    }
+  };
+
   if (loading) {
     return <ActivityIndicator style={styles.centered} />;
   }
@@ -99,7 +116,13 @@ export default function ActivityDetailScreen() {
           <RunDetailCard item={activity as RunActivity} />
         )}
         {/* Future: Add RideDetailCard when RideActivity is implemented */}
-        <TrackList tracks={activity.tracklist} />
+        <View style={styles.playlistContainer}>
+          <View style={styles.playlistHeaderContainer}>
+            <Text style={styles.playlistHeader}>Playlist</Text>
+            <Button title="Copy" onPress={handleCopy}></Button>
+          </View>
+          <TrackList tracks={activity.tracklist} />
+        </View>
       </ScrollView>
     </View>
   );
@@ -112,7 +135,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   container: {
-    // flexGrow: 1,
     padding: 16,
     gap: 16,
   },
@@ -166,5 +188,15 @@ const styles = StyleSheet.create({
   },
   trackListContainer: {
     gap: 8,
+  },
+  playlistContainer: {},
+  playlistHeaderContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  playlistHeader: {
+    fontSize: 20,
+    fontWeight: "bold",
   },
 });
