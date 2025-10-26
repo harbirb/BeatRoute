@@ -63,6 +63,7 @@ const styles = StyleSheet.create({
   contentContainer: {
     flex: 1,
     // paddingHorizontal: 16,
+    // Cannot use padding here since Flatlist clips shadow on cards
   },
   header: {
     padding: 16,

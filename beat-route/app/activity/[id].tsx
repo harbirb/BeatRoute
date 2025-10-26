@@ -4,27 +4,73 @@ import {
   Text,
   ActivityIndicator,
   StyleSheet,
+  Pressable,
+  Linking,
+  ScrollView,
 } from "react-native";
-import { Activity, RunActivity, useData } from "@/context/DataContext";
+import { Activity, Song, RunActivity, useData } from "@/context/DataContext";
+import { Image } from "expo-image";
 
-const PropertyValuePair = ({ label, value }: { label: string; value: string }) => (
+const PropertyValuePair = ({
+  label,
+  value,
+}: {
+  label: string;
+  value: string;
+}) => (
   <View style={styles.pvpContainer}>
     <Text style={styles.pvpLabel}>{label}</Text>
     <Text style={styles.pvpValue}>{value}</Text>
   </View>
 );
 
-const ActivityCard = ({ item }: { item: RunActivity }) => (
+const RunDetailCard = ({ item }: { item: RunActivity }) => (
   <View style={styles.card}>
-    <PropertyValuePair
-      label="Distance"
-      value={item.distanceInMeters.toString()}
-    />
-    <PropertyValuePair
-      label="Time"
-      value={item.durationInSeconds.toString()}
-    />
-    <PropertyValuePair label="Pace" value={item?.pace} />
+    <View style={styles.activityDetailContainer}>
+      <PropertyValuePair
+        label="Distance"
+        value={item.distanceInMeters.toString()}
+      />
+      <PropertyValuePair
+        label="Time"
+        value={item.durationInSeconds.toString()}
+      />
+      <PropertyValuePair label="Pace" value={item?.pace} />
+      {item.elevationGainInMeters && (
+        <PropertyValuePair
+          label="Elevation Gain"
+          value={item.elevationGainInMeters.toString()}
+        />
+      )}
+      {item.averageHeartRate && (
+        <PropertyValuePair
+          label="Avg Heart Rate"
+          value={item.averageHeartRate.toString()}
+        />
+      )}
+    </View>
+  </View>
+);
+
+const TrackItem = ({ song }: { song: Song }) => (
+  <Pressable onPress={() => Linking.openURL(song.url)}>
+    <View style={styles.trackContainer}>
+      <Image source={song.imageUrl} style={styles.trackImage} />
+      <View style={styles.trackInfo}>
+        <Text style={styles.trackTitle}>{song.title}</Text>
+        <Text style={styles.trackArtist}>{song.artists.join(", ")}</Text>
+      </View>
+    </View>
+  </Pressable>
+);
+
+const TrackList = ({ tracks }: { tracks: Song[] }) => (
+  <View style={styles.card}>
+    <View style={styles.trackListContainer}>
+      {tracks.map((song) => (
+        <TrackItem key={song.id} song={song} />
+      ))}
+    </View>
   </View>
 );
 
@@ -46,9 +92,15 @@ export default function ActivityDetailScreen() {
   }
 
   return (
-    <View style={styles.container}>
-      <Stack.Screen options={{ title: activity.name }} />
-      {activity.type === "run" && <ActivityCard item={activity as RunActivity} />}
+    <View style={{ flex: 1 }}>
+      <ScrollView contentContainerStyle={styles.container}>
+        <Stack.Screen options={{ title: activity.name }} />
+        {activity.type === "run" && (
+          <RunDetailCard item={activity as RunActivity} />
+        )}
+        {/* Future: Add RideDetailCard when RideActivity is implemented */}
+        <TrackList tracks={activity.tracklist} />
+      </ScrollView>
     </View>
   );
 }
@@ -60,17 +112,29 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   container: {
-    flex: 1,
+    // flexGrow: 1,
     padding: 16,
+    gap: 16,
   },
   card: {
     padding: 16,
-    marginVertical: 8,
-    backgroundColor: "#f0f0f0",
-    borderRadius: 8,
+    backgroundColor: "#ffffff",
+    borderRadius: 16,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  activityDetailContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "center",
   },
   pvpContainer: {
     alignItems: "center",
+    width: "50%", // 2 items per row
+    marginVertical: 8,
   },
   pvpLabel: {
     fontSize: 16,
@@ -79,5 +143,28 @@ const styles = StyleSheet.create({
   pvpValue: {
     fontSize: 20,
     fontWeight: "bold",
+  },
+  trackContainer: {
+    flexDirection: "row",
+  },
+  trackImage: {
+    width: 40,
+    height: 40,
+    borderRadius: 4,
+    marginRight: 12,
+  },
+  trackInfo: {
+    gap: 4,
+    justifyContent: "center",
+  },
+  trackTitle: {
+    fontSize: 16,
+  },
+  trackArtist: {
+    fontSize: 14,
+    color: "gray",
+  },
+  trackListContainer: {
+    gap: 8,
   },
 });
