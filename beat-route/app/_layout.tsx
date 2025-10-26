@@ -30,7 +30,11 @@ export default function RootLayout() {
           />
           <Stack.Screen
             name="activity/[id]"
-            options={{ presentation: "card", headerShown: true }}
+            options={{
+              presentation: "card",
+              headerShown: true,
+              headerBackButtonDisplayMode: "minimal",
+            }}
           />
         </Stack>
         <StatusBar style="auto" />

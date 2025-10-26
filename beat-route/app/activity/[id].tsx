@@ -1,58 +1,83 @@
+import { useLocalSearchParams, Stack } from "expo-router";
+import {
+  View,
+  Text,
+  ActivityIndicator,
+  StyleSheet,
+} from "react-native";
+import { Activity, RunActivity, useData } from "@/context/DataContext";
 
-import { useLocalSearchParams, Stack } from 'expo-router';
-import { useEffect, useState } from 'react';
-import { View, Text, ActivityIndicator, StyleSheet, FlatList } from 'react-native';
-import { getActivityById, Activity } from '@/lib/mock-db';
+const PropertyValuePair = ({ label, value }: { label: string; value: string }) => (
+  <View style={styles.pvpContainer}>
+    <Text style={styles.pvpLabel}>{label}</Text>
+    <Text style={styles.pvpValue}>{value}</Text>
+  </View>
+);
+
+const ActivityCard = ({ item }: { item: RunActivity }) => (
+  <View style={styles.card}>
+    <PropertyValuePair
+      label="Distance"
+      value={item.distanceInMeters.toString()}
+    />
+    <PropertyValuePair
+      label="Time"
+      value={item.durationInSeconds.toString()}
+    />
+    <PropertyValuePair label="Pace" value={item?.pace} />
+  </View>
+);
 
 export default function ActivityDetailScreen() {
-  const { id } = useLocalSearchParams<{ id: string }>();
-  const [activity, setActivity] = useState<Activity | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (id) {
-      const fetchActivity = async () => {
-        setLoading(true);
-        const data = await getActivityById(id);
-        setActivity(data as Activity);
-        setLoading(false);
-      };
-      fetchActivity();
-    }
-  }, [id]);
+  const { activities, loading } = useData();
+  const { id } = useLocalSearchParams();
+  const activity = activities.find((act: Activity) => act.id === id);
 
   if (loading) {
     return <ActivityIndicator style={styles.centered} />;
   }
 
   if (!activity) {
-    return <Text style={styles.centered}>Activity not found.</Text>;
+    return (
+      <View style={styles.centered}>
+        <Text>Activity not found</Text>
+      </View>
+    );
   }
 
   return (
     <View style={styles.container}>
       <Stack.Screen options={{ title: activity.name }} />
-      <Text style={styles.title}>{activity.name}</Text>
-      <Text style={styles.artist}>by {activity.artist}</Text>
-      <Text style={styles.tracklistHeader}>Tracklist ({activity.songCount} songs)</Text>
-      <FlatList
-        data={activity.tracklist}
-        keyExtractor={(item) => item.song}
-        renderItem={({ item }) => (
-          <View style={styles.tracklistItem}>
-            <Text>{item.song} - {item.artist}</Text>
-          </View>
-        )}
-      />
+      {activity.type === "run" && <ActivityCard item={activity as RunActivity} />}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  centered: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  container: { flex: 1, padding: 16 },
-  title: { fontSize: 28, fontWeight: 'bold' },
-  artist: { fontSize: 20, color: 'gray', marginBottom: 16 },
-  tracklistHeader: { fontSize: 18, fontWeight: 'bold', marginBottom: 8 },
-  tracklistItem: { paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: '#eee' },
+  centered: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  container: {
+    flex: 1,
+    padding: 16,
+  },
+  card: {
+    padding: 16,
+    marginVertical: 8,
+    backgroundColor: "#f0f0f0",
+    borderRadius: 8,
+  },
+  pvpContainer: {
+    alignItems: "center",
+  },
+  pvpLabel: {
+    fontSize: 16,
+    color: "gray",
+  },
+  pvpValue: {
+    fontSize: 20,
+    fontWeight: "bold",
+  },
 });
