@@ -12,25 +12,12 @@ import { Activity, RunActivity, useData } from "@/context/DataContext";
 import * as Clipboard from "expo-clipboard";
 import { RunDetailCard } from "@/components/RunDetailCard";
 import { TrackList } from "@/components/TrackList";
+import { FONT_SIZE, FONT_WEIGHT, SPACING } from "@/constants/theme";
 
 export default function ActivityDetailScreen() {
   const { activities, loading } = useData();
   const { id } = useLocalSearchParams();
   const activity = activities.find((act: Activity) => act.id === id);
-
-  const handleCopy = async () => {
-    if (!activity) return;
-
-    try {
-      const trackListText = activity.tracklist
-        .map((song) => `${song.title} - ${song.artists.join(", ")}`)
-        .join("\n");
-      await Clipboard.setStringAsync(trackListText);
-      Alert.alert("Copied playlist to clipboard");
-    } catch (error) {
-      Alert.alert("Error");
-    }
-  };
 
   if (loading) {
     return <ActivityIndicator style={styles.centered} />;
@@ -44,6 +31,18 @@ export default function ActivityDetailScreen() {
     );
   }
 
+  const handleCopy = async () => {
+    try {
+      const trackListText = activity.tracklist
+        .map((song) => `${song.title} - ${song.artists.join(", ")}`)
+        .join("\n");
+      await Clipboard.setStringAsync(trackListText);
+      Alert.alert("Copied playlist to clipboard");
+    } catch (error) {
+      Alert.alert("Error");
+    }
+  };
+
   return (
     <View style={{ flex: 1 }}>
       <Stack.Screen options={{ title: activity.name }} />
@@ -52,7 +51,7 @@ export default function ActivityDetailScreen() {
           <RunDetailCard item={activity as RunActivity} />
         )}
         {/* Future: Add RideDetailCard when RideActivity is implemented */}
-        <View style={styles.playlistContainer}>
+        <View>
           <View style={styles.playlistHeaderContainer}>
             <Text style={styles.playlistHeader}>Playlist</Text>
             <Button title="Copy" onPress={handleCopy}></Button>
@@ -71,17 +70,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   container: {
-    padding: 16,
-    gap: 16,
+    padding: SPACING.medium,
+    gap: SPACING.medium,
   },
-  playlistContainer: {},
   playlistHeaderContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
   },
   playlistHeader: {
-    fontSize: 20,
-    fontWeight: "bold",
+    fontSize: FONT_SIZE.large,
+    fontWeight: FONT_WEIGHT.bold,
   },
 });
