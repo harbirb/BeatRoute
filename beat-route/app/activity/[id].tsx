@@ -44,22 +44,20 @@ export default function ActivityDetailScreen() {
   };
 
   return (
-    <View style={{ flex: 1 }}>
+    <ScrollView contentContainerStyle={styles.container}>
       <Stack.Screen options={{ title: activity.name }} />
-      <ScrollView contentContainerStyle={styles.container}>
-        {activity.type === "run" && (
-          <RunDetailCard item={activity as RunActivity} />
-        )}
-        {/* Future: Add RideDetailCard when RideActivity is implemented */}
-        <View>
-          <View style={styles.playlistHeaderContainer}>
-            <Text style={styles.playlistHeader}>Playlist</Text>
-            <Button title="Copy" onPress={handleCopy}></Button>
-          </View>
-          <TrackList tracks={activity.tracklist} />
+      {activity.type === "run" && (
+        <RunDetailCard item={activity as RunActivity} />
+      )}
+      {/* Future: Add RideDetailCard when RideActivity is implemented */}
+      <View>
+        <View style={styles.playlistHeaderContainer}>
+          <Text style={styles.playlistHeader}>Playlist</Text>
+          <Button title="Copy" onPress={handleCopy}></Button>
         </View>
-      </ScrollView>
-    </View>
+        <TrackList tracks={activity.tracklist} />
+      </View>
+    </ScrollView>
   );
 }
 
