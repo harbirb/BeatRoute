@@ -59,9 +59,24 @@ export default function StudioScreen() {
           />
         </Pressable>
       </View>
-      <ActivitySticker>
-        <Text>HIIIId</Text>
-      </ActivitySticker>
+      <View
+        style={{ padding: 16, marginVertical: 20, alignItems: "flex-start" }}
+      >
+        <ActivitySticker
+          style={{
+            borderWidth: 2,
+            borderColor: "white",
+            padding: 20,
+            borderRadius: 10,
+          }}
+        >
+          <Text>SOME RANDOM TEXT STICKER HERE</Text>
+          <View
+            style={{ height: 10, width: 10, backgroundColor: "red" }}
+          ></View>
+        </ActivitySticker>
+      </View>
+
       <View>
         {/* <ColorPicker style={{ width: 300, gap: 20 }}>
           <Preview />

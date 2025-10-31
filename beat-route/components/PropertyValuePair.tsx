@@ -1,18 +1,20 @@
 import { Colors, FONT_SIZE, FONT_WEIGHT, SPACING } from "@/constants/theme";
 import { View, Text, StyleSheet } from "react-native";
 
-export const PropertyValuePair = ({
+export default function PropertyValuePair({
   label,
   value,
 }: {
   label: string;
   value: string;
-}) => (
-  <View style={styles.pvpContainer}>
-    <Text style={styles.pvpLabel}>{label}</Text>
-    <Text style={styles.pvpValue}>{value}</Text>
-  </View>
-);
+}) {
+  return (
+    <View style={styles.pvpContainer}>
+      <Text style={styles.pvpLabel}>{label}</Text>
+      <Text style={styles.pvpValue}>{value}</Text>
+    </View>
+  );
+}
 
 const styles = StyleSheet.create({
   pvpContainer: {

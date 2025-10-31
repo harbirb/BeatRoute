@@ -1,7 +1,7 @@
 import { View, StyleSheet } from "react-native";
 import { RunActivity } from "@/context/DataContext";
 import Card from "@/components/ui/Card";
-import { PropertyValuePair } from "@/components/PropertyValuePair";
+import PropertyValuePair from "@/components/PropertyValuePair";
 
 export const RunDetailCard = ({ item }: { item: RunActivity }) => {
   const details = [

@@ -11,17 +11,22 @@ import ViewShot, { captureRef } from "react-native-view-shot";
 import * as Clipboard from "expo-clipboard";
 
 type ActivityStickerProps = PropsWithChildren<{
+  children: React.ReactNode;
   style?: ViewProps["style"];
 }>;
 
-export default function ActivitySticker({ children }: ActivityStickerProps) {
-  const ref = useRef<View>(null);
+export default function ActivitySticker({
+  children,
+  style,
+}: ActivityStickerProps) {
+  const stickerRef = useRef<View>(null);
 
   const handleCopy = async () => {
+    if (!stickerRef.current) return;
+
     try {
-      const uri = await captureRef(ref, {
+      const uri = await captureRef(stickerRef, {
         format: "png",
-        quality: 1,
         result: "base64",
       });
       await Clipboard.setImageAsync(uri);
@@ -37,17 +42,9 @@ export default function ActivitySticker({ children }: ActivityStickerProps) {
       onPress={handleCopy}
       style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1 }]}
     >
-      <ViewShot ref={ref} style={styles.container}>
-        {children}
+      <ViewShot ref={stickerRef}>
+        <View style={style}>{children}</View>
       </ViewShot>
     </Pressable>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    padding: 20,
-    borderWidth: 2,
-    borderColor: "black",
-  },
-});
