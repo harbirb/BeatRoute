@@ -40,7 +40,10 @@ export default function ActivitySticker({
   return (
     <Pressable
       onPress={handleCopy}
-      style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1 }]}
+      style={({ pressed }) => [
+        { opacity: pressed ? 0.5 : 1 },
+        styles.container,
+      ]}
     >
       <ViewShot ref={stickerRef}>
         <View style={style}>{children}</View>
@@ -48,3 +51,11 @@ export default function ActivitySticker({
     </Pressable>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    borderWidth: 1,
+    borderColor: "lightgray",
+    borderRadius: 8,
+  },
+});

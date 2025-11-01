@@ -26,6 +26,7 @@ interface ActivityBase {
   tracklist: Tracklist;
   averageHeartRate?: number;
   elevationGainInMeters?: number;
+  polyline?: string;
 }
 
 // Specific interface for a 'run' activity

@@ -1,6 +1,8 @@
 import ActivitySticker from "@/components/ActivitySticker";
+import DistancePaceSticker from "@/components/DistancePaceSticker";
 import { useData } from "@/context/DataContext";
 import { Stack } from "expo-router";
+import Polyline from "@/components/Polyline";
 import {
   Alert,
   Pressable,
@@ -75,9 +77,18 @@ export default function StudioScreen() {
             style={{ height: 10, width: 10, backgroundColor: "red" }}
           ></View>
         </ActivitySticker>
-      </View>
+        <ActivitySticker>
+          <Text>ANOTHER STICKER HERE</Text>
+          <DistancePaceSticker distance={"12 km"} pace={"5'20\"/km"} />
+        </ActivitySticker>
+        <View>
+          <ActivitySticker>
+            {activities[0].polyline && (
+              <Polyline encodedPolyline={activities[0].polyline} />
+            )}
+          </ActivitySticker>
+        </View>
 
-      <View>
         {/* <ColorPicker style={{ width: 300, gap: 20 }}>
           <Preview />
           <Panel5 />

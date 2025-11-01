@@ -12,6 +12,8 @@ const MOCK_ACTIVITIES: Activity[] = [
     pace: "5'00\"/km",
     elevationGainInMeters: 50,
     averageHeartRate: 145,
+    polyline:
+      "yatkHdh_oVhA?t@FTD\\VH@fB?H@BH?p@Dx@G`@AT@nAK`QC`LCbAEJSPALHr@@d@O~IFjIGbD?bDKhAFlAA`KBnHPfHVfDr@tFx@bFJbAnA~F`B`Hv@vCNZb@NHHHLL^`@nBTrA@d@MhA@TVf@j@`@PX~CrMnA`FDd@Ef@Kr@@NNr@FHTHTTP\\HXFZ@TCr@BJ`@x@fA|Dz@bE\\hBh@bB^|AHn@?rAARMb@cArBSXsBvBu@l@c@XGJCr@GJi@h@g@r@IFSFSPa@h@cAhAq@`Aw@v@iAxAy@rB[hAGv@Hh@ANKd@_@fA]l@SXc@^e@RiA\\kAXcCp@q@Xc@Xw@`A[l@]lAgApEWr@U\\WVYPeAZ[LKHS\\Yr@S\\WZe@VYFM?sA_@YAa@J_@VUXS`@oBpFe@~@WT[Ni@BmCm@kAUg@CmBAqAO_@KsAc@}@i@oB{Ao@m@IMSc@O{@s@qAUi@yAmEo@yAk@cA_AaCY{@_B_E_BwCoAuC_ByEYiA]kAeA_GM{@Ke@CU@UPq@?MU]Qe@GQIaAOkDOkHGqF@eCFmIHyCJmBHoCVwEJaBX}BDwAn@eGVyBp@sEhB_KzAmGj@sBl@_CdAkD|DyK|AuDfB_FrAeDNk@Ho@Pi@~BuFvDwJh@}APSJCH@HBHHJXB\\@pCMxN?hEC|CCt@MfAK`AKj@q@hCORIBIAIGK[S{AO{AWgA_@qAMYk@eA}BcDMYAO@ODM\\q@|E_Mb@aAtA{DNUHCJ@PJNb@Bh@?rBKjQ?pCCfDOdBWpBw@rCGHI@KAKGM]U{BQmA[oAa@kAg@cAgCiDK[?OLe@vFgNxCiI`@oCNuAFiAFeCBsFBqB@UDIRAbFJ\\A`A@^CrAF|C?`CF~@AjKNZATi@FERAn@Dr@?HCCcBBgGBw@?gAByAAiCDmFAiA?MJ_@IgADkDAs@FcCCgCBgAAq@CGAAs@ByBG",
     tracklist: [
       {
         id: "song1-1",
