@@ -14,6 +14,8 @@ import { RunDetailCard } from "@/components/RunDetailCard";
 import { TrackList } from "@/components/TrackList";
 import { FONT_SIZE, FONT_WEIGHT, SPACING } from "@/constants/theme";
 import Carousel from "@/components/Carousel";
+import DistancePaceSticker from "@/components/DistancePaceSticker";
+import Polyline from "@/components/Polyline";
 
 export default function ActivityDetailScreen() {
   const { activities, loading } = useData();
@@ -44,6 +46,14 @@ export default function ActivityDetailScreen() {
     }
   };
 
+  const stickers = [
+    <DistancePaceSticker
+      distance={(activity.distanceInMeters / 1000).toFixed(2)}
+      pace={"5:00 /km"}
+    ></DistancePaceSticker>,
+    <Polyline encodedPolyline={activity.polyline || ""} />,
+  ];
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Stack.Screen options={{ title: activity.name }} />
@@ -51,6 +61,7 @@ export default function ActivityDetailScreen() {
         <RunDetailCard item={activity as RunActivity} />
       )}
       {/* Future: Add RideDetailCard when RideActivity is implemented */}
+      {/* Playlist section */}
       <View>
         <View style={styles.playlistHeaderContainer}>
           <Text style={styles.playlistHeader}>Playlist</Text>
@@ -58,8 +69,13 @@ export default function ActivityDetailScreen() {
         </View>
         <TrackList tracks={activity.tracklist} />
       </View>
+      {/* Sticker section */}
       <View>
-        <Carousel data={["Sticker 1", "Sticker 2", "Sticker 3"]} />
+        <View style={styles.playlistHeaderContainer}>
+          <Text style={styles.playlistHeader}>Stickers</Text>
+          <Button title="Edit"></Button>
+        </View>
+        <Carousel data={stickers} />
       </View>
     </ScrollView>
   );

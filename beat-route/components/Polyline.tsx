@@ -5,7 +5,7 @@ import Svg, { Polyline as SvgPolyline } from "react-native-svg";
 
 const PADDING = 5;
 
-export default function PolylineSticker({
+export default function Polyline({
   encodedPolyline,
 }: {
   encodedPolyline: string;

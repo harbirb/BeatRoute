@@ -6,6 +6,8 @@ import Carousel, {
 import { useSharedValue } from "react-native-reanimated";
 import { View, Text } from "react-native";
 import ActivitySticker from "./ActivitySticker";
+import { ImageBackground } from "expo-image";
+const TransparencyMid120 = require("../assets/images/TransparencyMid120.png");
 
 export default function CarouselComponent({ data }: { data: any[] }) {
   const ref = useRef<ICarouselInstance>(null);
@@ -14,33 +16,40 @@ export default function CarouselComponent({ data }: { data: any[] }) {
 
   return (
     <View
-      style={{ flex: 1, backgroundColor: "orange" }}
       onLayout={(event) => {
         setWidth(event.nativeEvent.layout.width);
       }}
     >
-      <Carousel
-        ref={ref}
-        width={width}
-        // height={width / 2}
-        enabled={width > 0}
-        data={data}
-        onProgressChange={progress}
-        renderItem={({ index }) => (
-          <View
-            style={{
-              flex: 1,
-              borderWidth: 1,
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <ActivitySticker key={index}>
-              <Text>{data[index]}</Text>
-            </ActivitySticker>
-          </View>
-        )}
-      />
+      <ImageBackground
+        source={TransparencyMid120}
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          borderRadius: 16,
+          overflow: "hidden",
+        }}
+      >
+        <Carousel
+          ref={ref}
+          width={width}
+          height={(width / 3) * 2}
+          enabled={width > 0}
+          data={data}
+          onProgressChange={progress}
+          renderItem={({ index }) => (
+            <View
+              style={{
+                flex: 1,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              {data[index]}
+            </View>
+          )}
+        />
+      </ImageBackground>
 
       <Pagination.Basic
         progress={progress}
@@ -50,7 +59,7 @@ export default function CarouselComponent({ data }: { data: any[] }) {
           borderRadius: 10,
         }}
         activeDotStyle={{ backgroundColor: "gray", borderRadius: 20 }}
-        containerStyle={{ gap: 5, marginTop: 10 }}
+        containerStyle={{ gap: 5, marginTop: 5 }}
       />
     </View>
   );
