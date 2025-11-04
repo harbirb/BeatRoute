@@ -7,8 +7,10 @@ const PADDING = 5;
 
 export default function Polyline({
   encodedPolyline,
+  color,
 }: {
   encodedPolyline: string;
+  color: string;
 }) {
   // decode polyline to lat/lng points
   const decodedPoints = polyline.decode(encodedPolyline);
@@ -57,7 +59,7 @@ export default function Polyline({
       <SvgPolyline
         points={points}
         fill="none"
-        stroke="teal"
+        stroke={color}
         strokeWidth="3"
         strokeLinecap="round"
         strokeLinejoin="bevel"

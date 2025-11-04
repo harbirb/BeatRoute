@@ -14,8 +14,7 @@ import { RunDetailCard } from "@/components/RunDetailCard";
 import { TrackList } from "@/components/TrackList";
 import { FONT_SIZE, FONT_WEIGHT, SPACING } from "@/constants/theme";
 import Carousel from "@/components/Carousel";
-import DistancePaceSticker from "@/components/DistancePaceSticker";
-import Polyline from "@/components/Polyline";
+import Stickers from "@/components/Stickers";
 
 export default function ActivityDetailScreen() {
   const { activities, loading } = useData();
@@ -46,14 +45,6 @@ export default function ActivityDetailScreen() {
     }
   };
 
-  const stickers = [
-    <DistancePaceSticker
-      distance={(activity.distanceInMeters / 1000).toFixed(2)}
-      pace={"5:00 /km"}
-    ></DistancePaceSticker>,
-    <Polyline encodedPolyline={activity.polyline || ""} />,
-  ];
-
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Stack.Screen options={{ title: activity.name }} />
@@ -73,11 +64,14 @@ export default function ActivityDetailScreen() {
       <View>
         <View style={styles.playlistHeaderContainer}>
           <Text style={styles.playlistHeader}>Stickers</Text>
-          <Link href={{ pathname: "/modal", params: { id: activity.id } }} asChild>
+          <Link
+            href={{ pathname: "/modal", params: { id: activity.id } }}
+            asChild
+          >
             <Button title="Edit"></Button>
           </Link>
         </View>
-        <Carousel data={stickers} />
+        <Carousel data={Stickers(activity, "red")} />
       </View>
     </ScrollView>
   );

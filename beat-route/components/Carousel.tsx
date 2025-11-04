@@ -12,18 +12,18 @@ const TransparencyMid120 = require("../assets/images/TransparencyMid120.png");
 export default function CarouselComponent({ data }: { data: any[] }) {
   const ref = useRef<ICarouselInstance>(null);
   const progress = useSharedValue<number>(0);
-  const [width, setWidth] = useState(1);
+  const [width, setWidth] = useState(10);
 
   return (
     <View
       onLayout={(event) => {
         setWidth(event.nativeEvent.layout.width);
       }}
+      style={{}}
     >
       <ImageBackground
         source={TransparencyMid120}
         style={{
-          flex: 1,
           justifyContent: "center",
           alignItems: "center",
           borderRadius: 16,
