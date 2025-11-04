@@ -13,6 +13,7 @@ import * as Clipboard from "expo-clipboard";
 import { RunDetailCard } from "@/components/RunDetailCard";
 import { TrackList } from "@/components/TrackList";
 import { FONT_SIZE, FONT_WEIGHT, SPACING } from "@/constants/theme";
+import Carousel from "@/components/Carousel";
 
 export default function ActivityDetailScreen() {
   const { activities, loading } = useData();
@@ -56,6 +57,9 @@ export default function ActivityDetailScreen() {
           <Button title="Copy" onPress={handleCopy}></Button>
         </View>
         <TrackList tracks={activity.tracklist} />
+      </View>
+      <View>
+        <Carousel data={["Sticker 1", "Sticker 2", "Sticker 3"]} />
       </View>
     </ScrollView>
   );

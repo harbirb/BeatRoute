@@ -2,7 +2,15 @@ import ActivitySticker from "@/components/ActivitySticker";
 import DistancePaceSticker from "@/components/DistancePaceSticker";
 import { useData } from "@/context/DataContext";
 import { Stack } from "expo-router";
+import Carousel, {
+  ICarouselInstance,
+  Pagination,
+} from "react-native-reanimated-carousel";
 import Polyline from "@/components/Polyline";
+import PagerView from "react-native-pager-view";
+import { useSharedValue } from "react-native-reanimated";
+import { useRef, useState } from "react";
+import { Dimensions } from "react-native";
 import {
   Alert,
   Pressable,
@@ -10,90 +18,70 @@ import {
   View,
   ActivityIndicator,
   StyleSheet,
+  ScrollView,
 } from "react-native";
-import ColorPicker, {
-  Panel1,
-  Panel2,
-  Panel5,
-  Preview,
-  Swatches,
-  OpacitySlider,
-  HueSlider,
-  PreviewText,
-} from "reanimated-color-picker";
+
+const { width } = Dimensions.get("window");
+
+const defaultDataWith6Colors = [
+  "#B0604D",
+  "#899F9C",
+  "#B3C680",
+  "#5C6265",
+  "#F5D399",
+  "#F1F1F1",
+];
 
 export default function StudioScreen() {
   const { activities, loading } = useData();
+  const polylines = activities.map((act) => act.polyline || "");
 
   if (loading) {
     return <ActivityIndicator style={styles.centered} />;
   }
 
+  const ref = useRef<ICarouselInstance>(null);
+  const progress = useSharedValue<number>(0);
+  const data = [1, 2, 3];
+
   return (
-    <View>
+    <View style={{ flex: 1 }}>
       <Stack.Screen
         options={{
           headerShown: true,
         }}
       />
-      <View
-        style={{
-          flexDirection: "row",
-          gap: 20,
-          justifyContent: "flex-end",
-          padding: 16,
-          alignItems: "center",
-        }}
-      >
-        <Pressable onPress={() => Alert.alert("Font picker coming soon!")}>
-          <Text style={{ fontWeight: "bold", fontSize: 20 }}>FONT</Text>
-        </Pressable>
-        <Pressable onPress={() => Alert.alert("Color picker coming soon!")}>
-          <View
-            style={{
-              width: 30,
-              height: 30,
-              borderRadius: 15,
-              backgroundColor: "lightgreen",
-              borderColor: "black",
-              borderWidth: 3,
-            }}
-          />
-        </Pressable>
-      </View>
-      <View
-        style={{ padding: 16, marginVertical: 20, alignItems: "flex-start" }}
-      >
-        <ActivitySticker
-          style={{
-            borderWidth: 2,
-            borderColor: "white",
-            padding: 20,
-            borderRadius: 10,
-          }}
-        >
-          <Text>SOME RANDOM TEXT STICKER HERE</Text>
-          <View
-            style={{ height: 10, width: 10, backgroundColor: "red" }}
-          ></View>
-        </ActivitySticker>
-        <ActivitySticker>
-          <Text>ANOTHER STICKER HERE</Text>
-          <DistancePaceSticker distance={"12 km"} pace={"5'20\"/km"} />
-        </ActivitySticker>
-        <View>
-          <ActivitySticker>
-            {activities[0].polyline && (
-              <Polyline encodedPolyline={activities[0].polyline} />
-            )}
-          </ActivitySticker>
-        </View>
+      {/* TOOLBAR */}
+      <View style={{ flex: 1 }}>
+        <Carousel
+          ref={ref}
+          width={width}
+          height={width / 2}
+          data={data}
+          onProgressChange={progress}
+          renderItem={({ index }) => (
+            <View
+              style={{
+                flex: 1,
+                borderWidth: 1,
+                justifyContent: "center",
+              }}
+            >
+              <ActivitySticker>
+                <Polyline encodedPolyline={polylines[index]}></Polyline>
+              </ActivitySticker>
+            </View>
+          )}
+        />
 
-        {/* <ColorPicker style={{ width: 300, gap: 20 }}>
-          <Preview />
-          <Panel5 />
-          <OpacitySlider />
-        </ColorPicker> */}
+        <Pagination.Basic
+          progress={progress}
+          data={data}
+          dotStyle={{ backgroundColor: "rgba(0,0,0,0.2)", borderRadius: 50 }}
+          activeDotStyle={{ backgroundColor: "blue", borderRadius: 50 }}
+          containerStyle={{ gap: 5, marginTop: 10 }}
+          // onPress={onPressPagination}
+        />
       </View>
     </View>
   );

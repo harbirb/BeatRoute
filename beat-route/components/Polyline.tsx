@@ -35,6 +35,7 @@ export default function PolylineSticker({
   const longestSide = Math.max(dy, dx);
 
   // calculate scaling based on longest side
+  // TODO: make size dynamic based on screen size or parent size container
   const baseSize = 300;
   const scale = baseSize / longestSide;
 

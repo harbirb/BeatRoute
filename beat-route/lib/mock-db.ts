@@ -170,6 +170,8 @@ const MOCK_ACTIVITIES: Activity[] = [
     durationInSeconds: 3600, // 1 hour
     averageSpeedKph: 20,
     elevationGainInMeters: 150,
+    polyline:
+      "}iskHdaeoVf@m@LeAWaAi@WmDdCSf@Ct@X`An@R`DcCVu@AaA]q@g@KcDdCYzAXbAp@R|C}BXs@@aAYu@i@OgDdCUj@A|@^|@j@JbDgCTw@C}@_@q@g@GcDdCUp@@|@\\t@j@JbDeCHOsBhBbBsAXy@KyA{@e@cDdCUl@At@X|@n@PdDgCTw@C_A[k@k@KcDdCSl@?z@^z@j@J~CeCVw@C{@]s@g@KeDfCSj@Az@Xx@l@NbDcCVo@?cA[q@i@OuCtBQPQf@C|@Xx@l@PbDaCVu@?_A]s@k@KcDdCU|ATz@n@VdDcCXw@Aw@[w@e@MgD`CYbAJnAv@b@rAy@rAiAVo@?}@Yw@g@OkDhCSh@At@X|@l@PdDcCTu@AeA[k@g@MeDdCWt@@t@^|@j@HbDiCR{@Cy@[m@g@KcDbCWn@Ax@Xx@n@PdDeCTu@C}@Yq@k@MgDhCQn@?v@Xv@l@N`DcCXw@Ay@Ys@o@O_DbCUj@Cx@Vz@p@R~C_CXu@?aA]u@c@KkDhCU|A\\bAn@L~CeCVw@C{@]s@e@KcDbCWp@Ax@\\z@l@L`DeCTs@?{@Yq@i@QeDbCWr@Av@Xv@n@PdDeCTw@EeA]k@g@G_D`CWl@Ax@Vx@t@R|CaCXy@A{@Yq@i@OgDdCYrAVfAn@V`D}BZw@?}@Uq@k@SgDbC[tATdAn@XfDcCVm@@y@Ok@_@_@o@H_DvCEdARt@h@Zh@SrCkCHgAW_AaAMqC|BWn@Az@Pn@^Vh@E`Aw@gAz@m@Ae@}@H}A~CoC~@HXx@GhAe@r@`@g@Lw@YhAsAhArAgARe@?qAc@w@u@B}CpCK`AP|@f@\\l@OnCaCPeAScA][g@B_DnCO`ALz@^`@j@A~CmCN_AOaAa@a@e@@aDnCO|@NdAd@`@h@IxCkCNcAUcAeAUcDzCGbARx@h@Zl@WpCiCDsAi@aAq@DmCvBWn@Av@Vx@d@Tf@OvCoCDuAg@}@s@BkCtBWl@Cv@Pv@^Xf@E~CqCJgAWaAaAO_DrCM~@RbAh@Zh@OvCoCDqAg@aAu@DkCtBWp@BnAd@p@j@?`Aw@",
     tracklist: [
       {
         id: "song3",
@@ -205,6 +207,9 @@ const MOCK_ACTIVITIES: Activity[] = [
     distanceInMeters: 3000,
     durationInSeconds: 960, // 16 minutes
     pace: "5'20\"/km",
+    polyline:
+      "sntkH|t_oVI|X`@PtPPfAj@Zz@FbIQpm@\\~L~@~J`ClNbEdN`BzGZhE|@vArBtIAZ|BpHFjDtAzCpHhYbAlAr@?\\Yl[mr@`IuSrO}\\lCaH`CwHrDyO~B{O`A}KlEur@dAcKrAyInQ{bAz[omAPuDDsZPuBjPal@`IgR^mBb@mFf@_CzD}IzEoFf@cAnAwENiH~@wCn@gArAi@tIH~CmAh}@{}@l@_BVuB@}UL}Ed@QhMLfAm@fC_Il@kD|FuUx@iBfAeArA_@~AJt]zJpBzAnBrChAbDn@jE]\\g@c@E_@VyAI{@q@qAyAqA?y@f@gCCg@oCeBeAUiA^}AbCaA`DaElVSxBArg@[XwCa@aBHaBp@oAjAgP~]u@jBc@|BkAnQ{UjjEAxI\\~Hz@`IdEvVFjCQfCi@`CoAnBuAx@kBNsMa@yKsB_LeDoAVuAjCoA~E_@hCVtc@MfG]|DyAvDmBvAoAJqDu@pDr@~AQbByAt@{A\\uAb@wEFuGW_b@ToBjA}Eh@{Av@iApA_@xLtD|HxAtEb@xHFdBK|Ay@nAeBv@kCTiCImDgEkWu@kHYqH?}HtTy_Eb@cLdAmNh@uCdQk`@hAqAdAm@zAY|AD~KpBzLvGxCb@rKgAbKIv@i@d\\@rAYtBDpD]dALbBi@pA?jAr@pMtQXr@StCXpAtGrDt@t@l@`BThCzAx_AAhJ[nHgApLu@lB{Ar@Q\\YlFf@fRiAfHe@fHg@dBf@aBh@_IdAeGe@qRXsFfB_A|@gB`AmK\\uGBoM{AebAc@sB{@yAsGwEIeA^mAM_@q@YeNiRiAy@eAG{Br@qAQyC`@yERy`@MqCXeD_@u@\\kIp@yEaA_IqEkHaBKe@G{KFuZnDuV`A{Dp@_BfBuBhBLtEpChBnCrGfEf@x@l@dCKZaA@qC{@uA`@oA_GaAkCkCmDgCgBkQkFcKaEwAMqA\\_Az@m@jAeIxZ[`Aw@dA\\tAAv@oAtDqAt@eMU{@PC~\\SpBi@xAc}@x}@_DnA}IGwAp@q@nAy@pCQlHgAdE{@zAsEfF{DbJa@jBk@fGa@xBeI`ReP`l@OpBCx[[fDwWfbA_CvGgLtn@iFhZcBvMeFlw@}@lJeCbP_DxMyFlP{Od]uH~R_Px]cJjQgA^m@UYa@eFeSiAoCMcCu@oB{FmUMaCq@sAqGuVqCaP}@kK]yKNmm@QeMc@YuTg@@oW",
+
     tracklist: [
       {
         id: "song6",
