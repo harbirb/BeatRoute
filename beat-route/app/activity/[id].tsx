@@ -1,4 +1,4 @@
-import { useLocalSearchParams, Stack } from "expo-router";
+import { useLocalSearchParams, Stack, Link } from "expo-router";
 import {
   View,
   Text,
@@ -73,7 +73,9 @@ export default function ActivityDetailScreen() {
       <View>
         <View style={styles.playlistHeaderContainer}>
           <Text style={styles.playlistHeader}>Stickers</Text>
-          <Button title="Edit"></Button>
+          <Link href={{ pathname: "/modal", params: { id: activity.id } }} asChild>
+            <Button title="Edit"></Button>
+          </Link>
         </View>
         <Carousel data={stickers} />
       </View>

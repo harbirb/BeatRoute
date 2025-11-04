@@ -6,7 +6,7 @@ import Card from "./ui/Card";
 
 export default function ActivityPreview({ item }: { item: Activity }) {
   return (
-    <Pressable onPress={() => router.push(`/activity/${item.id}`)}>
+    <Pressable onPress={() => router.navigate(`/activity/${item.id}`)}>
       <Card>
         <View style={styles.container}>
           <View style={styles.topRow}>
