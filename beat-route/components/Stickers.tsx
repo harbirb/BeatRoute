@@ -1,17 +1,41 @@
 import { Activity } from "@/context/DataContext";
 import DistancePaceSticker from "./DistancePaceSticker";
 import Polyline from "./Polyline";
-import { Text } from "react-native";
+import { View } from "react-native";
 
-export default function Stickers(activity: Activity, color: string): any[] {
-  console.log(color);
+export type StickerStyle = {
+  color: string;
+  fontWeight: string;
+  fontSize: number;
+  thickness: number;
+};
+
+const defaultStyle: StickerStyle = {
+  color: "#ffffff",
+  fontWeight: "normal",
+  fontSize: 14,
+  thickness: 2,
+};
+
+export default function Stickers(
+  activity: Activity,
+  style?: StickerStyle
+): any[] {
+  style = style || defaultStyle;
   return [
     <DistancePaceSticker
       distance={(activity.distanceInMeters / 1000).toFixed(2)}
       pace={"5:00 /km"}
-      color={color}
+      color={style.color}
     ></DistancePaceSticker>,
-    <Text>More stickers</Text>,
-    <Polyline encodedPolyline={activity.polyline || ""} color={color} />,
+    <Polyline encodedPolyline={activity.polyline || ""} color={style.color} />,
+    <View style={{ alignItems: "center", justifyContent: "center" }}>
+      <Polyline encodedPolyline={activity.polyline || ""} color={style.color} />
+      <DistancePaceSticker
+        distance={(activity.distanceInMeters / 1000).toFixed(2)}
+        pace={"5:00 /km"}
+        color={style.color}
+      ></DistancePaceSticker>
+    </View>,
   ];
 }

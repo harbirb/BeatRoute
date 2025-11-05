@@ -33,7 +33,7 @@ export default function CarouselComponent({ data }: { data: any[] }) {
         <Carousel
           ref={ref}
           width={width}
-          height={(width / 3) * 2}
+          height={width}
           enabled={width > 0}
           data={data}
           onProgressChange={progress}

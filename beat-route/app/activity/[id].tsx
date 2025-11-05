@@ -71,7 +71,7 @@ export default function ActivityDetailScreen() {
             <Button title="Edit"></Button>
           </Link>
         </View>
-        <Carousel data={Stickers(activity, "red")} />
+        <Carousel data={Stickers(activity)} />
       </View>
     </ScrollView>
   );
