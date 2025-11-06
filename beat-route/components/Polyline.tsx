@@ -2,16 +2,16 @@ import { View, Text } from "react-native";
 import polyline from "@mapbox/polyline";
 import MapView, { Polyline as MapPolyline } from "react-native-maps";
 import Svg, { Polyline as SvgPolyline } from "react-native-svg";
+import { StickerStyle } from "./Stickers";
 
-const PADDING = 5;
+const PADDING = 10;
 
-export default function Polyline({
-  encodedPolyline,
-  color,
-}: {
+type PolylineProps = {
   encodedPolyline: string;
-  color: string;
-}) {
+  style: StickerStyle;
+};
+
+export default function Polyline({ encodedPolyline, style }: PolylineProps) {
   // decode polyline to lat/lng points
   const decodedPoints = polyline.decode(encodedPolyline);
 
@@ -59,8 +59,8 @@ export default function Polyline({
       <SvgPolyline
         points={points}
         fill="none"
-        stroke={color}
-        strokeWidth="3"
+        stroke={style.color}
+        strokeWidth={style.strokeWidth}
         strokeLinecap="round"
         strokeLinejoin="bevel"
       />

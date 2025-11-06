@@ -12,7 +12,7 @@ const initialStyle: StickerStyle = {
   color: "white",
   fontWeight: "normal",
   fontSize: 14,
-  thickness: 2,
+  strokeWidth: 2,
 };
 
 export default function ActivityDetailModal() {

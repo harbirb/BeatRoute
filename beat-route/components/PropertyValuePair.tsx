@@ -13,8 +13,30 @@ export default function PropertyValuePair({
 }) {
   return (
     <View style={styles.pvpContainer}>
-      <Text style={[styles.pvpLabel, { color: style?.color }]}>{label}</Text>
-      <Text style={[styles.pvpValue, { color: style?.color }]}>{value}</Text>
+      <Text
+        style={[
+          styles.pvpLabel,
+          {
+            color: style?.color,
+            // fontWeight: style?.fontWeight as any,
+            // fontSize: (style?.fontSize as any) / 1.6,
+          },
+        ]}
+      >
+        {label}
+      </Text>
+      <Text
+        style={[
+          styles.pvpValue,
+          {
+            color: style?.color,
+            fontSize: style?.fontSize,
+            fontWeight: style?.fontWeight as any,
+          },
+        ]}
+      >
+        {value}
+      </Text>
     </View>
   );
 }

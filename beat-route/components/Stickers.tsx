@@ -11,14 +11,14 @@ export type StickerStyle = {
   color: string;
   fontWeight: string;
   fontSize: number;
-  thickness: number;
+  strokeWidth: number;
 };
 
 const defaultStyle: StickerStyle = {
   color: "#ffffff",
   fontWeight: "normal",
   fontSize: 14,
-  thickness: 2,
+  strokeWidth: 2,
 };
 
 export default function Stickers(
@@ -38,10 +38,10 @@ export default function Stickers(
       <PropertyValuePair label="Avg HR" value={"143 bpm"} style={style} />
     </View>,
     // Polyline sticker
-    <Polyline encodedPolyline={activity.polyline || ""} color={style.color} />,
+    <Polyline encodedPolyline={activity.polyline || ""} style={style} />,
     // Combined sticker
     <View style={{ alignItems: "center", justifyContent: "center" }}>
-      <Polyline encodedPolyline={activity.polyline || ""} color={style.color} />
+      <Polyline encodedPolyline={activity.polyline || ""} style={style} />
       <View style={{ flexDirection: "row", gap: 30 }}>
         <PropertyValuePair
           label="Distance"
