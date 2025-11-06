@@ -11,7 +11,7 @@ export default function dps({
   color: string;
 }) {
   return (
-    <View style={{ flexDirection: "row", gap: 10, backgroundColor: color }}>
+    <View style={{ flexDirection: "row", gap: 10 }}>
       <PropertyValuePair label="Distance" value={distance} />
       <PropertyValuePair label="Pace" value={pace} />
     </View>

@@ -1,17 +1,20 @@
 import { Colors, FONT_SIZE, FONT_WEIGHT, SPACING } from "@/constants/theme";
 import { View, Text, StyleSheet } from "react-native";
+import { StickerStyle } from "./Stickers";
 
 export default function PropertyValuePair({
   label,
   value,
+  style,
 }: {
   label: string;
   value: string;
+  style?: StickerStyle;
 }) {
   return (
     <View style={styles.pvpContainer}>
-      <Text style={styles.pvpLabel}>{label}</Text>
-      <Text style={styles.pvpValue}>{value}</Text>
+      <Text style={[styles.pvpLabel, { color: style?.color }]}>{label}</Text>
+      <Text style={[styles.pvpValue, { color: style?.color }]}>{value}</Text>
     </View>
   );
 }
