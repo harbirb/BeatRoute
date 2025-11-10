@@ -2,6 +2,7 @@ import { View, StyleSheet } from "react-native";
 import { RunActivity } from "@/context/DataContext";
 import Card from "@/components/ui/Card";
 import PropertyValuePair from "@/components/PropertyValuePair";
+import { StickerStyle } from "./Stickers";
 
 export const RunDetailCard = ({ item }: { item: RunActivity }) => {
   const details = [
@@ -11,6 +12,13 @@ export const RunDetailCard = ({ item }: { item: RunActivity }) => {
     { label: "Elevation Gain", value: item.elevationGainInMeters?.toString() },
     { label: "Avg Heart Rate", value: item.averageHeartRate?.toString() },
   ];
+
+  const defaultStyle: StickerStyle = {
+    color: "black",
+    fontSize: 20,
+    fontWeight: "regular",
+    strokeWidth: 2,
+  };
 
   return (
     <Card>

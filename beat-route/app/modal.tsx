@@ -7,6 +7,7 @@ import ColorPicker, { Panel5 } from "reanimated-color-picker";
 import { useState } from "react";
 import StyleEditor from "@/components/StyleEditor";
 import ColorEditor from "@/components/ColorEditor";
+import Card from "@/components/ui/Card";
 
 const initialStyle: StickerStyle = {
   color: "white",
@@ -28,7 +29,7 @@ export default function ActivityDetailModal() {
       style={{
         flex: 1,
         padding: 20,
-        gap: 20,
+        gap: 16,
       }}
     >
       <Carousel data={stickers} />
@@ -43,7 +44,7 @@ export default function ActivityDetailModal() {
         <Button title="Style" onPress={() => setActiveEditor("Style")}></Button>
         <Button title="Color" onPress={() => setActiveEditor("Color")}></Button>
       </View>
-      <View style={{ flex: 1, alignItems: "center" }}>
+      <View>
         {activeEditor === "Color" && (
           <ColorEditor style={style} setStyle={setStyle} />
         )}

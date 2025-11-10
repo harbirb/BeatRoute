@@ -26,14 +26,11 @@ export default function PropertyValuePair({
         {label}
       </Text>
       <Text
-        style={[
-          styles.pvpValue,
-          {
-            color: style?.color,
-            fontSize: style?.fontSize,
-            fontWeight: style?.fontWeight as any,
-          },
-        ]}
+        style={{
+          color: style?.color,
+          fontSize: style?.fontSize || styles.pvpValue.fontSize,
+          fontWeight: (style?.fontWeight as any) || styles.pvpValue.fontWeight,
+        }}
       >
         {value}
       </Text>

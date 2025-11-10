@@ -60,10 +60,10 @@ export const FONT_SIZE = {
   xlarge: 24,
 };
 export const FONT_WEIGHT = {
-  light: "300",
   regular: "400",
   medium: "500",
   bold: "700",
+  black: "900",
 } as const;
 export const RADIUS = {
   small: 4,
