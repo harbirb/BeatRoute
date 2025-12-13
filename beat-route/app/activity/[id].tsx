@@ -17,7 +17,7 @@ import Carousel from "@/components/Carousel";
 import Stickers from "@/components/Stickers";
 
 export default function ActivityDetailScreen() {
-  const { activities, loading } = useData();
+  const { activities, loading, stickerStyle } = useData();
   const { id } = useLocalSearchParams();
   const activity = activities.find((act: Activity) => act.id === id);
 
@@ -71,7 +71,7 @@ export default function ActivityDetailScreen() {
             <Button title="Edit"></Button>
           </Link>
         </View>
-        <Carousel data={Stickers(activity)} />
+        <Carousel data={Stickers(activity, stickerStyle)} />
       </View>
     </ScrollView>
   );

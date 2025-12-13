@@ -7,6 +7,7 @@ import React, {
   use,
 } from "react";
 import { getActivities } from "@/lib/mock-db";
+import { StickerStyle } from "@/components/Stickers";
 
 export interface Song {
   id: string;
@@ -51,17 +52,28 @@ export type Activity = RunActivity | RideActivity;
 interface DataContextType {
   activities: Activity[];
   loading: boolean;
+  stickerStyle: StickerStyle;
+  setStickerStyle: (style: StickerStyle) => void;
   // In the future, could add functions like:
   // addActivity: (activity: Activity) => void;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
 
+const defaultStickerStyle: StickerStyle = {
+  color: "#ffffff",
+  fontWeight: "normal",
+  fontSize: 14,
+  strokeWidth: 2,
+};
+
 // --- 4. Create the Provider ---
 
 export const DataProvider = ({ children }: { children: ReactNode }) => {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [loading, setLoading] = useState(true);
+  const [stickerStyle, setStickerStyle] =
+    useState<StickerStyle>(defaultStickerStyle);
 
   useEffect(() => {
     const fetchMockActivities = async () => {
@@ -80,7 +92,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     fetchMockActivities();
   }, []);
 
-  const value = { activities, loading };
+  const value = { activities, loading, stickerStyle, setStickerStyle };
 
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;
 };

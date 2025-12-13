@@ -2,27 +2,17 @@ import { useLocalSearchParams, Stack } from "expo-router";
 import { View, Text, Button } from "react-native";
 import { Activity, useData } from "@/context/DataContext";
 import Carousel from "@/components/Carousel";
-import Stickers, { StickerStyle } from "@/components/Stickers";
-import ColorPicker, { Panel5 } from "reanimated-color-picker";
+import Stickers from "@/components/Stickers";
 import { useState } from "react";
 import StyleEditor from "@/components/StyleEditor";
 import ColorEditor from "@/components/ColorEditor";
-import Card from "@/components/ui/Card";
-
-const initialStyle: StickerStyle = {
-  color: "white",
-  fontWeight: "normal",
-  fontSize: 14,
-  strokeWidth: 2,
-};
 
 export default function ActivityDetailModal() {
   const { id } = useLocalSearchParams();
-  const { activities } = useData();
+  const { activities, stickerStyle, setStickerStyle } = useData();
   const activity = activities.find((act: Activity) => act.id === id);
   const [activeEditor, setActiveEditor] = useState<string>("Style");
-  const [style, setStyle] = useState<StickerStyle>(initialStyle);
-  const stickers = Stickers(activity!, style);
+  const stickers = Stickers(activity!, stickerStyle);
 
   return (
     <View
@@ -46,10 +36,10 @@ export default function ActivityDetailModal() {
       </View>
       <View>
         {activeEditor === "Color" && (
-          <ColorEditor style={style} setStyle={setStyle} />
+          <ColorEditor style={stickerStyle} setStyle={setStickerStyle} />
         )}
         {activeEditor === "Style" && (
-          <StyleEditor style={style} setStyle={setStyle} />
+          <StyleEditor style={stickerStyle} setStyle={setStickerStyle} />
         )}
       </View>
     </View>
