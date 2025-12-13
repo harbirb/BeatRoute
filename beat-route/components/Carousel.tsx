@@ -45,7 +45,7 @@ export default function CarouselComponent({ data }: { data: any[] }) {
                 justifyContent: "center",
               }}
             >
-              {data[index]}
+              <ActivitySticker>{data[index]}</ActivitySticker>
             </View>
           )}
         />
