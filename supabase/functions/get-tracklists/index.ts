@@ -103,6 +103,7 @@ async function generateTracklist(
       track_name: obj.track.name,
       track_artists: obj.track.artists.map((artist: any) => artist.name),
       link: obj.track.external_urls.spotify,
+      img: obj.track.album.images[0].url,
       uri: obj.track.uri,
       played_at: obj.played_at,
     };
