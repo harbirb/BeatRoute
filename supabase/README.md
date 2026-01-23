@@ -1,83 +1,46 @@
 # Supabase Backend
 
-This directory contains the Supabase configuration, cloud functions, and database migrations.
+## Setup
 
-## Prerequisites
-
-- Node.js and npm installed.
-- Docker Desktop installed and running (required for local Supabase instance).
-
-## Getting Started
-
-1.  **Navigate to the supabase directory:**
-
+1.  **Install & Start:**
     ```bash
     cd supabase
-    ```
-
-2.  **Install dependencies:**
-
-    ```bash
     npm install
-    ```
-
-3.  **Start the local Supabase instance:**
-
-    ```bash
     npx supabase start
     ```
+    _Requires Docker._
 
-    This will spin up the local database, auth, and other services. It will output the API URL and Anon Key.
+## Commands
 
-## Common Commands
+### Local Dev
 
-### Local Development
-
-- **Stop the local instance:**
-
-  ```bash
-  npx supabase stop
-  ```
-
-- **Check status of the local instance:**
-  ```bash
-  npx supabase status
-  ```
+- **Stop:** `npx supabase stop`
+- **Status:** `npx supabase status`
 
 ### Edge Functions
 
-- **Serve functions locally:**
+- **Serve (All):** `npx supabase functions serve`
+- **Serve (Specific):** `npx supabase functions serve <name>`
+- **Deploy:** `npx supabase functions deploy <name>`
 
-  ```bash
-  npx supabase functions serve
-  ```
+### Database
+- **New Migration:** `npx supabase migration new <name>`
+- **Reset DB:** `npx supabase db reset`
+- **Apply Pending:** `npx supabase migration up`
+  *Apply any pending migrations to the local database.*
+- **Diff Changes:** `npx supabase db diff -f <name>`
+  *Generate a migration from local schema changes.*
 
-  To serve a specific function:
+### Remote Sync
+- **Login:** `npx supabase login`
+- **Link Project:** `npx supabase link --project-ref <project-id>`
+- **Pull Remote Schema:** `npx supabase db pull`
+  *Pull changes from remote DB into a local migration.*
+- **Push Migrations:** `npx supabase db push`
+  *Push local migrations to the remote database.*
 
-  ```bash
-  npx supabase functions serve <function-name>
-  ```
+## Structure
 
-- **Deploy functions:**
-  ```bash
-  npx supabase functions deploy <function-name>
-  ```
-
-### Database Migrations
-
-- **Create a new migration:**
-
-  ```bash
-  npx supabase migration new <migration_name>
-  ```
-
-- **Reset the database (applies all migrations):**
-  ```bash
-  npx supabase db reset
-  ```
-
-## Project Structure
-
-- `functions/`: Deno-based Edge Functions.
-- `migrations/`: SQL migration files.
-- `config.toml`: Supabase CLI configuration.
+- `functions/`: Edge Functions.
+- `migrations/`: SQL migrations.
+- `config.toml`: CLI config.
