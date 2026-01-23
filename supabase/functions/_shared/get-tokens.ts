@@ -21,7 +21,7 @@ const SPOTIFY_TOKEN_URL = "https://accounts.spotify.com/api/token";
 
 if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
   throw new Error(
-    "Missing environment variables: SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY"
+    "Missing environment variables: SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY",
   );
 }
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
@@ -66,7 +66,7 @@ export const getTokens = async (userId: string, service: service) => {
 };
 
 async function refreshStravaToken(
-  refresh_token: string
+  refresh_token: string,
 ): Promise<RefreshTokenResult> {
   const response = await fetch(STRAVA_TOKEN_URL, {
     method: "POST",
@@ -86,17 +86,21 @@ async function refreshStravaToken(
 }
 
 async function refreshSpotifyToken(
-  refresh_token: string
+  refresh_token: string,
 ): Promise<RefreshTokenResult> {
   const response = await fetch(SPOTIFY_TOKEN_URL, {
     method: "POST",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
-      Authorization: `Basic ${btoa(
-        `${Deno.env.get("SPOTIFY_CLIENT_ID")}:${Deno.env.get(
-          "SPOTIFY_CLIENT_SECRET"
-        )}`
-      )}`,
+      Authorization: `Basic ${
+        btoa(
+          `${Deno.env.get("SPOTIFY_CLIENT_ID")}:${
+            Deno.env.get(
+              "SPOTIFY_CLIENT_SECRET",
+            )
+          }`,
+        )
+      }`,
     },
     body: new URLSearchParams({
       grant_type: "refresh_token",

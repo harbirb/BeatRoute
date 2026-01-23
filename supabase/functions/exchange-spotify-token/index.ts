@@ -18,29 +18,33 @@ Deno.serve(async (req) => {
 
     const supabaseClient = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
     );
 
     // check env vars
-    if (!SPOTIFY_CLIENT_ID || !SPOTIFY_CLIENT_SECRET)
+    if (!SPOTIFY_CLIENT_ID || !SPOTIFY_CLIENT_SECRET) {
       return jsonResponse(400, {
         error: "Missing Spotify client ID or secret",
       });
+    }
 
     // get token
     const token = req.headers.get("Authorization")?.replace("Bearer ", "");
-    if (!token)
+    if (!token) {
       return jsonResponse(401, { error: "Missing authorization token" });
+    }
 
     // get user
-    const { data: userData, error: authError } =
-      await supabaseClient.auth.getUser(token);
-    if (authError || !userData?.user)
+    const { data: userData, error: authError } = await supabaseClient.auth
+      .getUser(token);
+    if (authError || !userData?.user) {
       return jsonResponse(401, { error: "Unauthorized" });
+    }
 
     const { code } = await req.json();
-    if (!code)
+    if (!code) {
       return jsonResponse(400, { error: "Missing Spotify authorization code" });
+    }
 
     console.log("tset ehre");
     // Exchange code for Spotify tokens
@@ -48,9 +52,11 @@ Deno.serve(async (req) => {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
-        Authorization: `Basic ${btoa(
-          `${SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`
-        )}`,
+        Authorization: `Basic ${
+          btoa(
+            `${SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`,
+          )
+        }`,
       },
       body: new URLSearchParams({
         grant_type: "authorization_code",
@@ -61,11 +67,12 @@ Deno.serve(async (req) => {
     console.log("here now");
 
     const spotifyData = await response.json();
-    if (!response.ok)
+    if (!response.ok) {
       return jsonResponse(response.status, {
         error: "Spotify token exchange failed",
         details: spotifyData,
       });
+    }
 
     console.log(spotifyData);
 
@@ -82,7 +89,7 @@ Deno.serve(async (req) => {
           refresh_token,
           expires_at: currTime,
         },
-        { onConflict: ["user_id"] }
+        { onConflict: ["user_id"] },
       );
 
     console.log(dbError);

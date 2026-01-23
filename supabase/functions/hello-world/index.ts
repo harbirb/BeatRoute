@@ -26,8 +26,9 @@ Deno.serve(async (req) => {
     console.log(data1, error1);
     const authHeader = req.headers.get("Authorization")!;
     const token = authHeader.replace("Bearer ", "");
-    const { data: data2, error: error2 } =
-      await supabaseClient.auth.getUser(token);
+    const { data: data2, error: error2 } = await supabaseClient.auth.getUser(
+      token,
+    );
     const stravaToken = await getTokens(data2.user.id, "strava");
     const spotifyToken = await getTokens(data2.user.id, "spotify");
     if (error2 || !data2.user) {

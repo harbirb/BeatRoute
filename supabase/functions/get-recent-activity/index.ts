@@ -12,14 +12,15 @@ Deno.serve(async (req) => {
   const token = req.headers.get("Authorization")?.replace("Bearer ", "");
   const supabaseClient = createClient(
     Deno.env.get("SUPABASE_URL") ?? "",
-    Deno.env.get("SUPABASE_ANON_KEY") ?? ""
+    Deno.env.get("SUPABASE_ANON_KEY") ?? "",
   );
 
   // get user
-  const { data: userData, error: authError } =
-    await supabaseClient.auth.getUser(token);
-  if (authError || !userData?.user)
+  const { data: userData, error: authError } = await supabaseClient.auth
+    .getUser(token);
+  if (authError || !userData?.user) {
     return jsonResponse(401, { error: "Unauthorized" });
+  }
 
   const userId = userData.user.id;
 
@@ -36,7 +37,7 @@ Deno.serve(async (req) => {
       headers: {
         Authorization: `Bearer ${stravaToken}`,
       },
-    }
+    },
   );
   const data = await response.json();
   console.log(data);

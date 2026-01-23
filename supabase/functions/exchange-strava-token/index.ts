@@ -13,27 +13,31 @@ Deno.serve(async (req: Request) => {
 
     const supabaseClient = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
     );
 
     // check env vars
-    if (!stravaClientId || !stravaClientSecret)
+    if (!stravaClientId || !stravaClientSecret) {
       return jsonResponse(400, { error: "Missing Strava client ID or secret" });
+    }
 
     // get token
     const token = req.headers.get("Authorization")?.replace("Bearer ", "");
-    if (!token)
+    if (!token) {
       return jsonResponse(401, { error: "Missing authorization token" });
+    }
 
     // get user
-    const { data: userData, error: authError } =
-      await supabaseClient.auth.getUser(token);
-    if (authError || !userData?.user)
+    const { data: userData, error: authError } = await supabaseClient.auth
+      .getUser(token);
+    if (authError || !userData?.user) {
       return jsonResponse(401, { error: "Unauthorized" });
+    }
 
     const { code } = await req.json();
-    if (!code)
+    if (!code) {
       return jsonResponse(400, { error: "Missing Strava authorization code" });
+    }
 
     // Exchange code for Strava tokens
     const response = await fetch("https://www.strava.com/api/v3/oauth/token", {
@@ -49,11 +53,12 @@ Deno.serve(async (req: Request) => {
 
     // check response from strava
     const stravaData = await response.json();
-    if (!response.ok)
+    if (!response.ok) {
       return jsonResponse(response.status, {
         error: "Strava token exchange failed",
         details: stravaData,
       });
+    }
 
     // store tokens
     const { access_token, refresh_token, expires_at, athlete } = stravaData;
@@ -67,14 +72,15 @@ Deno.serve(async (req: Request) => {
           refresh_token,
           expires_at,
         },
-        { onConflict: ["user_id"] }
+        { onConflict: ["user_id"] },
       );
 
-    if (dbError)
+    if (dbError) {
       return jsonResponse(500, {
         error: "Database insert failed",
         details: dbError.message,
       });
+    }
 
     return jsonResponse(200, {
       success: true,

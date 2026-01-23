@@ -21,7 +21,7 @@ const SPOTIFY_TOKEN_URL = "https://accounts.spotify.com/api/token";
 
 if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
   throw new Error(
-    "Missing environment variables: SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY"
+    "Missing environment variables: SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY",
   );
 }
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
@@ -39,16 +39,19 @@ Deno.serve(async (req: Request) => {
   try {
     const { service } = await req.json();
     const jwt = req.headers.get("Authorization")?.replace("Bearer ", "");
-    if (!service || !jwt)
+    if (!service || !jwt) {
       return jsonResponse(400, { error: "Missing service or jwt" });
-    if (!refreshTokenMap[service])
+    }
+    if (!refreshTokenMap[service]) {
       return jsonResponse(400, { error: `Invalid service: ${service}` });
+    }
 
     const {
       data: { user },
     } = await supabase.auth.getUser(jwt);
-    if (!user)
+    if (!user) {
       return jsonResponse(401, { error: "Unauthorized, user not found" });
+    }
     const userId = user.id;
 
     const table = service + "_tokens";
@@ -77,7 +80,7 @@ Deno.serve(async (req: Request) => {
 });
 
 async function refreshStravaToken(
-  refresh_token: string
+  refresh_token: string,
 ): Promise<RefreshTokenResult> {
   const response = await fetch(STRAVA_TOKEN_URL, {
     method: "POST",
@@ -97,17 +100,21 @@ async function refreshStravaToken(
 }
 
 async function refreshSpotifyToken(
-  refresh_token: string
+  refresh_token: string,
 ): Promise<RefreshTokenResult> {
   const response = await fetch(SPOTIFY_TOKEN_URL, {
     method: "POST",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
-      Authorization: `Basic ${btoa(
-        `${Deno.env.get("SPOTIFY_CLIENT_ID")}:${Deno.env.get(
-          "SPOTIFY_CLIENT_SECRET"
-        )}`
-      )}`,
+      Authorization: `Basic ${
+        btoa(
+          `${Deno.env.get("SPOTIFY_CLIENT_ID")}:${
+            Deno.env.get(
+              "SPOTIFY_CLIENT_SECRET",
+            )
+          }`,
+        )
+      }`,
     },
     body: new URLSearchParams({
       grant_type: "refresh_token",

@@ -10,17 +10,18 @@ import { start } from "node:repl";
 
 const supabaseClient = createClient(
   Deno.env.get("SUPABASE_URL") ?? "",
-  Deno.env.get("SUPABASE_ANON_KEY") ?? ""
+  Deno.env.get("SUPABASE_ANON_KEY") ?? "",
 );
 
 Deno.serve(async (req) => {
   const token = req.headers.get("Authorization")?.replace("Bearer ", "");
 
   // get user
-  const { data: userData, error: authError } =
-    await supabaseClient.auth.getUser(token);
-  if (authError || !userData?.user)
+  const { data: userData, error: authError } = await supabaseClient.auth
+    .getUser(token);
+  if (authError || !userData?.user) {
     return jsonResponse(401, { error: "Unauthorized" });
+  }
 
   const userId = userData.user.id;
   const stravaToken = await getTokens(userId, "strava");
@@ -78,22 +79,22 @@ async function getTracklist(activity: any, userId: string) {
 async function generateTracklist(
   start_date: string,
   elapsed_time: number,
-  userId: string
+  userId: string,
 ) {
   const startTime = new Date(start_date).getTime();
   const endTime = startTime + elapsed_time * 1000;
   const songsAfterStart = await fetchSongsByCutoffTime(
     `after=${startTime}`,
-    userId
+    userId,
   );
   const songsBeforeEnd = await fetchSongsByCutoffTime(
     `before=${endTime}`,
-    userId
+    userId,
   );
   const songSet = new Set(
     songsBeforeEnd.items.map((obj: any) => {
       return obj.played_at;
-    })
+    }),
   );
   const songsDuringActivity = songsAfterStart.items.filter((obj: any) => {
     return songSet.has(obj.played_at);
@@ -123,10 +124,11 @@ async function fetchSongsByCutoffTime(cutoffTime: string, userId: string) {
       headers: {
         Authorization: `Bearer ${spotifyToken}`,
       },
-    }
+    },
   );
-  if (!recentlyPlayedSongs.ok)
+  if (!recentlyPlayedSongs.ok) {
     return jsonResponse(400, { error: "Failed to get recently played songs" });
+  }
   return await recentlyPlayedSongs.json();
 }
 
@@ -148,7 +150,7 @@ async function getRecentActivities(userId: string) {
       headers: {
         Authorization: `Bearer ${stravaToken}`,
       },
-    }
+    },
   );
   const activityData = await response.json();
   if (!activityData) return jsonResponse(400, { error: "No activity data" });
