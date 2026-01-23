@@ -1,5 +1,5 @@
 {
-  "deno.enablePaths": ["supabase"],
+  "deno.enablePaths": ["supabase/functions"],
   "deno.lint": true,
   "deno.unstable": [
     "bare-node-builtins",
@@ -17,6 +17,7 @@
     "net"
   ],
   "[typescript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  }
+    "editor.defaultFormatter": "denoland.vscode-deno"
+  },
+  "deno.enable": true
 }

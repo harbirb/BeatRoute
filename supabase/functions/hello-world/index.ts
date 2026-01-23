@@ -15,7 +15,7 @@ Deno.serve(async (req) => {
 
   const supabaseClient = createClient(
     Deno.env.get("SUPABASE_URL") ?? "",
-    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
+    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
   );
 
   try {
@@ -26,9 +26,8 @@ Deno.serve(async (req) => {
     console.log(data1, error1);
     const authHeader = req.headers.get("Authorization")!;
     const token = authHeader.replace("Bearer ", "");
-    const { data: data2, error: error2 } = await supabaseClient.auth.getUser(
-      token
-    );
+    const { data: data2, error: error2 } =
+      await supabaseClient.auth.getUser(token);
     const stravaToken = await getTokens(data2.user.id, "strava");
     const spotifyToken = await getTokens(data2.user.id, "spotify");
     if (error2 || !data2.user) {
@@ -45,7 +44,7 @@ Deno.serve(async (req) => {
 
     return new Response(
       JSON.stringify({ message: "Entry added successfully" }),
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     // console.log(err);
@@ -53,7 +52,7 @@ Deno.serve(async (req) => {
       JSON.stringify({ message: "Internal Server Error" + error }),
       {
         status: 500,
-      }
+      },
     );
   }
 });
