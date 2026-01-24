@@ -337,3 +337,14 @@ entrypoint = "./functions/strava-post/index.ts"
 # Specifies static files to be bundled with the function. Supports glob patterns.
 # For example, if you want to serve static HTML pages in your function:
 # static_files = [ "./functions/strava-post/*.html" ]
+
+[functions.exchange-oauth-token]
+enabled = true
+verify_jwt = true
+import_map = "./functions/exchange-oauth-token/deno.json"
+# Uncomment to specify a custom file path to the entrypoint.
+# Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
+entrypoint = "./functions/exchange-oauth-token/index.ts"
+# Specifies static files to be bundled with the function. Supports glob patterns.
+# For example, if you want to serve static HTML pages in your function:
+# static_files = [ "./functions/exchange-oauth-token/*.html" ]

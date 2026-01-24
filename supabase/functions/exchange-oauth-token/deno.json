@@ -1,0 +1,7 @@
+{
+  "imports": {
+    "edge-runtime": "jsr:@supabase/functions-js/edge-runtime.d.ts",
+    "supabase": "npm:@supabase/supabase-js@2",
+    "strava-sdk": "https://esm.sh/strava-sdk"
+  }
+}
