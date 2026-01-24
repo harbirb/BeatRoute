@@ -46,3 +46,37 @@
 - `functions/`: Edge Functions.
 - `migrations/`: SQL migrations.
 - `config.toml`: CLI config.
+
+## Development Practices
+
+### Edge Functions (Deno)
+
+We use Deno for Supabase Edge Functions.
+
+- **Dependency Management:** Use `deno.json` in each function's directory to manage imports. This keeps versions consistent and imports clean.
+- **IDE Setup:** To resolve "red squigglies" and ensure your editor understands the Deno environment, run `deno install` within the specific function's folder (e.g., `cd functions/my-function && deno install`).
+- **Formatting:** Run `deno fmt` to format your code.
+- **Linting:** Run `deno lint` to catch common issues.
+
+#### JSR Imports
+
+Avoid using `import "jsr:@..."` directly in `index.ts`.
+
+- **Why:** Direct JSR imports can cause issues with tooling (like `deno install` not properly caching them for the LSP in some contexts), are harder to read, and scatter version management across files.
+- **Instead:** Map the JSR dependency in `deno.json` to a bare specifier.
+
+**Example:**
+
+*deno.json:*
+```json
+{
+  "imports": {
+    "@supabase/supabase-js": "jsr:@supabase/supabase-js@2"
+  }
+}
+```
+
+*index.ts:*
+```typescript
+import { createClient } from "@supabase/supabase-js";
+```
