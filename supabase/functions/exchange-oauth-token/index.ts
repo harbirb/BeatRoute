@@ -25,57 +25,79 @@ const strava = new StravaClient({
   storage: undefined,
 });
 
-Deno.serve(async (req) => {
+export const exchangeHandler = async (req: Request) => {
   // Log request headers for debugging
-  const headersObject = Object.fromEntries(req.headers);
-  const headersJson = JSON.stringify(headersObject, null, 2);
-  console.log(`Request headers:\n${headersJson}`);
+  // const headersObject = Object.fromEntries(req.headers);
+  // const headersJson = JSON.stringify(headersObject, null, 2);
+  // console.log(`Request headers:\n${headersJson}`);
 
-  const authHeader = req.headers.get("Authorization")!;
+  const authHeader = req.headers.get("Authorization");
+  if (!authHeader) {
+    console.error("Missing Authorization header");
+    return Response.json({ msg: "Unauthorized" }, { status: 401 });
+  }
+
   const token = authHeader.replace("Bearer ", "");
   const { data: { user }, error } = await supabaseAdmin.auth.getUser(token);
+
   if (!user || error) {
     console.error("Unauthorized request to function", error?.message);
     return Response.json({ msg: "Unauthorized" }, { status: 401 });
   }
 
   const { provider, code } = await req.json();
-  if (!VALID_PROVIDERS.includes(provider) || !code) {
-    console.error("Invalid provider or missing code");
+  if (!VALID_PROVIDERS.includes(provider as Provider) || !code) {
     return Response.json({ msg: "Invalid provider or missing code" }, {
       status: 400,
     });
   }
 
-  if (provider === "strava") {
-    try {
-      const tokens = await strava.oauth.exchangeCode(code);
-      console.log("Exchanged Strava code for tokens", tokens);
-
-      // TODO: Store tokens in the database
-    } catch (err) {
-      console.error("Error exchanging Strava code", err);
-      return Response.json({ msg: "Error exchanging Strava code" }, {
-        status: 500,
-      });
+  try {
+    switch (provider) {
+      case "strava":
+        await handleStravaExchange(user.id, code);
+        break;
+      case "spotify":
+        await handleSpotifyExchange(user.id, code);
+        break;
+      default:
+        return Response.json({ msg: "Unsupported provider" }, { status: 400 });
     }
-  }
 
-  if (provider === "spotify") {
-    try {
-      // TODO: Store tokens in the database
-    } catch (err) {
-      console.error("Error exchanging Spotify code", err);
-      return Response.json({ msg: "Error exchanging Spotify code" }, {
-        status: 500,
-      });
-    }
+    return Response.json({ msg: "OAuth token exchanged successfully" }, {
+      status: 200,
+    });
+  } catch (err) {
+    console.error(`Error exchanging ${provider} code:`, err);
+    return Response.json({ msg: `Failed to exchange ${provider} token` }, {
+      status: 500,
+    });
   }
+};
 
-  return Response.json({ msg: "OAuth token exchanged successfully" }, {
-    status: 200,
-  });
-});
+/**
+ * Strava-specific exchange logic
+ */
+async function handleStravaExchange(userId: string, code: string) {
+  const tokens = await strava.oauth.exchangeCode(code);
+  console.log("Exchanged Strava code for tokens", tokens);
+
+  // TODO: Implement database storage using supabaseAdmin
+  // await supabaseAdmin.from('strava_tokens').upsert({ user_id: userId, ...tokens });
+}
+
+/**
+ * Spotify-specific exchange logic
+ */
+async function handleSpotifyExchange(userId: string, code: string) {
+  // TODO: Implement Spotify token exchange logic
+  // const tokens = await spotify.exchangeCode(code);
+  console.log("Spotify exchange requested for user", userId);
+}
+
+if (import.meta.main) {
+  Deno.serve(exchangeHandler);
+}
 
 /* To invoke locally:
 
