@@ -22,7 +22,7 @@ const strava = new StravaClient({
   clientId: Deno.env.get("STRAVA_CLIENT_ID")!,
   clientSecret: Deno.env.get("STRAVA_CLIENT_SECRET")!,
   redirectUri: "http://localhost:3000/auth/callback",
-  storage: undefined,
+  storage: { get: () => null, set: () => {}, delete: () => {} },
 });
 
 export const exchangeHandler = async (req: Request) => {
@@ -47,6 +47,7 @@ export const exchangeHandler = async (req: Request) => {
 
   const { provider, code } = await req.json();
   if (!VALID_PROVIDERS.includes(provider as Provider) || !code) {
+    console.error("Invalid provider or missing code");
     return Response.json({ msg: "Invalid provider or missing code" }, {
       status: 400,
     });
