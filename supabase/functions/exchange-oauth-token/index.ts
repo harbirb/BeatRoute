@@ -21,7 +21,7 @@ const supabaseAdmin = createClient(
 const strava = new StravaClient({
   clientId: Deno.env.get("STRAVA_CLIENT_ID")!,
   clientSecret: Deno.env.get("STRAVA_CLIENT_SECRET")!,
-  redirectUri: "http://localhost:3000/auth/callback",
+  redirectUri: Deno.env.get("STRAVA_REDIRECT_URI")!,
   storage: { get: () => null, set: () => {}, delete: () => {} },
 });
 
@@ -80,11 +80,38 @@ export const exchangeHandler = async (req: Request) => {
  * Strava-specific exchange logic
  */
 async function handleStravaExchange(userId: string, code: string) {
-  const tokens = await strava.oauth.exchangeCode(code);
-  console.log("Exchanged Strava code for tokens", tokens);
+  try {
+    const tokens = await strava.oauth.exchangeCode(code);
+    console.log("Exchanged Strava code for tokens", tokens);
+    const { access_token, refresh_token, expires_at, athlete } = tokens;
 
-  // TODO: Implement database storage using supabaseAdmin
-  // await supabaseAdmin.from('strava_tokens').upsert({ user_id: userId, ...tokens });
+    if (!athlete) {
+      throw new Error("No athlete data returned from Strava");
+    }
+
+    // store tokens
+    const { error: dbError } = await supabaseAdmin
+      .from("strava_tokens")
+      .upsert(
+        {
+          user_id: userId,
+          athlete_id: athlete.id,
+          access_token,
+          refresh_token,
+          expires_at,
+        },
+        { onConflict: "user_id" },
+      );
+
+    if (dbError) {
+      throw new Error(`Database insert failed: ${dbError.message}`);
+    }
+
+    console.log("Stored Strava tokens in database for user", userId);
+  } catch (err) {
+    console.error(`Error exchanging Strava code:`, err);
+    throw err;
+  }
 }
 
 /**
