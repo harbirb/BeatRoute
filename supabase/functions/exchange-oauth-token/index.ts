@@ -118,9 +118,62 @@ async function handleStravaExchange(userId: string, code: string) {
  * Spotify-specific exchange logic
  */
 async function handleSpotifyExchange(userId: string, code: string) {
-  // TODO: Implement Spotify token exchange logic
-  // const tokens = await spotify.exchangeCode(code);
-  console.log("Spotify exchange requested for user", userId);
+  try {
+    const SPOTIFY_CLIENT_ID = Deno.env.get("SPOTIFY_CLIENT_ID")!;
+    const SPOTIFY_CLIENT_SECRET = Deno.env.get("SPOTIFY_CLIENT_SECRET")!;
+    const SPOTIFY_REDIRECT_URI = Deno.env.get("SPOTIFY_REDIRECT_URI")!;
+
+    if (!SPOTIFY_CLIENT_ID || !SPOTIFY_CLIENT_SECRET || !SPOTIFY_REDIRECT_URI) {
+      throw new Error("Missing Spotify environment variables");
+    }
+
+    const response = await fetch("https://accounts.spotify.com/api/token", {
+      method: "POST",
+      headers: {
+        "Authorization": `Basic ${
+          btoa(`${SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`)
+        }`,
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: new URLSearchParams({
+        grant_type: "authorization_code",
+        code,
+        redirect_uri: SPOTIFY_REDIRECT_URI,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(
+        `Spotify token exchange failed: ${response.status} ${errorText}`,
+      );
+    }
+
+    const data = await response.json();
+    const { access_token, refresh_token, expires_in } = data;
+    const expires_at = Math.floor(Date.now() / 1000) + expires_in;
+
+    const { error: dbError } = await supabaseAdmin
+      .from("spotify_tokens")
+      .upsert(
+        {
+          user_id: userId,
+          access_token,
+          refresh_token,
+          expires_at,
+        },
+        { onConflict: "user_id" },
+      );
+
+    if (dbError) {
+      throw new Error(`Database insert failed: ${dbError.message}`);
+    }
+
+    console.log("Stored Spotify tokens in database for user", userId);
+  } catch (err) {
+    console.error(`Error exchanging Spotify code:`, err);
+    throw err;
+  }
 }
 
 if (import.meta.main) {

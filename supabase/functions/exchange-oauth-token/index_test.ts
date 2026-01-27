@@ -7,6 +7,9 @@ Deno.env.set("SUPABASE_SERVICE_ROLE_KEY", "example-key");
 Deno.env.set("STRAVA_CLIENT_ID", "123");
 Deno.env.set("STRAVA_CLIENT_SECRET", "secret");
 Deno.env.set("STRAVA_REDIRECT_URI", "http://localhost:3000/auth/callback");
+Deno.env.set("SPOTIFY_CLIENT_ID", "spotify_123");
+Deno.env.set("SPOTIFY_CLIENT_SECRET", "spotify_secret");
+Deno.env.set("SPOTIFY_REDIRECT_URI", "http://localhost:3000/spotify/callback");
 
 // Dynamically import the module so env vars are available during top-level initialization
 const { exchangeHandler } = await import("./index.ts");
@@ -187,6 +190,85 @@ Deno.test("exchangeHandler returns 500 if Strava returns no athlete", async () =
 
   assertEquals(response.status, 500);
   assertEquals(data.msg, "Failed to exchange strava token");
+});
+
+Deno.test("exchangeHandler returns 200 and stores tokens on successful Spotify exchange", async () => {
+  using _fetchStub = stub(globalThis, "fetch", async (input) => {
+    await Promise.resolve();
+    const url = getUrl(input);
+
+    // 1. Mock Supabase Auth Response
+    if (url.includes("/auth/v1/user")) {
+      return Response.json({ id: "test-user-id" }, { status: 200 });
+    }
+
+    // 2. Mock Spotify Token Response
+    if (url === "https://accounts.spotify.com/api/token") {
+      return Response.json({
+        access_token: "mock_spotify_access",
+        refresh_token: "mock_spotify_refresh",
+        expires_in: 3600,
+      }, { status: 200 });
+    }
+
+    // 3. Mock DB Insert for spotify_tokens
+    if (url.includes("/rest/v1/spotify_tokens")) {
+      return Response.json(null, { status: 201 });
+    }
+
+    return Response.json("Not Found", { status: 404 });
+  });
+
+  const req = new Request("http://localhost/functions/exchange-oauth-token", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer fake_valid_token",
+    },
+    body: JSON.stringify({ provider: "spotify", code: "valid_spotify_code" }),
+  });
+
+  const response = await exchangeHandler(req);
+  const data = await response.json();
+
+  assertEquals(response.status, 200);
+  assertEquals(data.msg, "OAuth token exchanged successfully");
+});
+
+Deno.test("exchangeHandler returns 500 if Spotify token exchange fails", async () => {
+  using _fetchStub = stub(globalThis, "fetch", async (input) => {
+    await Promise.resolve();
+    const url = getUrl(input);
+
+    if (url.includes("/auth/v1/user")) {
+      return Response.json({ id: "test-user-id" }, { status: 200 });
+    }
+
+    // Mock Spotify Error Response
+    if (url === "https://accounts.spotify.com/api/token") {
+      return Response.json({
+        error: "invalid_grant",
+        error_description: "Invalid authorization code",
+      }, { status: 400 });
+    }
+
+    return Response.json("Not Found", { status: 404 });
+  });
+
+  const req = new Request("http://localhost/functions/exchange-oauth-token", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer fake_valid_token",
+    },
+    body: JSON.stringify({ provider: "spotify", code: "invalid_spotify_code" }),
+  });
+
+  const response = await exchangeHandler(req);
+  const data = await response.json();
+
+  assertEquals(response.status, 500);
+  assertEquals(data.msg, "Failed to exchange spotify token");
 });
 
 Deno.test("exchangeHandler returns 500 if DB insert fails", async () => {
