@@ -1,6 +1,7 @@
 import "edge-runtime";
 import { createClient } from "supabase";
 import { ProviderName, PROVIDERS } from "./providers.ts";
+import { StravaApi } from "strava-sdk";
 
 const supabaseAdmin = createClient(
   Deno.env.get("SUPABASE_URL")!,
@@ -26,12 +27,7 @@ export const getToken = async (
       return null;
     }
     if (isExpired(data.expires_at)) {
-      const refreshSuccess = refreshToken(userId, provider);
-      if (!refreshSuccess) {
-        console.error(`Failed to refresh token for ${provider}`);
-        return null;
-      }
-      return await getToken(userId, provider);
+      return await refreshAndReturnToken(userId, provider, data.refresh_token);
     }
     return data.access_token;
   } catch (error) {
@@ -47,14 +43,55 @@ function isExpired(expires_at: number): boolean {
   return now > expires_at - bufferTime;
 }
 
-// Refresh token function
-// Return true if refresh is successful, false otherwise
-function refreshToken(
+// Refresh access token, update DB, and return new token
+async function refreshAndReturnToken(
   userId: string,
   provider: ProviderName,
-): boolean {
+  refreshToken: string,
+): Promise<string | null> {
   // Placeholder for refresh logic
   console.log(`Refreshing token for ${provider} and user ${userId}`);
+  const refreshFunction = REFRESH_STRATEGIES[provider];
+  const refreshResult = await refreshFunction(refreshToken);
+  await supabaseAdmin.from(PROVIDERS[provider].table).update(refreshResult).eq(
+    "user_id",
+    userId,
+  );
   // Implement actual refresh logic here
-  return true; // Return true if refresh is successful, false otherwise
+  return refreshResult.access_token; // Return true if refresh is successful, false otherwise
+}
+
+async function refreshStravaToken(
+  refreshToken: string,
+): Promise<RefreshTokenResult> {
+  const strava = new StravaApi({
+    clientId: Deno.env.get("STRAVA_CLIENT_ID")!,
+    clientSecret: Deno.env.get("STRAVA_CLIENT_SECRET")!,
+  });
+  const { access_token, refresh_token, expires_at } = await strava
+    .refreshAccessToken(refreshToken);
+  return { access_token, refresh_token, expires_at };
+}
+
+async function refreshSpotifyToken(
+  refreshToken: string,
+): Promise<RefreshTokenResult> {
+  // Placeholder for refresh logic
+  return {
+    access_token: "j",
+    refresh_token: "j",
+    expires_at: Math.floor(Date.now() / 1000) + 3600,
+  };
+}
+
+type RefreshHandler = (refreshToken: string) => Promise<RefreshTokenResult>;
+const REFRESH_STRATEGIES: Record<ProviderName, RefreshHandler> = {
+  strava: refreshStravaToken,
+  spotify: refreshSpotifyToken,
+};
+
+interface RefreshTokenResult {
+  access_token: string;
+  refresh_token: string;
+  expires_at: number;
 }
