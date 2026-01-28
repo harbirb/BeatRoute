@@ -1,15 +1,16 @@
 import { assertEquals } from "@std/assert";
 import { stub } from "@std/testing/mock";
+import { PROVIDERS } from "../_shared/providers.ts";
 
 // Set up mock environment variables
 Deno.env.set("SUPABASE_URL", "https://example.supabase.co");
 Deno.env.set("SUPABASE_SERVICE_ROLE_KEY", "example-key");
-Deno.env.set("STRAVA_CLIENT_ID", "123");
-Deno.env.set("STRAVA_CLIENT_SECRET", "secret");
-Deno.env.set("STRAVA_REDIRECT_URI", "http://localhost:3000/auth/callback");
-Deno.env.set("SPOTIFY_CLIENT_ID", "spotify_123");
-Deno.env.set("SPOTIFY_CLIENT_SECRET", "spotify_secret");
-Deno.env.set("SPOTIFY_REDIRECT_URI", "http://localhost:3000/spotify/callback");
+Deno.env.set(PROVIDERS.strava.clientIdEnv, "123");
+Deno.env.set(PROVIDERS.strava.clientSecretEnv, "secret");
+Deno.env.set(PROVIDERS.strava.redirectUriEnv, "http://localhost:3000/auth/callback");
+Deno.env.set(PROVIDERS.spotify.clientIdEnv, "spotify_123");
+Deno.env.set(PROVIDERS.spotify.clientSecretEnv, "spotify_secret");
+Deno.env.set(PROVIDERS.spotify.redirectUriEnv, "http://localhost:3000/spotify/callback");
 
 // Dynamically import the module so env vars are available during top-level initialization
 const { exchangeHandler } = await import("./index.ts");
@@ -121,7 +122,7 @@ Deno.test("exchangeHandler returns 200 and stores tokens on successful Strava ex
     }
 
     // 2. Mock Strava Response
-    if (url.includes("strava.com/oauth/token")) {
+    if (url.includes(PROVIDERS.strava.tokenUrl)) {
       return Response.json({
         access_token: "mock_access",
         refresh_token: "mock_refresh",
@@ -131,7 +132,7 @@ Deno.test("exchangeHandler returns 200 and stores tokens on successful Strava ex
     }
 
     // 3. Mock DB Insert
-    if (url.includes("/rest/v1/strava_tokens")) {
+    if (url.includes(`/rest/v1/${PROVIDERS.strava.table}`)) {
       return Response.json(null, { status: 201 }); // 201 Created
     }
 
@@ -164,7 +165,7 @@ Deno.test("exchangeHandler returns 500 if Strava returns no athlete", async () =
     }
 
     // Mock Strava Response MISSING 'athlete'
-    if (url.includes("strava.com/oauth/token")) {
+    if (url.includes(PROVIDERS.strava.tokenUrl)) {
       return Response.json({
         access_token: "mock_access",
         refresh_token: "mock_refresh",
@@ -203,7 +204,7 @@ Deno.test("exchangeHandler returns 200 and stores tokens on successful Spotify e
     }
 
     // 2. Mock Spotify Token Response
-    if (url === "https://accounts.spotify.com/api/token") {
+    if (url === PROVIDERS.spotify.tokenUrl) {
       return Response.json({
         access_token: "mock_spotify_access",
         refresh_token: "mock_spotify_refresh",
@@ -212,7 +213,7 @@ Deno.test("exchangeHandler returns 200 and stores tokens on successful Spotify e
     }
 
     // 3. Mock DB Insert for spotify_tokens
-    if (url.includes("/rest/v1/spotify_tokens")) {
+    if (url.includes(`/rest/v1/${PROVIDERS.spotify.table}`)) {
       return Response.json(null, { status: 201 });
     }
 
@@ -245,7 +246,7 @@ Deno.test("exchangeHandler returns 500 if Spotify token exchange fails", async (
     }
 
     // Mock Spotify Error Response
-    if (url === "https://accounts.spotify.com/api/token") {
+    if (url === PROVIDERS.spotify.tokenUrl) {
       return Response.json({
         error: "invalid_grant",
         error_description: "Invalid authorization code",
@@ -280,7 +281,7 @@ Deno.test("exchangeHandler returns 500 if DB insert fails", async () => {
       return Response.json({ id: "test-user-id" }, { status: 200 });
     }
 
-    if (url.includes("strava.com/oauth/token")) {
+    if (url.includes(PROVIDERS.strava.tokenUrl)) {
       return Response.json({
         access_token: "mock_access",
         refresh_token: "mock_refresh",
@@ -290,7 +291,7 @@ Deno.test("exchangeHandler returns 500 if DB insert fails", async () => {
     }
 
     // Mock DB Failure
-    if (url.includes("/rest/v1/strava_tokens")) {
+    if (url.includes(`/rest/v1/${PROVIDERS.strava.table}`)) {
       return Response.json({ message: "DB Error" }, { status: 400 });
     }
 

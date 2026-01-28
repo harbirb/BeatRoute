@@ -6,12 +6,11 @@
 import "edge-runtime";
 import { createClient } from "supabase";
 import { StravaClient } from "strava-sdk";
+import { ProviderName, PROVIDERS } from "../_shared/providers.ts";
 
 console.log("Hello from Functions!");
 // Tokens should not be accessible from the client (No RLS access)
 // Must use service role key to access
-const VALID_PROVIDERS = ["strava", "spotify"] as const;
-type Provider = typeof VALID_PROVIDERS[number];
 
 const supabaseAdmin = createClient(
   Deno.env.get("SUPABASE_URL")!,
@@ -19,9 +18,9 @@ const supabaseAdmin = createClient(
 );
 
 const strava = new StravaClient({
-  clientId: Deno.env.get("STRAVA_CLIENT_ID")!,
-  clientSecret: Deno.env.get("STRAVA_CLIENT_SECRET")!,
-  redirectUri: Deno.env.get("STRAVA_REDIRECT_URI")!,
+  clientId: Deno.env.get(PROVIDERS.strava.clientIdEnv)!,
+  clientSecret: Deno.env.get(PROVIDERS.strava.clientSecretEnv)!,
+  redirectUri: Deno.env.get(PROVIDERS.strava.redirectUriEnv)!,
   storage: { get: () => null, set: () => {}, delete: () => {} },
 });
 
@@ -46,7 +45,7 @@ export const exchangeHandler = async (req: Request) => {
   }
 
   const { provider, code } = await req.json();
-  if (!VALID_PROVIDERS.includes(provider as Provider) || !code) {
+  if (!Object.keys(PROVIDERS).includes(provider) || !code) {
     console.error("Invalid provider or missing code");
     return Response.json({ msg: "Invalid provider or missing code" }, {
       status: 400,
@@ -54,7 +53,7 @@ export const exchangeHandler = async (req: Request) => {
   }
 
   try {
-    switch (provider) {
+    switch (provider as ProviderName) {
       case "strava":
         await handleStravaExchange(user.id, code);
         break;
@@ -91,7 +90,7 @@ async function handleStravaExchange(userId: string, code: string) {
 
     // store tokens
     const { error: dbError } = await supabaseAdmin
-      .from("strava_tokens")
+      .from(PROVIDERS.strava.table)
       .upsert(
         {
           user_id: userId,
@@ -119,15 +118,16 @@ async function handleStravaExchange(userId: string, code: string) {
  */
 async function handleSpotifyExchange(userId: string, code: string) {
   try {
-    const SPOTIFY_CLIENT_ID = Deno.env.get("SPOTIFY_CLIENT_ID")!;
-    const SPOTIFY_CLIENT_SECRET = Deno.env.get("SPOTIFY_CLIENT_SECRET")!;
-    const SPOTIFY_REDIRECT_URI = Deno.env.get("SPOTIFY_REDIRECT_URI")!;
+    const config = PROVIDERS.spotify;
+    const SPOTIFY_CLIENT_ID = Deno.env.get(config.clientIdEnv)!;
+    const SPOTIFY_CLIENT_SECRET = Deno.env.get(config.clientSecretEnv)!;
+    const SPOTIFY_REDIRECT_URI = Deno.env.get(config.redirectUriEnv)!;
 
     if (!SPOTIFY_CLIENT_ID || !SPOTIFY_CLIENT_SECRET || !SPOTIFY_REDIRECT_URI) {
       throw new Error("Missing Spotify environment variables");
     }
 
-    const response = await fetch("https://accounts.spotify.com/api/token", {
+    const response = await fetch(config.tokenUrl, {
       method: "POST",
       headers: {
         "Authorization": `Basic ${
@@ -154,7 +154,7 @@ async function handleSpotifyExchange(userId: string, code: string) {
     const expires_at = Math.floor(Date.now() / 1000) + expires_in;
 
     const { error: dbError } = await supabaseAdmin
-      .from("spotify_tokens")
+      .from(config.table)
       .upsert(
         {
           user_id: userId,
