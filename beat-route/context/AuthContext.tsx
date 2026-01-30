@@ -1,58 +1,90 @@
+import React, {
+  createContext,
+  useContext,
+  useState,
+  PropsWithChildren,
+  useEffect,
+} from "react";
+import { Session } from "@supabase/supabase-js";
+import { supabase } from "../lib/supabase";
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
-
-// Define the shape of our user object, similar to a Supabase user
-interface User {
-  id: string;
-  email: string;
-  user_metadata: {
-    full_name?: string;
-    avatar_url?: string;
-  };
-}
-
-// Define the shape of the authentication context
-interface AuthContextType {
-  user: User | null;
-  signIn: () => void;
-  signOut: () => void;
+// Define the shape of auth context data
+export type AuthData = {
+  session?: Session | null;
+  profile?: any | null;
   isLoading: boolean;
-}
-
-// Create the authentication context with a default undefined value
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-// A mock user object that mimics a real Supabase user
-const MOCK_USER: User = {
-  id: 'a1b2c3d4-e5f6-7890-1234-567890abcdef',
-  email: 'mock.user@example.com',
-  user_metadata: {
-    full_name: 'Beat Route User',
-    avatar_url: 'https://place-hold.it/150',
-  },
+  isLoggedIn: boolean;
 };
 
+// Create the auth context with a default undefined value
+const AuthContext = createContext<AuthData>({
+  session: undefined,
+  profile: undefined,
+  isLoading: true,
+  isLoggedIn: false,
+});
+
 // Create the AuthProvider component
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(MOCK_USER);
-  const [isLoading, setIsLoading] = useState(false);
+export const AuthProvider = ({ children }: PropsWithChildren) => {
+  const [session, setSession] = useState<Session | undefined | null>(undefined);
+  const [profile, setProfile] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  // Mock sign-in function
-  const signIn = () => {
-    setIsLoading(true);
-    setTimeout(() => {
-      setUser(MOCK_USER);
+  // Fetch session on app startup
+  useEffect(() => {
+    const fetchSession = async () => {
+      setIsLoading(true);
+      const {
+        data: { session },
+        error,
+      } = await supabase.auth.getSession();
+      if (error) {
+        console.error("Error fetching session:", error);
+      }
+      setSession(session);
       setIsLoading(false);
-    }, 1000); // Simulate network delay
-  };
+    };
 
-  // Mock sign-out function
-  const signOut = () => {
-    setUser(null);
-  };
+    fetchSession();
+
+    // Subscribe for auth state changes (ex. sign-in, sign-out)
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      console.log("Auth state changed:", { event: _event, session });
+      setSession(session);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  // Fetch profile data whenever the session changes
+  useEffect(() => {
+    const fetchProfile = async () => {
+      setIsLoading(true);
+
+      if (session) {
+        const { data } = await supabase
+          .from("profiles")
+          .select("*")
+          .eq("id", session.user.id)
+          .single();
+        setProfile(data);
+      } else {
+        setProfile(null);
+      }
+      setIsLoading(false);
+    };
+
+    fetchProfile();
+  }, [session]);
 
   return (
-    <AuthContext.Provider value={{ user, signIn, signOut, isLoading }}>
+    <AuthContext.Provider
+      value={{ session, profile, isLoading, isLoggedIn: !!session }}
+    >
       {children}
     </AuthContext.Provider>
   );
@@ -62,7 +94,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };
