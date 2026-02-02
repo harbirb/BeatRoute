@@ -39,7 +39,7 @@ function RootNavigator() {
           }}
         />
       </Stack.Protected>
-      <Stack.Screen name="+not-found" />
+      {/* <Stack.Screen name="+not-found" /> */}
     </Stack>
   );
 }
