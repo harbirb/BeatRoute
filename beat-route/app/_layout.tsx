@@ -20,13 +20,25 @@ function RootNavigator() {
   const { isLoggedIn } = useAuth();
   return (
     <Stack>
-      <Stack.Protected guard={isLoggedIn}>
+      {/* <Stack.Protected guard={isLoggedIn}>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      </Stack.Protected> */}
+      <Stack.Protected guard={true}>
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="modal"
+          options={{ presentation: "modal", headerShown: false }}
+        />
+        <Stack.Screen
+          name="activity/[id]"
+          options={{
+            presentation: "card",
+            headerShown: true,
+            headerBackButtonDisplayMode: "minimal",
+          }}
+        />
       </Stack.Protected>
-      <Stack.Protected guard={!isLoggedIn}>
-        <Stack.Screen name="login" options={{ headerShown: false }} />
-      </Stack.Protected>
-      <Stack.Screen name="+not-found" />
+      {/* <Stack.Screen name="+not-found" /> */}
     </Stack>
   );
 }
@@ -39,21 +51,7 @@ export default function RootLayout() {
       <AuthProvider>
         <DataProvider>
           <SplashScreenController />
-          <Stack>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen
-              name="modal"
-              options={{ presentation: "modal", headerShown: false }}
-            />
-            <Stack.Screen
-              name="activity/[id]"
-              options={{
-                presentation: "card",
-                headerShown: true,
-                headerBackButtonDisplayMode: "minimal",
-              }}
-            />
-          </Stack>
+          <RootNavigator />
           <StatusBar style="auto" />
         </DataProvider>
       </AuthProvider>
