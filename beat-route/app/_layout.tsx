@@ -17,14 +17,26 @@ export const unstable_settings = {
 };
 
 function RootNavigator() {
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, profile, isLoading } = useAuth();
+
+  if (isLoading) {
+    return null;
+  }
+
   return (
     <Stack>
-      {/* TODO: switch these after auth implemented */}
+      {/* Not logged in */}
       <Stack.Protected guard={!isLoggedIn}>
         <Stack.Screen name="login" options={{ headerShown: false }} />
       </Stack.Protected>
-      <Stack.Protected guard={isLoggedIn}>
+
+      {/* Logged in but no profile */}
+      <Stack.Protected guard={isLoggedIn && !profile?.name}>
+        <Stack.Screen name="profile-setup" options={{ headerShown: false }} />
+      </Stack.Protected>
+
+      {/* Logged in and has profile */}
+      <Stack.Protected guard={isLoggedIn && profile?.name}>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen
           name="modal"

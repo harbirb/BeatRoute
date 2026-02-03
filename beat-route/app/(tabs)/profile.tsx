@@ -6,7 +6,7 @@ import SignOutButton from "@/components/SignOutButton";
 import ParallaxScrollView from "@/app-example/components/parallax-scroll-view";
 
 export default function ProfileScreen() {
-  const { profile } = useAuth();
+  const { profile, session } = useAuth();
 
   return (
     <View
@@ -22,10 +22,10 @@ export default function ProfileScreen() {
         <Text style={{ fontSize: 24, fontWeight: "bold" }}>Profile</Text>
       </View>
       <View style={styles.stepContainer}>
-        <Text style={{ fontSize: 18, fontWeight: "600" }}>Username:</Text>
-        <Text>{profile?.username}</Text>
-        <Text style={{ fontSize: 18, fontWeight: "600" }}>Full name:</Text>
-        <Text>{profile?.full_name}</Text>
+        <Text style={{ fontSize: 18, fontWeight: "600" }}>Name:</Text>
+        <Text>{profile?.name}</Text>
+        <Text style={{ fontSize: 18, fontWeight: "600" }}>Email:</Text>
+        <Text>{session?.user.email}</Text>
       </View>
       <SignOutButton />
     </View>

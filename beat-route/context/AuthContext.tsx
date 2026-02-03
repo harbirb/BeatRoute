@@ -14,6 +14,7 @@ export type AuthData = {
   profile?: any | null;
   isLoading: boolean;
   isLoggedIn: boolean;
+  refetchProfile: () => Promise<void>;
 };
 
 // Create the auth context with a default undefined value
@@ -22,6 +23,7 @@ const AuthContext = createContext<AuthData>({
   profile: undefined,
   isLoading: true,
   isLoggedIn: false,
+  refetchProfile: async () => {},
 });
 
 // Create the AuthProvider component
@@ -81,9 +83,26 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     fetchProfile();
   }, [session]);
 
+  const refetchProfile = async () => {
+    if (session) {
+      const { data } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", session.user.id)
+        .single();
+      setProfile(data);
+    }
+  };
+
   return (
     <AuthContext.Provider
-      value={{ session, profile, isLoading, isLoggedIn: !!session }}
+      value={{
+        session,
+        profile,
+        isLoading,
+        isLoggedIn: !!session,
+        refetchProfile,
+      }}
     >
       {children}
     </AuthContext.Provider>
