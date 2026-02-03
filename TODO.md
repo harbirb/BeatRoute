@@ -2,7 +2,7 @@
 
 ### Backend
 
-- Instead of fetching from Strava everytime,Create edge function to accept Strava webhooks and store activity data in supabase
+- Instead of fetching from Strava everytime, create edge function to accept Strava webhooks and store activity data in supabase
 - Then fetch music history, match, and save to supabase
 - Then simply perfom return a query result. No need to worry about Strava/Spotify usage limits.
 
