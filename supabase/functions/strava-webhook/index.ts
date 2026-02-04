@@ -25,7 +25,7 @@ Deno.serve(async (req) => {
   return Response.json({ error: "Method not allowed" }, { status: 405 });
 });
 
-// Handle Strava subscription validation challenge
+// Handle Strava subscription validation challenge (ONE TIME ONLY)
 function handleSubscriptionValidation(req: Request): Response {
   const url = new URL(req.url);
   const mode = url.searchParams.get("hub.mode");
@@ -45,38 +45,31 @@ function handleSubscriptionValidation(req: Request): Response {
   return Response.json({ "hub.challenge": challenge });
 }
 
-// Handle Strava webhook events for activities
 async function handleWebhookEvent(req: Request): Promise<Response> {
-  let payload: unknown;
+  let payload: StravaWebhookPayload;
   try {
     payload = await req.json();
+    if (!isValidWebhookPayload(payload)) {
+      return Response.json({ error: "Invalid payload" }, { status: 400 });
+    }
   } catch {
     return Response.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  if (!isValidWebhookPayload(payload)) {
-    return Response.json({ error: "Invalid payload" }, { status: 400 });
-  }
-
-  // Log event for async processing
   console.log(
     `Activity ${payload.aspect_type}: id=${payload.object_id}, owner=${payload.owner_id}`,
   );
 
-  // TODO: Queue activity for processing (fetch details, match songs, store)
-
-  // Acknowledge immediately (process async)
   return Response.json({ received: true });
 }
 
 function isValidWebhookPayload(data: unknown): data is StravaWebhookPayload {
-  if (typeof data !== "object" || !data) return false;
+  if (typeof data !== "object" || data === null) return false;
   const p = data as Record<string, unknown>;
   return (
     p.object_type === "activity" &&
     typeof p.object_id === "number" &&
-    (p.aspect_type === "create" || p.aspect_type === "update" ||
-      p.aspect_type === "delete") &&
+    ["create", "update", "delete"].includes(p.aspect_type as string) &&
     typeof p.owner_id === "number"
   );
 }
