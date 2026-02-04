@@ -8,8 +8,8 @@
   - Store in activities table
 
 - Fat Function:
-  - Return 200 to Strava immediately (webhook acknowledgment)
-    ├── Trigger background task via `waitUntil()`
+  - ~~Return 200 to Strava immediately (webhook acknowledgment)~~
+    ├── ~~Trigger background task via `waitUntil()`~~
     └── Background task:
     ├── Fetch latest Strava activity
     ├── Fetch Spotify recent tracks

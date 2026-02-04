@@ -1,5 +1,7 @@
 // Setup type definitions for built-in Supabase Runtime APIs
 import "edge-runtime";
+import { createClient } from "supabase";
+import { fetchStravaActivity } from "./handlers/strava.ts";
 
 interface StravaWebhookPayload {
   object_type: "activity";
@@ -12,6 +14,11 @@ interface StravaWebhookPayload {
 }
 
 const VERIFY_TOKEN = Deno.env.get("STRAVA_VERIFY_TOKEN")!;
+
+const supabaseAdmin = createClient(
+  Deno.env.get("SUPABASE_URL")!,
+  Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+);
 
 Deno.serve(async (req) => {
   if (req.method === "GET") {
@@ -61,12 +68,7 @@ async function handleWebhookEvent(req: Request): Promise<Response> {
   );
 
   // Perform async processing here, return success response immediately
-  EdgeRuntime.waitUntil((async () => {
-    await "true";
-    // fetch strava activity details, update database
-    // fetch spotify tracklist, update db
-    // perform song matching, update db
-  })());
+  EdgeRuntime.waitUntil(processActivity(payload));
 
   return Response.json({ received: true });
 }
@@ -80,6 +82,38 @@ function isValidWebhookPayload(data: unknown): data is StravaWebhookPayload {
     ["create", "update", "delete"].includes(p.aspect_type as string) &&
     typeof p.owner_id === "number"
   );
+}
+
+async function processActivity(payload: StravaWebhookPayload) {
+  console.log("Processing activity...");
+  try {
+    const userId = await resolveUserIdFromStravaOwnerId(payload.owner_id);
+    const activity = await fetchStravaActivity(payload.object_id, userId);
+    // TODO: Insert activity details in the database
+    // TODO: Fetch from spotify (using start/end time of activity)
+    // TODO: Upsert into songs table
+    // TODO: Link activity to songs in activity_songs table
+    console.log(`Activity ${payload.object_id} processed successfully`);
+  } catch (error) {
+    console.error("Error processing activity:", error);
+  }
+}
+
+async function resolveUserIdFromStravaOwnerId(
+  ownerId: number,
+): Promise<string> {
+  console.log("Resolving user from Strava athlete", ownerId);
+  const { data, error } = await supabaseAdmin
+    .from("strava_tokens")
+    .select("user_id")
+    .eq("athlete_id", ownerId)
+    .single();
+
+  if (error || !data) {
+    throw new Error(`Failed to resolve user for athlete ${ownerId}`);
+  }
+
+  return data.user_id;
 }
 
 /* To invoke locally:
