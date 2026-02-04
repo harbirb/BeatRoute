@@ -27,15 +27,18 @@ Expected response:
 
 ## 2) Activity Event (POST)
 
+<!-- USE YOUR STRAVA ID, and ACTIVITY ID -->
+<!-- PUT A VALID TOKEN IN THE DB -->
+
 ```bash
 curl -i "http://127.0.0.1:54381/functions/v1/strava-webhook" \
   -H "Content-Type: application/json" \
   -d '{
     "aspect_type": "update",
     "event_time": 1516126040,
-    "object_id": 1360128428,
+    "object_id": 17262100597,
     "object_type": "activity",
-    "owner_id": 134815,
+    "owner_id": 28437315,
     "subscription_id": 120475,
     "updates": {
       "title": "Messy"

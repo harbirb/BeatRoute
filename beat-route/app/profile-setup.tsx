@@ -70,6 +70,7 @@ export default function ProfileSetupScreen() {
             onChangeText={setName}
             onSubmitEditing={updateProfile}
             returnKeyType="done"
+            autoCorrect={false}
             autoFocus
             editable={!loading}
           />

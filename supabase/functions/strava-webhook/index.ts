@@ -2,7 +2,6 @@
 import "edge-runtime";
 import { createClient } from "supabase";
 import { fetchStravaActivity } from "./handlers/strava.ts";
-
 interface StravaWebhookPayload {
   object_type: "activity";
   object_id: number;
@@ -68,7 +67,10 @@ async function handleWebhookEvent(req: Request): Promise<Response> {
   );
 
   // Perform async processing here, return success response immediately
-  EdgeRuntime.waitUntil(processActivity(payload));
+  // EdgeRuntime.waitUntil(processActivity(payload));
+
+  // Perform synchronous processing for testing/logging locally
+  await processActivity(payload);
 
   return Response.json({ received: true });
 }
@@ -110,6 +112,7 @@ async function resolveUserIdFromStravaOwnerId(
     .single();
 
   if (error || !data) {
+    console.error("Failed to resolve user for athlete", ownerId);
     throw new Error(`Failed to resolve user for athlete ${ownerId}`);
   }
 
