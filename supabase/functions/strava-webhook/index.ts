@@ -60,6 +60,14 @@ async function handleWebhookEvent(req: Request): Promise<Response> {
     `Activity ${payload.aspect_type}: id=${payload.object_id}, owner=${payload.owner_id}`,
   );
 
+  // Perform async processing here, return success response immediately
+  EdgeRuntime.waitUntil((async () => {
+    await "true";
+    // fetch strava activity details, update database
+    // fetch spotify tracklist, update db
+    // perform song matching, update db
+  })());
+
   return Response.json({ received: true });
 }
 
