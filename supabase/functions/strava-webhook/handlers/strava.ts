@@ -21,6 +21,8 @@ export async function fetchStravaActivity(
 
   const activity: StravaActivity = await res.json();
   console.log("Successfully fetched activity", { activityId });
-  console.log(activity);
+
+  //   TODO: Upsert activity into the database
+
   return activity;
 }

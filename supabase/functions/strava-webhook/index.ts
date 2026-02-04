@@ -62,15 +62,19 @@ async function handleWebhookEvent(req: Request): Promise<Response> {
     return Response.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  console.log(
-    `Activity ${payload.aspect_type}: id=${payload.object_id}, owner=${payload.owner_id}`,
-  );
+  if (
+    payload.aspect_type === "create" || payload.aspect_type === "update"
+  ) {
+    // Perform async processing here, return success response immediately
+    // EdgeRuntime.waitUntil(processActivity(payload));
 
-  // Perform async processing here, return success response immediately
-  // EdgeRuntime.waitUntil(processActivity(payload));
-
-  // Perform synchronous processing for testing/logging locally
-  await processActivity(payload);
+    // Perform synchronous processing for testing/logging locally
+    await processActivity(payload);
+  } else if (payload.aspect_type === "delete") {
+    // EdgeRuntime.waitUntil(deleteActivityFromDatabase(payload));
+    await deleteActivityFromDatabase(payload);
+    return Response.json({ received: true });
+  }
 
   return Response.json({ received: true });
 }
@@ -99,6 +103,10 @@ async function processActivity(payload: StravaWebhookPayload) {
   } catch (error) {
     console.error("Error processing activity:", error);
   }
+}
+
+async function deleteActivityFromDatabase(payload: StravaWebhookPayload) {
+  // TODO: Delete activity from database
 }
 
 async function resolveUserIdFromStravaOwnerId(
