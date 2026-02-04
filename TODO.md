@@ -8,10 +8,13 @@
   - Store in activities table
 
 - Fat Function:
-  - parse activity_id and stuff first
-  - trigger your background logic using EdgeRuntime.waitUntil().
-  - return 200 ok immediately
-  - have helper files for logic (strava.ts, spotify.ts, matcher.ts, index as entry point)
+  - Return 200 to Strava immediately (webhook acknowledgment)
+    ├── Trigger background task via `waitUntil()`
+    └── Background task:
+    ├── Fetch latest Strava activity
+    ├── Fetch Spotify recent tracks
+    ├── Match songs to activity
+    └── Store in database
 
 - In same fat edge function, fetch music history, match, and save to supabase
   - create songs table
