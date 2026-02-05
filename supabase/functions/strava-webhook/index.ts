@@ -1,7 +1,7 @@
 // Setup type definitions for built-in Supabase Runtime APIs
 import "edge-runtime";
-import { createClient } from "supabase";
 import { fetchStravaActivity } from "./handlers/strava.ts";
+import { supabaseAdmin } from "../_shared/supabaseAdmin.ts";
 interface StravaWebhookPayload {
   object_type: "activity";
   object_id: number;
@@ -13,11 +13,6 @@ interface StravaWebhookPayload {
 }
 
 const VERIFY_TOKEN = Deno.env.get("STRAVA_VERIFY_TOKEN")!;
-
-const supabaseAdmin = createClient(
-  Deno.env.get("SUPABASE_URL")!,
-  Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
-);
 
 Deno.serve(async (req) => {
   if (req.method === "GET") {

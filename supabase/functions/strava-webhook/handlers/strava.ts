@@ -1,5 +1,6 @@
 import { type StravaActivity } from "strava-sdk";
 import { getToken } from "../../_shared/tokens.ts";
+import { supabaseAdmin } from "../../_shared/supabaseAdmin.ts";
 
 export async function fetchStravaActivity(
   activityId: number,
@@ -22,7 +23,10 @@ export async function fetchStravaActivity(
   const activity: StravaActivity = await res.json();
   console.log("Successfully fetched activity", { activityId });
 
-  //   TODO: Upsert activity into the database
+  await upsertActivity(activity, userId);
 
   return activity;
+}
+
+async function upsertActivity(activity: StravaActivity, userId: string) {
 }
