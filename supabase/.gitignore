@@ -10,6 +10,7 @@
 
 node_modules/
 
-# Generated Strava OpenAPI artifacts
-functions/_shared/strava-openapi.json
-functions/_shared/stravaTypes.ts
+# Generated API/database types
+types/strava-openapi.json
+types/stravaTypes.ts
+types/supabaseTypes.ts

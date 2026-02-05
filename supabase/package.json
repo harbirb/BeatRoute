@@ -5,8 +5,8 @@
     "swagger2openapi": "^7.0.8"
   },
   "scripts": {
-    "update-types": "supabase gen types typescript --local > ../supabase.ts",
-    "gen-strava-openapi": "npx swagger2openapi https://developers.strava.com/swagger/swagger.json -o ./functions/_shared/strava-openapi.json",
-    "gen-strava-types": "npm run gen-strava-openapi && npx openapi-typescript ./functions/_shared/strava-openapi.json -o ./functions/_shared/stravaTypes.ts"
+    "update-types": "supabase gen types typescript --local > ./types/supabaseTypes.ts",
+    "gen-strava-openapi": "npx swagger2openapi https://developers.strava.com/swagger/swagger.json -o ./types/strava-openapi.json",
+    "gen-strava-types": "npm run gen-strava-openapi && npx openapi-typescript ./types/strava-openapi.json -o ./types/stravaTypes.ts"
   }
 }
