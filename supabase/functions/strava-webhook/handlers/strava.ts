@@ -1,7 +1,7 @@
-import { getToken } from "../../_shared/tokens.ts";
-import type { paths } from "../../../types/stravaTypes.ts";
-import { supabaseAdmin } from "../../_shared/supabaseAdmin.ts";
-import type { Database, Json } from "../../../types/supabaseTypes.ts";
+import { getToken } from "@/shared/tokens.ts";
+import type { paths } from "@/types/stravaTypes.ts";
+import { supabaseAdmin } from "@/shared/supabaseAdmin.ts";
+import type { Database, Json } from "@/types/supabaseTypes.ts";
 
 type StravaDetailedActivity =
   paths["/activities/{id}"]["get"]["responses"][200]["content"][
@@ -9,6 +9,33 @@ type StravaDetailedActivity =
   ];
 
 type ActivityInsert = Database["public"]["Tables"]["activities"]["Insert"];
+
+// Get summary polyline from activity map data
+function getSummaryPolyline(activity: StravaDetailedActivity): string | null {
+  return (
+    (activity.map as { summary_polyline?: string | null } | undefined)
+      ?.summary_polyline ?? null
+  );
+}
+
+function toActivityInsert(
+  activity: StravaDetailedActivity,
+  userId: string,
+): ActivityInsert {
+  return {
+    activity_id: activity.id ?? 0,
+    user_id: userId,
+    activity_type: activity.type ?? null,
+    athlete_id: activity.athlete?.id ?? null,
+    distance_meters: activity.distance ?? null,
+    elapsed_time_seconds: activity.elapsed_time ?? null,
+    moving_time_seconds: activity.moving_time ?? null,
+    name: activity.name ?? null,
+    start_time: activity.start_date ?? null,
+    summary_polyline: getSummaryPolyline(activity),
+    raw_data: activity as Json,
+  };
+}
 
 export async function fetchStravaActivity(
   activityId: number,
@@ -44,25 +71,7 @@ async function upsertActivity(
     throw new Error("Strava activity is missing id");
   }
 
-  const summaryPolyline =
-    typeof activity.map === "object" && activity.map !== null
-      ? (activity.map as { summary_polyline?: string | null })
-        .summary_polyline ?? null
-      : null;
-
-  const payload: ActivityInsert = {
-    activity_id: activity.id,
-    user_id: userId,
-    activity_type: activity.type ?? null,
-    athlete_id: activity.athlete?.id ?? null,
-    distance_meters: activity.distance ?? null,
-    elapsed_time_seconds: activity.elapsed_time ?? null,
-    moving_time_seconds: activity.moving_time ?? null,
-    name: activity.name ?? null,
-    start_time: activity.start_date ?? null,
-    summary_polyline: summaryPolyline,
-    raw_data: activity as Json,
-  };
+  const payload = toActivityInsert(activity, userId);
 
   const { error } = await supabaseAdmin
     .from("activities")
