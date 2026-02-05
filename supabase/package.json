@@ -1,8 +1,12 @@
 {
   "devDependencies": {
-    "supabase": "^2.72.8"
+    "openapi-typescript": "^6.7.3",
+    "supabase": "^2.72.8",
+    "swagger2openapi": "^7.0.8"
   },
   "scripts": {
-    "update-types": "supabase gen types typescript --local > ../supabase.ts"
+    "update-types": "supabase gen types typescript --local > ../supabase.ts",
+    "gen-strava-openapi": "npx swagger2openapi https://developers.strava.com/swagger/swagger.json -o ./functions/_shared/strava-openapi.json",
+    "gen-strava-types": "npm run gen-strava-openapi && npx openapi-typescript ./functions/_shared/strava-openapi.json -o ./functions/_shared/stravaTypes.ts"
   }
 }

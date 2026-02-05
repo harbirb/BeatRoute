@@ -1,11 +1,15 @@
-import { type StravaActivity } from "strava-sdk";
 import { getToken } from "../../_shared/tokens.ts";
-import { supabaseAdmin } from "../../_shared/supabaseAdmin.ts";
+import type { paths } from "../../_shared/stravaTypes.ts";
+
+type StravaDetailedActivity =
+  paths["/activities/{id}"]["get"]["responses"][200]["content"][
+    "application/json"
+  ];
 
 export async function fetchStravaActivity(
   activityId: number,
   userId: string,
-): Promise<StravaActivity> {
+): Promise<StravaDetailedActivity> {
   // TODO: Setup tokens in DB, test with
   console.log("Fetching Strava activity", { activityId, userId });
 
@@ -20,7 +24,7 @@ export async function fetchStravaActivity(
     throw new Error(`Strava API error: ${res.status}`);
   }
 
-  const activity: StravaActivity = await res.json();
+  const activity: StravaDetailedActivity = await res.json();
   console.log("Successfully fetched activity", { activityId });
 
   await upsertActivity(activity, userId);
@@ -28,5 +32,8 @@ export async function fetchStravaActivity(
   return activity;
 }
 
-async function upsertActivity(activity: StravaActivity, userId: string) {
+async function upsertActivity(
+  activity: StravaDetailedActivity,
+  userId: string,
+) {
 }

@@ -23,6 +23,12 @@
 - **Serve (Specific):** `npx supabase functions serve <name>`
 - **Deploy:** `npx supabase functions deploy <name>`
 
+### Strava Types
+
+- **How types are generated:** Strava publishes Swagger 2.0. We first convert it to OpenAPI 3.0 with `swagger2openapi`, then generate TypeScript types with `openapi-typescript` via `npm run gen-strava-types`.
+- **Why not swagger-typescript-api:** With the Strava Swagger spec, `swagger-typescript-api --no-client` produced no usable type output, so we switched to the Swagger→OpenAPI→types pipeline for reliable, types-only generation.
+- **How to use types:** Import the generated `paths` type and select the response you need, e.g. `paths["/activities/{id}"]["get"]["responses"][200]["content"]["application/json"]` for the activity shape.
+
 ### Database
 
 - **New Migration:** `npx supabase migration new <name>`
@@ -67,7 +73,8 @@ Avoid using `import "jsr:@..."` directly in `index.ts`.
 
 **Example:**
 
-*deno.json:*
+_deno.json:_
+
 ```json
 {
   "imports": {
@@ -76,7 +83,8 @@ Avoid using `import "jsr:@..."` directly in `index.ts`.
 }
 ```
 
-*index.ts:*
+_index.ts:_
+
 ```typescript
 import { createClient } from "@supabase/supabase-js";
 ```
