@@ -41,7 +41,6 @@ export async function fetchStravaActivity(
   activityId: number,
   userId: string,
 ): Promise<StravaDetailedActivity> {
-  // TODO: Setup tokens in DB, test with
   console.log("Fetching Strava activity", { activityId, userId });
 
   const accessToken = await getToken(userId, "strava");
@@ -52,7 +51,11 @@ export async function fetchStravaActivity(
   );
 
   if (!res.ok) {
-    throw new Error(`Strava API error: ${res.status}`);
+    const errorData = await res.json().catch(() => null);
+    throw new Error(
+      `Failed to fetch Strava activity: ${res.status} ${res.statusText}`,
+      { cause: errorData },
+    );
   }
 
   const activity: StravaDetailedActivity = await res.json();
@@ -68,7 +71,7 @@ async function upsertActivity(
   userId: string,
 ) {
   if (!activity.id) {
-    throw new Error("Strava activity is missing id");
+    throw new Error("Strava activity is missing id", { cause: { userId } });
   }
 
   const payload = toActivityInsert(activity, userId);
@@ -78,6 +81,8 @@ async function upsertActivity(
     .upsert(payload, { onConflict: "activity_id" });
 
   if (error) {
-    throw new Error(`Failed to upsert activity: ${error.message}`);
+    throw new Error(`Failed to upsert activity: ${error.message}`, {
+      cause: error,
+    });
   }
 }
