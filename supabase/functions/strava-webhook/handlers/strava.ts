@@ -13,7 +13,7 @@ function getSummaryPolyline(activity: StravaDetailedActivity): string | null {
   );
 }
 
-function toActivityInsert(
+function mapToActivityRecord(
   activity: StravaDetailedActivity,
   userId: string,
 ): ActivityInsert {
@@ -69,11 +69,11 @@ async function upsertActivity(
     throw new Error("Strava activity is missing id", { cause: { userId } });
   }
 
-  const payload = toActivityInsert(activity, userId);
+  const activityRecord = mapToActivityRecord(activity, userId);
 
   const { error } = await supabaseAdmin
     .from("activities")
-    .upsert(payload, { onConflict: "activity_id" });
+    .upsert(activityRecord, { onConflict: "activity_id" });
 
   if (error) {
     throw new Error(`Failed to upsert activity: ${error.message}`, {

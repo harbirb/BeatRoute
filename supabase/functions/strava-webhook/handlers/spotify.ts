@@ -1,6 +1,12 @@
 import type { StravaDetailedActivity } from "@/shared/stravaTypes.ts";
 import { PlayHistory, SpotifyApi } from "spotify-sdk";
 import { getToken } from "@/shared/tokens.ts";
+import type { Database } from "@/types/supabaseTypes.ts";
+import { supabaseAdmin } from "@/shared/supabaseAdmin.ts";
+
+type SongsInsert = Database["public"]["Tables"]["songs"]["Insert"];
+type SongsOnActivitiesInsert =
+  Database["public"]["Tables"]["activity_songs"]["Insert"];
 
 export async function fetchSongsForActivity(
   activity: StravaDetailedActivity,
@@ -9,9 +15,7 @@ export async function fetchSongsForActivity(
   const { startTimeMs, endTimeMs } = getActivityStartEndTimes(activity);
   const sdk = await createSpotifyClient(userId);
   const songs = await getSongsDuringActivity(sdk, startTimeMs, endTimeMs);
-  //   add songs to database and join table
-  await upsertSongs(songs, activity, userId);
-  //   await upsertJoinTable(songs, activity, userId);
+  await linkSongsToActivity(songs, activity);
 
   console.log("Fetching songs for activity", {
     activityId: activity.id,
@@ -19,13 +23,33 @@ export async function fetchSongsForActivity(
   });
 }
 
-async function upsertSongs(
+// Add songs to database and link to activity via join table
+async function linkSongsToActivity(
   songs: PlayHistory[],
   activity: StravaDetailedActivity,
-  userId: string,
 ) {
-  //   go through each song insert into songs if it doesnt already exist
-  // TODO: Upsert join rows into `songs_on_activities`
+  const songRecords = songs.map(mapToSongRecord);
+  await supabaseAdmin.from("songs").upsert(songRecords, { onConflict: "id" });
+
+  const joinRecords = songs.map((song): SongsOnActivitiesInsert => ({
+    activity_id: activity.id ?? 0,
+    played_at: song.played_at,
+    song_id: song.track.id,
+  }));
+  await supabaseAdmin.from("activity_songs").upsert(joinRecords, {
+    onConflict: "activity_id, song_id, played_at",
+  });
+}
+
+// Map PlayHistory to SongsInsert object
+function mapToSongRecord(song: PlayHistory): SongsInsert {
+  return {
+    id: song.track.id,
+    title: song.track.name,
+    artists: song.track.artists.map((artist) => artist.name),
+    album_art_url: song.track.album.images[0]?.url ?? null,
+    spotify_url: song.track.external_urls.spotify,
+  };
 }
 
 async function createSpotifyClient(userId: string): Promise<SpotifyApi> {
@@ -45,6 +69,7 @@ async function createSpotifyClient(userId: string): Promise<SpotifyApi> {
   );
 }
 
+// Fetch songs played during the activity
 async function getSongsDuringActivity(
   sdk: SpotifyApi,
   startTimeMs: number,
