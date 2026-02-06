@@ -15,12 +15,12 @@ export async function fetchSongsForActivity(
   const { startTimeMs, endTimeMs } = getActivityStartEndTimes(activity);
   const sdk = await createSpotifyClient(userId);
   const songs = await getSongsDuringActivity(sdk, startTimeMs, endTimeMs);
-  await linkSongsToActivity(songs, activity);
 
-  console.log("Fetching songs for activity", {
-    activityId: activity.id,
-    foundSongs: songs.length,
-  });
+  if (songs.length === 0) {
+    console.log("No songs found for activity", { activityId: activity.id });
+    return;
+  }
+  await linkSongsToActivity(songs, activity);
 }
 
 // Add songs to database and link to activity via join table
@@ -29,16 +29,28 @@ async function linkSongsToActivity(
   activity: StravaDetailedActivity,
 ) {
   const songRecords = songs.map(mapToSongRecord);
-  await supabaseAdmin.from("songs").upsert(songRecords, { onConflict: "id" });
+  const { error: songError } = await supabaseAdmin.from("songs").upsert(
+    songRecords,
+    { onConflict: "id" },
+  );
+  if (songError) {
+    console.error("Error upserting songs", songError);
+    return;
+  }
 
   const joinRecords = songs.map((song): SongsOnActivitiesInsert => ({
     activity_id: activity.id ?? 0,
     played_at: song.played_at,
     song_id: song.track.id,
   }));
-  await supabaseAdmin.from("activity_songs").upsert(joinRecords, {
-    onConflict: "activity_id, song_id, played_at",
-  });
+  const { error: joinError } = await supabaseAdmin.from("activity_songs")
+    .upsert(joinRecords, {
+      onConflict: "activity_id, song_id, played_at",
+    });
+  if (joinError) {
+    console.error("Error upserting activity_songs", joinError);
+    return;
+  }
 }
 
 // Map PlayHistory to SongsInsert object
