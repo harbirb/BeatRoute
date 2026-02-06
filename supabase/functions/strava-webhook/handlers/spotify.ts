@@ -1,5 +1,5 @@
 import type { StravaDetailedActivity } from "@/shared/stravaTypes.ts";
-import { SpotifyApi } from "spotify-sdk";
+import { PlayHistory, SpotifyApi } from "spotify-sdk";
 import { getToken } from "@/shared/tokens.ts";
 
 export async function fetchSongsForActivity(
@@ -9,13 +9,22 @@ export async function fetchSongsForActivity(
   const { startTimeMs, endTimeMs } = getActivityStartEndTimes(activity);
   const sdk = await createSpotifyClient(userId);
   const songs = await getSongsDuringActivity(sdk, startTimeMs, endTimeMs);
+  //   add songs to database and join table
+  await upsertSongs(songs, activity, userId);
+  //   await upsertJoinTable(songs, activity, userId);
 
   console.log("Fetching songs for activity", {
     activityId: activity.id,
     foundSongs: songs.length,
   });
+}
 
-  // TODO: Upsert songs into `songs` table (idempotent on Spotify ID)
+async function upsertSongs(
+  songs: PlayHistory[],
+  activity: StravaDetailedActivity,
+  userId: string,
+) {
+  //   go through each song insert into songs if it doesnt already exist
   // TODO: Upsert join rows into `songs_on_activities`
 }
 
