@@ -1,12 +1,7 @@
 import { getToken } from "@/shared/tokens.ts";
-import type { paths } from "@/types/stravaTypes.ts";
 import { supabaseAdmin } from "@/shared/supabaseAdmin.ts";
 import type { Database, Json } from "@/types/supabaseTypes.ts";
-
-type StravaDetailedActivity =
-  paths["/activities/{id}"]["get"]["responses"][200]["content"][
-    "application/json"
-  ];
+import type { StravaDetailedActivity } from "@/shared/stravaTypes.ts";
 
 type ActivityInsert = Database["public"]["Tables"]["activities"]["Insert"];
 

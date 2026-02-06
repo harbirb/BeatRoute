@@ -1,6 +1,7 @@
 // Setup type definitions for built-in Supabase Runtime APIs
 import "edge-runtime";
 import { fetchStravaActivity } from "./handlers/strava.ts";
+import { fetchSongsForActivity } from "./handlers/spotify.ts";
 import { supabaseAdmin } from "@/shared/supabaseAdmin.ts";
 interface StravaWebhookPayload {
   object_type: "activity";
@@ -90,12 +91,10 @@ async function processActivity(payload: StravaWebhookPayload) {
 
   try {
     const userId = await resolveUserIdFromStravaOwnerId(athleteId);
-    await fetchStravaActivity(activityId, userId);
-
-    // TODO: Insert activity details in the database
-    // TODO: Fetch from spotify (using start/end time of activity)
-    // TODO: Upsert into songs table
-    // TODO: Link activity to songs in activity_songs table
+    // Fetch activity details from Strava and upsert into database
+    const activity = await fetchStravaActivity(activityId, userId);
+    // Fetch songs from Spotify and upsert into database (including join table)
+    await fetchSongsForActivity(activity, userId);
 
     console.log("Successfully processed activity", { activityId });
   } catch (error) {
