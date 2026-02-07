@@ -3,6 +3,7 @@ import { useAuth } from "@/context/AuthContext";
 import { ThemedView } from "@/app-example/components/themed-view";
 import { StyleSheet, Image } from "react-native";
 import SignOutButton from "@/components/SignOutButton";
+import StravaOAuthButton from "@/components/StravaOAuthButton";
 import ParallaxScrollView from "@/app-example/components/parallax-scroll-view";
 
 export default function ProfileScreen() {
@@ -27,6 +28,7 @@ export default function ProfileScreen() {
         <Text style={{ fontSize: 18, fontWeight: "600" }}>Email:</Text>
         <Text>{session?.user.email}</Text>
       </View>
+      <StravaOAuthButton />
       <SignOutButton />
     </View>
   );
