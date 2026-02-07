@@ -2,6 +2,7 @@
   "imports": {
     "edge-runtime": "jsr:@supabase/functions-js/edge-runtime.d.ts",
     "supabase": "jsr:@supabase/supabase-js@2",
+    "strava-sdk": "https://esm.sh/strava-sdk",
     "spotify-sdk": "npm:@spotify/web-api-ts-sdk",
     "@/types/": "../../types/",
     "@/shared/": "../_shared/"

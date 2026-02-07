@@ -36,7 +36,7 @@ curl -i "http://127.0.0.1:54381/functions/v1/strava-webhook" \
   -d '{
     "aspect_type": "update",
     "event_time": 1516126040,
-    "object_id": 17262100597,
+    "object_id": 17309829452,
     "object_type": "activity",
     "owner_id": 28437315,
     "subscription_id": 120475,
