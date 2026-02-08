@@ -7,23 +7,23 @@ import { supabase } from "@/lib/supabase";
 // Complete the auth session if we're in a web browser environment
 WebBrowser.maybeCompleteAuthSession();
 
-// Strava OAuth endpoints
+// Spotify OAuth endpoints
 const discovery = {
-  authorizationEndpoint: "https://www.strava.com/oauth/mobile/authorize",
-  tokenEndpoint: "https://www.strava.com/oauth/token",
-  revocationEndpoint: "https://www.strava.com/oauth/deauthorize",
+  authorizationEndpoint: "https://accounts.spotify.com/authorize",
+  tokenEndpoint: "https://accounts.spotify.com/api/token",
 };
 
-export default function StravaOAuthButton() {
+export default function SpotifyOAuthButton() {
   const [loading, setLoading] = useState(false);
   const [request, response, promptAsync] = useAuthRequest(
     {
-      clientId: process.env.EXPO_PUBLIC_STRAVA_CLIENT_ID || "",
-      scopes: ["activity:read_all"],
-      redirectUri: process.env.EXPO_PUBLIC_STRAVA_REDIRECT_URI || "",
+      clientId: process.env.EXPO_PUBLIC_SPOTIFY_CLIENT_ID || "",
+      scopes: ["user-read-email", "user-read-private", "playlist-read-private"],
+      redirectUri: process.env.EXPO_PUBLIC_SPOTIFY_REDIRECT_URI || "",
+      usePKCE: false,
       responseType: "code",
       extraParams: {
-        approval_prompt: "force",
+        show_dialog: "true",
       },
     },
     discovery,
@@ -31,7 +31,7 @@ export default function StravaOAuthButton() {
 
   useEffect(() => {
     if (request) {
-      console.log("Strava Redirect URI:", request.redirectUri);
+      console.log("Spotify Redirect URI:", request.redirectUri);
     }
   }, [request]);
 
@@ -39,27 +39,27 @@ export default function StravaOAuthButton() {
     const handleResponse = async () => {
       if (response?.type === "success") {
         const { code } = response.params;
-        console.log("Strava Authorization Code:", code);
-
+        console.log("Spotify Authorization Code:", code);
+        
         setLoading(true);
         try {
           const { data, error } = await supabase.functions.invoke("exchange-oauth-token", {
-            body: { provider: "strava", code },
+            body: { provider: "spotify", code },
           });
 
           if (error) throw error;
 
-          Alert.alert("Success", "Strava connected successfully!");
+          Alert.alert("Success", "Spotify connected successfully!");
         } catch (error: any) {
-          console.error("Error exchanging Strava token:", error);
-          Alert.alert("Error", error.message || "Failed to exchange Strava token");
+          console.error("Error exchanging Spotify token:", error);
+          Alert.alert("Error", error.message || "Failed to exchange Spotify token");
         } finally {
           setLoading(false);
         }
       } else if (response?.type === "error") {
         Alert.alert(
           "Error",
-          response.error?.message || "Failed to authenticate with Strava",
+          response.error?.message || "Failed to authenticate with Spotify",
         );
       }
     };
@@ -68,15 +68,16 @@ export default function StravaOAuthButton() {
   }, [response]);
 
   if (loading) {
-    return <ActivityIndicator size="small" />;
+    return <ActivityIndicator size="small" color="#1DB954" />;
   }
 
   return (
     <Button
       disabled={!request || loading}
-      title="Connect Strava"
+      title="Connect Spotify"
+      color="#1DB954" // Spotify Green
       onPress={() => {
-        promptAsync();
+        promptAsync({ preferEphemeralSession: true });
       }}
     />
   );

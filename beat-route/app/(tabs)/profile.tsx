@@ -1,10 +1,8 @@
-import { Text, View, Button, ActivityIndicator } from "react-native";
+import { Text, View, StyleSheet } from "react-native";
 import { useAuth } from "@/context/AuthContext";
-import { ThemedView } from "@/app-example/components/themed-view";
-import { StyleSheet, Image } from "react-native";
 import SignOutButton from "@/components/SignOutButton";
 import StravaOAuthButton from "@/components/StravaOAuthButton";
-import ParallaxScrollView from "@/app-example/components/parallax-scroll-view";
+import SpotifyOAuthButton from "@/components/SpotifyOAuthButton";
 
 export default function ProfileScreen() {
   const { profile, session } = useAuth();
@@ -29,6 +27,7 @@ export default function ProfileScreen() {
         <Text>{session?.user.email}</Text>
       </View>
       <StravaOAuthButton />
+      <SpotifyOAuthButton />
       <SignOutButton />
     </View>
   );
