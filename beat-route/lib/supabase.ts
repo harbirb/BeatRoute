@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import { deleteItemAsync, getItemAsync, setItemAsync } from "expo-secure-store";
+import { Database } from "@/types/supabase";
 
 const ExpoSecureStoreAdapter = {
   getItem: (key: string) => {
@@ -24,7 +25,7 @@ const supabaseUrl = process.env.EXPO_PUBLIC_LOCAL_SUPABASE_URL ||
 const supabaseAnonKey = process.env.EXPO_PUBLIC_LOCAL_SUPABASE_ANON_KEY ||
   process.env.EXPO_PUBLIC_PUBLIC_SUPABASE_ANON_KEY;
 
-export const supabase = createClient(supabaseUrl!, supabaseAnonKey!, {
+export const supabase = createClient<Database>(supabaseUrl!, supabaseAnonKey!, {
   auth: {
     storage: ExpoSecureStoreAdapter as any,
     autoRefreshToken: true,

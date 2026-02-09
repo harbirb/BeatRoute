@@ -29,6 +29,7 @@
 - **Why not swagger-typescript-api:** With the Strava Swagger spec, `swagger-typescript-api --no-client` produced no usable type output, so we switched to the Swagger→OpenAPI→types pipeline for reliable, types-only generation.
 - **How to use types:** Import the generated `paths` type and select the response you need, e.g. `paths["/activities/{id}"]["get"]["responses"][200]["content"]["application/json"]` for the activity shape.
 - **Generate files:** Run `npm run gen-strava-types` (Strava) and `npm run update-types` (DB). Files are output to `types/` and are ignored in git.
+- **Sync to Frontend:** Run `npm run sync-types` to generate DB types and copy them to `beat-route/types/supabase.ts` for frontend usage.
 
 ### Database
 

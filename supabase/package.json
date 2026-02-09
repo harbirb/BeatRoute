@@ -6,6 +6,7 @@
   },
   "scripts": {
     "update-types": "supabase gen types typescript --local > ./types/supabaseTypes.ts",
+    "sync-types": "npm run update-types && mkdir -p ../beat-route/types && cp ./types/supabaseTypes.ts ../beat-route/types/supabase.ts",
     "gen-strava-openapi": "npx swagger2openapi https://developers.strava.com/swagger/swagger.json -o ./types/strava-openapi.json",
     "gen-strava-types": "npm run gen-strava-openapi && npx openapi-typescript ./types/strava-openapi.json -o ./types/stravaTypes.ts"
   }

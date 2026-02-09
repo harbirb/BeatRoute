@@ -4,9 +4,8 @@ import React, {
   useState,
   ReactNode,
   useEffect,
-  use,
 } from "react";
-import { getActivities } from "@/lib/mock-db";
+import { fetchActivities } from "@/lib/api";
 import { StickerStyle } from "@/components/Stickers";
 
 export interface Song {
@@ -24,7 +23,7 @@ interface ActivityBase {
   id: string;
   name: string;
   date: string; // ISO 8601 format
-  tracklist: Tracklist;
+  tracklist?: Tracklist;
   averageHeartRate?: number;
   elevationGainInMeters?: number;
   polyline?: string;
@@ -76,20 +75,19 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     useState<StickerStyle>(defaultStickerStyle);
 
   useEffect(() => {
-    const fetchMockActivities = async () => {
+    const loadData = async () => {
       setLoading(true);
-
-      // TODO: 1. Replace this mock call with a real Supabase API call.
-      const mockData = await getActivities();
-
-      // TODO: 2. When using a real API, need an adapter function here
-      // to map the raw API response to app's data types
-
-      setActivities(mockData);
-      setLoading(false);
+      try {
+        const data = await fetchActivities();
+        setActivities(data);
+      } catch (e) {
+        console.error("Failed to load activities", e);
+      } finally {
+        setLoading(false);
+      }
     };
 
-    fetchMockActivities();
+    loadData();
   }, []);
 
   const value = { activities, loading, stickerStyle, setStickerStyle };
