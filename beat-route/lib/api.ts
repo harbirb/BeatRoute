@@ -1,14 +1,28 @@
 import { supabase } from "./supabase";
-import { Activity, ActivitySong } from "@/context/DataContext";
+import { Activity, ActivitySong, ActivityType } from "@/context/DataContext";
 import { Database } from "@/types/supabase";
 
-// Helper to format pace (min/km)
-function formatPace(seconds: number, meters: number): string {
-  if (!meters || meters === 0) return "0'00/km";
+function getPace(
+  type: ActivityType,
+  seconds: number,
+  meters: number,
+): string | undefined {
+  if (type !== "run") return undefined;
+  if (!meters || meters <= 0 || !seconds || seconds <= 0) return "0'00\"/km";
   const minutesPerKm = (seconds / 60) / (meters / 1000);
   const min = Math.floor(minutesPerKm);
   const sec = Math.round((minutesPerKm - min) * 60);
   return `${min}'${sec.toString().padStart(2, "0")}"/km`;
+}
+
+function getAverageSpeedKph(
+  type: ActivityType,
+  seconds: number,
+  meters: number,
+): number | undefined {
+  if (type !== "ride") return undefined;
+  if (!meters || meters <= 0 || !seconds || seconds <= 0) return 0;
+  return (meters / 1000) / (seconds / 3600);
 }
 
 export async function fetchActivities(): Promise<Activity[]> {
@@ -27,40 +41,43 @@ export async function fetchActivities(): Promise<Activity[]> {
     data as Database["public"]["Tables"]["activities"]["Row"][];
 
   return activitiesData.map((row) => {
-    const type =
-      (row.activity_type?.toLowerCase() === "ride" ? "ride" : "run") as
-        | "run"
-        | "ride";
-
-    // TODO: Add elevation gain and average heart rate or remove from this data type
-
-    const base = {
-      id: row.activity_id.toString(),
-      name: row.name || "Untitled Activity",
-      date: row.start_time || new Date().toISOString(),
-      distanceInMeters: Number(row.distance_meters || 0),
-      durationInSeconds: row.moving_time_seconds || 0,
-      elevationGainInMeters: 0, // Placeholder until column exists
-      averageHeartRate: 0, // Placeholder until column exists
-      polyline: row.summary_polyline || undefined,
-      tracklist: undefined, // Lists don't load songs by default
-    };
-
-    if (type === "run") {
-      return {
-        ...base,
-        type: "run",
-        pace: formatPace(base.durationInSeconds, base.distanceInMeters),
-      };
-    } else {
-      return {
-        ...base,
-        type: "ride",
-        averageSpeedKph: base.durationInSeconds > 0
-          ? (base.distanceInMeters / 1000) / (base.durationInSeconds / 3600)
-          : 0,
-      };
+    let type: ActivityType = "other";
+    if (row.activity_type) {
+      const lowerType = row.activity_type.toLowerCase();
+      if (
+        [
+          "run",
+          "ride",
+          "hike",
+          "walk",
+          "other",
+        ].includes(lowerType)
+      ) {
+        type = lowerType as ActivityType;
+      }
     }
+
+    const durationInSeconds = row.moving_time_seconds || 0;
+    const distanceInMeters = row.distance_meters || 0;
+
+    return {
+      id: row.activity_id.toString(),
+      type,
+      name: row.name || "Untitled " + type,
+      date: row.start_time || new Date().toISOString(),
+      durationInSeconds,
+      distanceInMeters,
+      elevationGainInMeters: 0, // Placeholder
+      averageHeartRate: 0, // Placeholder
+      // Calculated fields
+      pace: getPace(type, durationInSeconds, distanceInMeters),
+      averageSpeedKph: getAverageSpeedKph(
+        type,
+        durationInSeconds,
+        distanceInMeters,
+      ),
+      polyline: row.summary_polyline || undefined,
+    };
   });
 }
 
@@ -88,7 +105,6 @@ export async function fetchActivitySongs(
     throw error;
   }
 
-  // Map nested join data
   return data.map((item) => {
     const song = item.songs;
 
