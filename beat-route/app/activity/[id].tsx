@@ -8,7 +8,7 @@ import {
   Button,
   Alert,
 } from "react-native";
-import { Activity, RunActivity, useData } from "@/context/DataContext";
+import { Activity, useData } from "@/context/DataContext";
 import * as Clipboard from "expo-clipboard";
 import { RunDetailCard } from "@/components/RunDetailCard";
 import { TrackList } from "@/components/TrackList";
@@ -17,9 +17,10 @@ import Carousel from "@/components/Carousel";
 import Stickers from "@/components/Stickers";
 
 export default function ActivityDetailScreen() {
-  const { activities, loading, stickerStyle } = useData();
-  const { id } = useLocalSearchParams();
+  const { activities, loading } = useData();
+  const { id } = useLocalSearchParams<{ id: string }>();
   const activity = activities.find((act: Activity) => act.id === id);
+  const activitySongs = [];
 
   if (loading) {
     return <ActivityIndicator style={styles.centered} />;
@@ -33,32 +34,30 @@ export default function ActivityDetailScreen() {
     );
   }
 
-  const handleCopy = async () => {
-    try {
-      const trackListText = activity.tracklist
-        .map((song) => `${song.title} - ${song.artists.join(", ")}`)
-        .join("\n");
-      await Clipboard.setStringAsync(trackListText);
-      Alert.alert("Copied playlist to clipboard");
-    } catch (error) {
-      Alert.alert("Error");
-    }
-  };
+  // const handleCopy = async () => {
+  //   try {
+  //     const trackListText = activitySongs
+  //       .map((song) => `${song.title} - ${song.artists.join(", ")}`)
+  //       .join("\n");
+  //     await Clipboard.setStringAsync(trackListText);
+  //     Alert.alert("Copied playlist to clipboard");
+  //   } catch (error) {
+  //     Alert.alert("Error");
+  //   }
+  // };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Stack.Screen options={{ title: activity.name }} />
-      {activity.type === "run" && (
-        <RunDetailCard item={activity as RunActivity} />
-      )}
+      {activity.type === "run" && <RunDetailCard item={activity} />}
       {/* Future: Add RideDetailCard when RideActivity is implemented */}
       {/* Playlist section */}
       <View>
         <View style={styles.playlistHeaderContainer}>
           <Text style={styles.playlistHeader}>Playlist</Text>
-          <Button title="Copy" onPress={handleCopy}></Button>
+          {/* <Button title="Copy" onPress={handleCopy}></Button> */}
         </View>
-        <TrackList tracks={activity.tracklist} />
+        {/* <TrackList tracks={activity.tracklist} /> */}
       </View>
       {/* Sticker section */}
       <View>
@@ -71,7 +70,7 @@ export default function ActivityDetailScreen() {
             <Button title="Edit"></Button>
           </Link>
         </View>
-        <Carousel data={Stickers(activity, stickerStyle)} />
+        <Carousel data={Stickers(activity)} />
       </View>
     </ScrollView>
   );
