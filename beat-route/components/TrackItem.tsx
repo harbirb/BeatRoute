@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
     marginRight: SPACING.small,
   },
   trackInfo: {
-    gap: SPACING.xsmall,
+    gap: 2,
     justifyContent: "center",
   },
   trackTitle: {

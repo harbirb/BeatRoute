@@ -1,4 +1,7 @@
+import { useEffect, useState } from "react";
 import { useLocalSearchParams, Stack, Link } from "expo-router";
+import { ActivitySong } from "@/context/DataContext";
+import { fetchActivitySongs } from "@/lib/api";
 import {
   View,
   Text,
@@ -20,9 +23,31 @@ export default function ActivityDetailScreen() {
   const { activities, loading } = useData();
   const { id } = useLocalSearchParams<{ id: string }>();
   const activity = activities.find((act: Activity) => act.id === id);
-  const activitySongs = [];
+  const [activitySongData, setActivitySongData] = useState<ActivitySong[]>([]);
+  const [songsLoading, setSongsLoading] = useState(true);
 
-  if (loading) {
+  // load songs on mount
+  useEffect(() => {
+    if (!id) {
+      return;
+    }
+    const loadSongs = async () => {
+      setSongsLoading(true);
+      try {
+        const songs = await fetchActivitySongs(id);
+        setActivitySongData(songs);
+      } catch (e) {
+        console.error("Failed to load activity songs", e);
+        setActivitySongData([]);
+      } finally {
+        setSongsLoading(false);
+      }
+    };
+
+    loadSongs();
+  }, [id]);
+
+  if (loading || songsLoading) {
     return <ActivityIndicator style={styles.centered} />;
   }
 
@@ -52,13 +77,15 @@ export default function ActivityDetailScreen() {
       {activity.type === "run" && <RunDetailCard item={activity} />}
       {/* Future: Add RideDetailCard when RideActivity is implemented */}
       {/* Playlist section */}
-      <View>
-        <View style={styles.playlistHeaderContainer}>
-          <Text style={styles.playlistHeader}>Playlist</Text>
-          {/* <Button title="Copy" onPress={handleCopy}></Button> */}
+      {activitySongData.length > 0 && (
+        <View>
+          <View style={styles.playlistHeaderContainer}>
+            <Text style={styles.playlistHeader}>Playlist</Text>
+            {/* <Button title="Copy" onPress={handleCopy}></Button> */}
+          </View>
+          <TrackList tracks={activitySongData} />
         </View>
-        {/* <TrackList tracks={activity.tracklist} /> */}
-      </View>
+      )}
       {/* Sticker section */}
       <View>
         <View style={styles.playlistHeaderContainer}>
