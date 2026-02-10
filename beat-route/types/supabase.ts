@@ -138,27 +138,27 @@ export type Database = {
       }
       songs: {
         Row: {
-          album_art_url: string | null
+          album_art_url: string
           artists: string[]
           created_at: string
           id: string
-          spotify_url: string | null
+          spotify_url: string
           title: string
         }
         Insert: {
-          album_art_url?: string | null
+          album_art_url: string
           artists: string[]
           created_at?: string
           id: string
-          spotify_url?: string | null
+          spotify_url: string
           title: string
         }
         Update: {
-          album_art_url?: string | null
+          album_art_url?: string
           artists?: string[]
           created_at?: string
           id?: string
-          spotify_url?: string | null
+          spotify_url?: string
           title?: string
         }
         Relationships: []

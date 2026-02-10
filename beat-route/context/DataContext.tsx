@@ -8,15 +8,15 @@ import React, {
 import { fetchActivities } from "@/lib/api";
 import { StickerStyle } from "@/components/Stickers";
 
-export interface Song {
+export interface ActivitySong {
   id: string;
   title: string;
   artists: string[];
-  url: string;
-  imageUrl: string;
+  spotifyUrl: string;
+  albumArtUrl: string;
 }
 
-export type Tracklist = Song[];
+export type Tracklist = ActivitySong[];
 
 // Base interface with common fields for all activities
 interface ActivityBase {

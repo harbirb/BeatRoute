@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet, Pressable, Linking } from "react-native";
 import { Image } from "expo-image";
-import { Song } from "@/context/DataContext";
+import { ActivitySong } from "@/context/DataContext";
 import {
   Colors,
   FONT_SIZE,
@@ -9,10 +9,10 @@ import {
   SPACING,
 } from "@/constants/theme";
 
-export const TrackItem = ({ song }: { song: Song }) => (
-  <Pressable onPress={() => Linking.openURL(song.url)}>
+export const TrackItem = ({ song }: { song: ActivitySong }) => (
+  <Pressable onPress={() => Linking.openURL(song.spotifyUrl)}>
     <View style={styles.trackContainer}>
-      <Image source={song.imageUrl} style={styles.trackImage} />
+      <Image source={song.albumArtUrl} style={styles.trackImage} />
       <View style={styles.trackInfo}>
         <Text style={styles.trackTitle}>{song.title}</Text>
         <Text style={styles.trackArtist}>{song.artists.join(", ")}</Text>

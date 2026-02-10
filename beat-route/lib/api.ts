@@ -1,5 +1,5 @@
 import { supabase } from "./supabase";
-import { Activity, Song } from "@/context/DataContext";
+import { Activity, ActivitySong } from "@/context/DataContext";
 import { Database } from "@/types/supabase";
 
 // Helper to format pace (min/km)
@@ -64,7 +64,9 @@ export async function fetchActivities(): Promise<Activity[]> {
   });
 }
 
-export async function fetchActivitySongs(activityId: string): Promise<Song[]> {
+export async function fetchActivitySongs(
+  activityId: string,
+): Promise<ActivitySong[]> {
   const { data, error } = await supabase
     .from("activity_songs")
     .select(`
@@ -78,7 +80,7 @@ export async function fetchActivitySongs(activityId: string): Promise<Song[]> {
         spotify_url
       )
     `)
-    .eq("activity_id", activityId)
+    .eq("activity_id", Number(activityId))
     .order("played_at", { ascending: true });
 
   if (error) {
@@ -88,16 +90,14 @@ export async function fetchActivitySongs(activityId: string): Promise<Song[]> {
 
   // Map nested join data
   return data.map((item) => {
-    // 'songs' is an object because of the join, but TypeScript might see it as array/object depending on generation.
-    // We cast to any to safely access the joined relation which Supabase returns as a single object here.
-    const song = item.songs as any;
+    const song = item.songs;
 
     return {
       id: song.id,
       title: song.title,
-      artists: song.artists || [],
-      url: song.spotify_url || "",
-      imageUrl: song.album_art_url || "",
+      artists: song.artists,
+      spotifyUrl: song.spotify_url,
+      albumArtUrl: song.album_art_url,
     };
   });
 }
