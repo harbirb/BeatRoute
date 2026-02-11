@@ -1,10 +1,11 @@
-import { router } from "expo-router";
+import { Link, router } from "expo-router";
 import {
   View,
   Text,
   FlatList,
   StyleSheet,
   ActivityIndicator,
+  Button,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useData } from "@/context/DataContext";
@@ -22,6 +23,7 @@ export default function HomeScreen() {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Activities</Text>
+        <Button title="Profile" onPress={() => router.push("/profile")} />
       </View>
       <FlatList
         data={activities}
@@ -45,8 +47,9 @@ const styles = StyleSheet.create({
   header: {
     paddingBottom: SPACING.small,
     paddingHorizontal: SPACING.medium,
-    fontSize: FONT_SIZE.xlarge,
-    fontWeight: FONT_WEIGHT.bold,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   title: {
     fontSize: FONT_SIZE.xlarge,

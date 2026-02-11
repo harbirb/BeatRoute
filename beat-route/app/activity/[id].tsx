@@ -91,7 +91,7 @@ export default function ActivityDetailScreen() {
         <View style={styles.playlistHeaderContainer}>
           <Text style={styles.playlistHeader}>Stickers</Text>
           <Link
-            href={{ pathname: "/modal", params: { id: activity.id } }}
+            href={{ pathname: "/stickers-modal", params: { id: activity.id } }}
             asChild
           >
             <Button title="Edit"></Button>

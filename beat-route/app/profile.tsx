@@ -17,9 +17,6 @@ export default function ProfileScreen() {
         justifyContent: "center",
       }}
     >
-      <View style={styles.titleContainer}>
-        <Text style={{ fontSize: 24, fontWeight: "bold" }}>Profile</Text>
-      </View>
       <View style={styles.stepContainer}>
         <Text style={{ fontSize: 18, fontWeight: "600" }}>Name:</Text>
         <Text>{profile?.name}</Text>

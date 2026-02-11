@@ -13,7 +13,7 @@ import { DataProvider } from "@/context/DataContext";
 import { SplashScreenController } from "@/components/SplashScreenController";
 
 export const unstable_settings = {
-  anchor: "(tabs)",
+  anchor: "index",
 };
 
 function RootNavigator() {
@@ -37,10 +37,22 @@ function RootNavigator() {
 
       {/* Logged in and has profile */}
       <Stack.Protected guard={isLoggedIn && profile?.name}>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen
-          name="modal"
-          options={{ presentation: "modal", headerShown: false }}
+          name="profile"
+          options={{
+            presentation: "card",
+            headerShown: true,
+            title: "Profile",
+            headerBackButtonDisplayMode: "minimal",
+          }}
+        />
+        <Stack.Screen
+          name="stickers-modal"
+          options={{
+            presentation: "modal",
+            headerShown: false,
+          }}
         />
         <Stack.Screen
           name="activity/[id]"
