@@ -1,8 +1,6 @@
 import { Activity } from "@/context/DataContext";
-import DistancePaceSticker from "./DistancePaceSticker";
 import Polyline from "./Polyline";
 import { View } from "react-native";
-import { Text } from "react-native";
 import { StyleSheet } from "react-native";
 import { FONT_SIZE, FONT_WEIGHT, SPACING, Colors } from "@/constants/theme";
 import PropertyValuePair from "./PropertyValuePair";
@@ -23,12 +21,12 @@ const defaultStyle: StickerStyle = {
 
 export default function Stickers(
   activity: Activity,
-  inputStyle?: StickerStyle
+  inputStyle?: StickerStyle,
 ): any[] {
   const style = inputStyle ?? defaultStyle;
 
   return [
-    <View style={{ flexDirection: "row", gap: 30 }}>
+    <View key="stats-row-1" style={{ flexDirection: "row", gap: 30 }}>
       <PropertyValuePair
         label="Distance"
         value={(activity.distanceInMeters / 1000).toFixed(2)}
@@ -38,9 +36,9 @@ export default function Stickers(
       <PropertyValuePair label="Avg HR" value={"143 bpm"} style={style} />
     </View>,
     // Polyline sticker
-    <Polyline encodedPolyline={activity.polyline || ""} style={style} />,
+    <Polyline key="polyline-sticker" encodedPolyline={activity.polyline || ""} style={style} />,
     // Combined sticker
-    <View style={{ alignItems: "center", justifyContent: "center" }}>
+    <View key="combined-sticker" style={{ alignItems: "center", justifyContent: "center" }}>
       <Polyline encodedPolyline={activity.polyline || ""} style={style} />
       <View style={{ flexDirection: "row", gap: 30 }}>
         <PropertyValuePair
@@ -52,7 +50,7 @@ export default function Stickers(
         <PropertyValuePair label="Time" value={"25:00"} style={style} />
       </View>
     </View>,
-    <View style={{ flexDirection: "row", gap: 30 }}>
+    <View key="stats-row-2" style={{ flexDirection: "row", gap: 30 }}>
       <PropertyValuePair
         label="Distance"
         value={(activity.distanceInMeters / 1000).toFixed(2)}
