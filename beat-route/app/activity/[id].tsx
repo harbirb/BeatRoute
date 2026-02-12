@@ -59,17 +59,17 @@ export default function ActivityDetailScreen() {
     );
   }
 
-  // const handleCopy = async () => {
-  //   try {
-  //     const trackListText = activitySongs
-  //       .map((song) => `${song.title} - ${song.artists.join(", ")}`)
-  //       .join("\n");
-  //     await Clipboard.setStringAsync(trackListText);
-  //     Alert.alert("Copied playlist to clipboard");
-  //   } catch (error) {
-  //     Alert.alert("Error");
-  //   }
-  // };
+  const handleCopy = async () => {
+    try {
+      const trackListText = activitySongData
+        .map((song) => `${song.title} - ${song.artists.join(", ")}`)
+        .join("\n");
+      await Clipboard.setStringAsync(trackListText);
+      Alert.alert("Copied playlist to clipboard");
+    } catch (error) {
+      Alert.alert("Error");
+    }
+  };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -80,7 +80,7 @@ export default function ActivityDetailScreen() {
         <View>
           <View style={styles.playlistHeaderContainer}>
             <Text style={styles.playlistHeader}>Playlist</Text>
-            {/* <Button title="Copy" onPress={handleCopy}></Button> */}
+            <Button title="Copy" onPress={handleCopy}></Button>
           </View>
           <TrackList tracks={activitySongData} />
         </View>
