@@ -18,6 +18,7 @@ import { TrackList } from "@/components/TrackList";
 import { FONT_SIZE, FONT_WEIGHT, SPACING } from "@/constants/theme";
 import Carousel from "@/components/Carousel";
 import Stickers from "@/components/Stickers";
+import { useHeaderHeight } from "@react-navigation/elements";
 
 export default function ActivityDetailScreen() {
   const { activities, loading } = useData();
@@ -25,6 +26,7 @@ export default function ActivityDetailScreen() {
   const activity = activities.find((act: Activity) => act.id === id);
   const [activitySongData, setActivitySongData] = useState<ActivitySong[]>([]);
   const [songsLoading, setSongsLoading] = useState(true);
+  const headerHeight = useHeaderHeight();
 
   // load songs on mount
   useEffect(() => {
@@ -72,8 +74,12 @@ export default function ActivityDetailScreen() {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Stack.Screen options={{ title: activity.name }} />
+    <ScrollView
+      contentContainerStyle={[styles.container, { paddingTop: headerHeight }]}
+    >
+      <Stack.Screen
+        options={{ title: activity.name, headerTransparent: true }}
+      />
       <DetailCard item={activity} />
       {/* Playlist section */}
       {activitySongData.length > 0 && (
