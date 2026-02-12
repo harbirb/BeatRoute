@@ -7,7 +7,7 @@ function getPace(
   seconds: number,
   meters: number,
 ): string | undefined {
-  if (type !== "run") return undefined;
+  if (!["run", "walk", "hike"].includes(type)) return undefined;
   if (!meters || meters <= 0 || !seconds || seconds <= 0) return "0'00\"/km";
   const minutesPerKm = (seconds / 60) / (meters / 1000);
   const min = Math.floor(minutesPerKm);
@@ -22,7 +22,7 @@ function getAverageSpeedKph(
 ): number | undefined {
   if (type !== "ride") return undefined;
   if (!meters || meters <= 0 || !seconds || seconds <= 0) return 0;
-  return (meters / 1000) / (seconds / 3600);
+  return Number(((meters / 1000) / (seconds / 3600)).toFixed(1));
 }
 
 export async function fetchActivities(): Promise<Activity[]> {
@@ -37,26 +37,10 @@ export async function fetchActivities(): Promise<Activity[]> {
     throw error;
   }
 
-  const activitiesData =
-    data as Database["public"]["Tables"]["activities"]["Row"][];
+  const activitiesData = data;
 
   return activitiesData.map((row) => {
-    let type: ActivityType = "other";
-    if (row.activity_type) {
-      const lowerType = row.activity_type.toLowerCase();
-      if (
-        [
-          "run",
-          "ride",
-          "hike",
-          "walk",
-          "other",
-        ].includes(lowerType)
-      ) {
-        type = lowerType as ActivityType;
-      }
-    }
-
+    const type: ActivityType = getActivityType(row.activity_type);
     const durationInSeconds = row.moving_time_seconds || 0;
     const distanceInMeters = row.distance_meters || 0;
 
@@ -79,6 +63,25 @@ export async function fetchActivities(): Promise<Activity[]> {
       polyline: row.summary_polyline || undefined,
     };
   });
+}
+
+function getActivityType(activityType: string | null) {
+  let type: ActivityType = "other";
+  if (activityType) {
+    const lowerType = activityType.toLowerCase();
+    if (
+      [
+        "run",
+        "ride",
+        "hike",
+        "walk",
+        "other",
+      ].includes(lowerType)
+    ) {
+      type = lowerType as ActivityType;
+    }
+  }
+  return type;
 }
 
 export async function fetchActivitySongs(

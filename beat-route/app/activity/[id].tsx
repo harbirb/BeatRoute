@@ -13,7 +13,7 @@ import {
 } from "react-native";
 import { Activity, useData } from "@/context/DataContext";
 import * as Clipboard from "expo-clipboard";
-import { RunDetailCard } from "@/components/RunDetailCard";
+import { DetailCard } from "@/components/DetailCard";
 import { TrackList } from "@/components/TrackList";
 import { FONT_SIZE, FONT_WEIGHT, SPACING } from "@/constants/theme";
 import Carousel from "@/components/Carousel";
@@ -74,8 +74,7 @@ export default function ActivityDetailScreen() {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Stack.Screen options={{ title: activity.name }} />
-      {activity.type === "run" && <RunDetailCard item={activity} />}
-      {/* Future: Add RideDetailCard when RideActivity is implemented */}
+      <DetailCard item={activity} />
       {/* Playlist section */}
       {activitySongData.length > 0 && (
         <View>
