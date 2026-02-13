@@ -1,17 +1,18 @@
 import "edge-runtime";
 import { ProviderName, PROVIDERS } from "./providers.ts";
-import { StravaApi } from "strava-sdk";
+import { StravaApi, StravaClient } from "strava-sdk";
 import { supabaseAdmin } from "./supabaseAdmin.ts";
 
-interface RefreshTokenResult {
+interface TokenResult {
   access_token: string;
   refresh_token: string;
   expires_at: number;
+  athlete_id?: number;
 }
 
-type RefreshHandler = (refreshToken: string) => Promise<RefreshTokenResult>;
+type TokenHandler = (token: string) => Promise<TokenResult>;
 
-const REFRESH_STRATEGIES: Record<ProviderName, RefreshHandler> = {
+const REFRESH_STRATEGIES: Record<ProviderName, TokenHandler> = {
   strava: refreshStravaToken,
   spotify: refreshSpotifyToken,
 };
@@ -71,10 +72,10 @@ async function refreshAndUpdateTokens(
 
 async function refreshStravaToken(
   refreshToken: string,
-): Promise<RefreshTokenResult> {
+): Promise<TokenResult> {
   const strava = new StravaApi({
-    clientId: Deno.env.get("STRAVA_CLIENT_ID")!,
-    clientSecret: Deno.env.get("STRAVA_CLIENT_SECRET")!,
+    clientId: Deno.env.get(PROVIDERS.strava.clientIdEnv)!,
+    clientSecret: Deno.env.get(PROVIDERS.strava.clientSecretEnv)!,
   });
   const { access_token, refresh_token, expires_at } = await strava
     .refreshAccessToken(refreshToken);
@@ -83,12 +84,12 @@ async function refreshStravaToken(
 
 async function refreshSpotifyToken(
   refreshToken: string,
-): Promise<RefreshTokenResult> {
-  const clientId = Deno.env.get("SPOTIFY_CLIENT_ID")!;
-  const clientSecret = Deno.env.get("SPOTIFY_CLIENT_SECRET")!;
-  const tokenUrl = "https://accounts.spotify.com/api/token";
+): Promise<TokenResult> {
+  const config = PROVIDERS.spotify;
+  const clientId = Deno.env.get(config.clientIdEnv)!;
+  const clientSecret = Deno.env.get(config.clientSecretEnv)!;
 
-  const response = await fetch(tokenUrl, {
+  const response = await fetch(config.tokenUrl, {
     method: "POST",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
@@ -111,4 +112,55 @@ async function refreshSpotifyToken(
     refresh_token: data.refresh_token || refreshToken,
     expires_at: Math.floor(Date.now() / 1000) + data.expires_in,
   };
+}
+
+export async function exchangeStravaToken(code: string): Promise<TokenResult> {
+  const strava = new StravaClient({
+    clientId: Deno.env.get(PROVIDERS.strava.clientIdEnv)!,
+    clientSecret: Deno.env.get(PROVIDERS.strava.clientSecretEnv)!,
+    redirectUri: Deno.env.get(PROVIDERS.strava.redirectUriEnv)!,
+    storage: { get: () => null, set: () => {}, delete: () => {} },
+  });
+
+  const tokens = await strava.oauth.exchangeCode(code);
+  const { access_token, refresh_token, expires_at, athlete } = tokens;
+
+  if (!athlete) {
+    throw new Error("No athlete data returned from Strava");
+  }
+
+  return { access_token, refresh_token, expires_at, athlete_id: athlete.id };
+}
+
+export async function exchangeSpotifyToken(code: string): Promise<TokenResult> {
+  const config = PROVIDERS.spotify;
+  const clientId = Deno.env.get(config.clientIdEnv)!;
+  const clientSecret = Deno.env.get(config.clientSecretEnv)!;
+  const redirectUri = Deno.env.get(config.redirectUriEnv)!;
+
+  const response = await fetch(config.tokenUrl, {
+    method: "POST",
+    headers: {
+      "Authorization": `Basic ${btoa(`${clientId}:${clientSecret}`)}`,
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: new URLSearchParams({
+      grant_type: "authorization_code",
+      code,
+      redirect_uri: redirectUri,
+    }),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(
+      `Spotify token exchange failed: ${response.status} ${errorText}`,
+    );
+  }
+
+  const data = await response.json();
+  const { access_token, refresh_token, expires_in } = data;
+  const expires_at = Math.floor(Date.now() / 1000) + expires_in;
+
+  return { access_token, refresh_token, expires_at };
 }

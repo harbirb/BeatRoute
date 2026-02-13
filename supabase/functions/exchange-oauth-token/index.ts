@@ -4,32 +4,11 @@
 
 // Setup type definitions for built-in Supabase Runtime APIs
 import "edge-runtime";
-import { createClient } from "supabase";
-import { StravaClient } from "strava-sdk";
-import { ProviderName, PROVIDERS } from "../_shared/providers.ts";
-
-console.log("Hello from Functions!");
-// Tokens should not be accessible from the client (No RLS access)
-// Must use service role key to access
-
-const supabaseAdmin = createClient(
-  Deno.env.get("SUPABASE_URL")!,
-  Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
-);
-
-const strava = new StravaClient({
-  clientId: Deno.env.get(PROVIDERS.strava.clientIdEnv)!,
-  clientSecret: Deno.env.get(PROVIDERS.strava.clientSecretEnv)!,
-  redirectUri: Deno.env.get(PROVIDERS.strava.redirectUriEnv)!,
-  storage: { get: () => null, set: () => {}, delete: () => {} },
-});
+import { ProviderName, PROVIDERS } from "@/shared/providers.ts";
+import { supabaseAdmin } from "@/shared/supabaseAdmin.ts";
+import { exchangeSpotifyToken, exchangeStravaToken } from "@/shared/tokens.ts";
 
 export const exchangeHandler = async (req: Request) => {
-  // Log request headers for debugging
-  // const headersObject = Object.fromEntries(req.headers);
-  // const headersJson = JSON.stringify(headersObject, null, 2);
-  // console.log(`Request headers:\n${headersJson}`);
-
   const authHeader = req.headers.get("Authorization");
   if (!authHeader) {
     console.error("Missing Authorization header");
@@ -53,16 +32,35 @@ export const exchangeHandler = async (req: Request) => {
   }
 
   try {
+    const userId = user.id;
+    let tokens;
+
     switch (provider as ProviderName) {
       case "strava":
-        await handleStravaExchange(user.id, code);
+        tokens = await exchangeStravaToken(code);
         break;
       case "spotify":
-        await handleSpotifyExchange(user.id, code);
+        tokens = await exchangeSpotifyToken(code);
         break;
       default:
         return Response.json({ msg: "Unsupported provider" }, { status: 400 });
     }
+
+    const { error: dbError } = await supabaseAdmin
+      .from(PROVIDERS[provider as ProviderName].table)
+      .upsert(
+        {
+          user_id: userId,
+          ...tokens,
+        },
+        { onConflict: "user_id" },
+      );
+
+    if (dbError) {
+      throw new Error(`Database insert failed: ${dbError.message}`);
+    }
+
+    console.log(`Stored ${provider} tokens in database for user`, userId);
 
     return Response.json({ msg: "OAuth token exchanged successfully" }, {
       status: 200,
@@ -75,119 +73,6 @@ export const exchangeHandler = async (req: Request) => {
   }
 };
 
-/**
- * Strava-specific exchange logic
- */
-async function handleStravaExchange(userId: string, code: string) {
-  try {
-    const tokens = await strava.oauth.exchangeCode(code);
-    console.log("Exchanged Strava code for tokens", tokens);
-    const { access_token, refresh_token, expires_at, athlete } = tokens;
-
-    if (!athlete) {
-      throw new Error("No athlete data returned from Strava");
-    }
-
-    // store tokens
-    const { error: dbError } = await supabaseAdmin
-      .from(PROVIDERS.strava.table)
-      .upsert(
-        {
-          user_id: userId,
-          athlete_id: athlete.id,
-          access_token,
-          refresh_token,
-          expires_at,
-        },
-        { onConflict: "user_id" },
-      );
-
-    if (dbError) {
-      throw new Error(`Database insert failed: ${dbError.message}`);
-    }
-
-    console.log("Stored Strava tokens in database for user", userId);
-  } catch (err) {
-    console.error(`Error exchanging Strava code:`, err);
-    throw err;
-  }
-}
-
-/**
- * Spotify-specific exchange logic
- */
-async function handleSpotifyExchange(userId: string, code: string) {
-  try {
-    const config = PROVIDERS.spotify;
-    const SPOTIFY_CLIENT_ID = Deno.env.get(config.clientIdEnv)!;
-    const SPOTIFY_CLIENT_SECRET = Deno.env.get(config.clientSecretEnv)!;
-    const SPOTIFY_REDIRECT_URI = Deno.env.get(config.redirectUriEnv)!;
-
-    if (!SPOTIFY_CLIENT_ID || !SPOTIFY_CLIENT_SECRET || !SPOTIFY_REDIRECT_URI) {
-      throw new Error("Missing Spotify environment variables");
-    }
-
-    const response = await fetch(config.tokenUrl, {
-      method: "POST",
-      headers: {
-        "Authorization": `Basic ${
-          btoa(`${SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`)
-        }`,
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: new URLSearchParams({
-        grant_type: "authorization_code",
-        code,
-        redirect_uri: SPOTIFY_REDIRECT_URI,
-      }),
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(
-        `Spotify token exchange failed: ${response.status} ${errorText}`,
-      );
-    }
-
-    const data = await response.json();
-    const { access_token, refresh_token, expires_in } = data;
-    const expires_at = Math.floor(Date.now() / 1000) + expires_in;
-
-    const { error: dbError } = await supabaseAdmin
-      .from(config.table)
-      .upsert(
-        {
-          user_id: userId,
-          access_token,
-          refresh_token,
-          expires_at,
-        },
-        { onConflict: "user_id" },
-      );
-
-    if (dbError) {
-      throw new Error(`Database insert failed: ${dbError.message}`);
-    }
-
-    console.log("Stored Spotify tokens in database for user", userId);
-  } catch (err) {
-    console.error(`Error exchanging Spotify code:`, err);
-    throw err;
-  }
-}
-
 if (import.meta.main) {
   Deno.serve(exchangeHandler);
 }
-
-/* To invoke locally:
-
-  1. Run `supabase start` (see: https://supabase.com/docs/reference/cli/supabase-start)
-  2. Make an HTTP request:
-
-  curl -i --location --request POST 'http://127.0.0.1:54381/functions/v1/exchange-oauth-token' \
-    --header 'Authorization: Bearer eyJhbGciOiJFUzI1NiIsImtpZCI6ImI4MTI2OWYxLTIxZDgtNGYyZS1iNzE5LWMyMjQwYTg0MGQ5MCIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjIwODQ1Nzc1MTF9.x8KBDbMFLwC_PBGEIayVzGt9RizkWJxB5ID_vR1LGR8soiUVO_1U3EYxYO0Xy5sT7tn37UnzqzdMC30T0InPiQ' \
-    --header 'Content-Type: application/json' \
-    --data '{"name":"Functions"}'
-
-*/

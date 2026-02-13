@@ -114,6 +114,11 @@ async function processActivity(payload: StravaWebhookPayload) {
   try {
     const userId = await getUserIdByAthleteId(athleteId);
 
+    if (!userId) {
+      console.warn("Could not find user for athlete", { athleteId });
+      return;
+    }
+
     // Fetch activity details from Strava and upsert into database
     const activity = await fetchStravaActivity(activityId, userId);
 
