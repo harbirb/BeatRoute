@@ -300,7 +300,7 @@ s3_secret_key = "env(S3_SECRET_KEY)"
 [functions.exchange-oauth-token]
 enabled = true
 verify_jwt = false
-import_map = "./functions/exchange-oauth-token/deno.json"
+import_map = "./functions/deno.json"
 # Uncomment to specify a custom file path to the entrypoint.
 # Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
 entrypoint = "./functions/exchange-oauth-token/index.ts"
@@ -311,7 +311,7 @@ entrypoint = "./functions/exchange-oauth-token/index.ts"
 [functions.strava-webhook]
 enabled = true
 verify_jwt = false
-import_map = "./functions/strava-webhook/deno.json"
+import_map = "./functions/deno.json"
 # Uncomment to specify a custom file path to the entrypoint.
 # Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
 entrypoint = "./functions/strava-webhook/index.ts"

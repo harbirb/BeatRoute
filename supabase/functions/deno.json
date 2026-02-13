@@ -4,7 +4,9 @@
     "supabase": "jsr:@supabase/supabase-js@2",
     "strava-sdk": "https://esm.sh/strava-sdk",
     "spotify-sdk": "npm:@spotify/web-api-ts-sdk",
-    "@/types/": "../../types/",
-    "@/shared/": "../_shared/"
+    "@std/assert": "jsr:@std/assert@1",
+    "@std/testing/mock": "jsr:@std/testing/mock",
+    "@/types/": "../types/",
+    "@/shared/": "./_shared/"
   }
 }
