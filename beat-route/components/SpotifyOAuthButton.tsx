@@ -18,7 +18,8 @@ export default function SpotifyOAuthButton() {
   const [request, response, promptAsync] = useAuthRequest(
     {
       clientId: process.env.EXPO_PUBLIC_SPOTIFY_CLIENT_ID || "",
-      scopes: ["user-read-email", "user-read-private", "playlist-read-private"],
+      // Spotify has removed multiple scopes recently. Removed deprecated scopes because it causes the API to ignore our requests
+      scopes: ["user-read-recently-played"],
       redirectUri: process.env.EXPO_PUBLIC_SPOTIFY_REDIRECT_URI || "",
       usePKCE: false,
       responseType: "code",
@@ -40,19 +41,25 @@ export default function SpotifyOAuthButton() {
       if (response?.type === "success") {
         const { code } = response.params;
         console.log("Spotify Authorization Code:", code);
-        
+
         setLoading(true);
         try {
-          const { data, error } = await supabase.functions.invoke("exchange-oauth-token", {
-            body: { provider: "spotify", code },
-          });
+          const { data, error } = await supabase.functions.invoke(
+            "exchange-oauth-token",
+            {
+              body: { provider: "spotify", code },
+            },
+          );
 
           if (error) throw error;
 
           Alert.alert("Success", "Spotify connected successfully!");
         } catch (error: any) {
           console.error("Error exchanging Spotify token:", error);
-          Alert.alert("Error", error.message || "Failed to exchange Spotify token");
+          Alert.alert(
+            "Error",
+            error.message || "Failed to exchange Spotify token",
+          );
         } finally {
           setLoading(false);
         }
