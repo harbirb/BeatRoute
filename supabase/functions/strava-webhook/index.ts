@@ -88,8 +88,7 @@ async function handleWebhookEvent(req: Request): Promise<Response> {
   // Handle Activity Events
   if (payload.object_type === "activity") {
     if (payload.aspect_type === "create" || payload.aspect_type === "update") {
-      // EdgeRuntime.waitUntil(processActivity(payload));
-      await processActivity(payload);
+      EdgeRuntime.waitUntil(processActivity(payload));
     } else if (payload.aspect_type === "delete") {
       EdgeRuntime.waitUntil(deleteActivityFromDatabase(payload));
     }
