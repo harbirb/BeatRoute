@@ -63,20 +63,21 @@ export async function fetchStravaActivity(
 
 export async function getUserIdByAthleteId(
   athleteId: number,
-): Promise<string> {
+): Promise<string | null> {
   const { data, error } = await supabaseAdmin
     .from("strava_tokens")
     .select("user_id")
     .eq("athlete_id", athleteId)
     .single();
 
-  if (error || !data) {
+  if (error) {
+    if (error.code === "PGRST116") return null; // No rows found
     throw new Error(`Failed to resolve user for athlete ${athleteId}`, {
       cause: error,
     });
   }
 
-  return data.user_id;
+  return data?.user_id ?? null;
 }
 
 async function upsertActivity(
