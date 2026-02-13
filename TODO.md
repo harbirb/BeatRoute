@@ -11,10 +11,6 @@
 
 FUNCTION TECH DEBT
 
-1. Missing deleteActivityFromDatabase
-   In strava-webhook/index.ts, the deletion logic for Strava activities is currently a TODO. When a user
-   deletes an activity on Strava, it won't be removed from your database.
-
 2. Handling Deauthorization
    When a user disconnects your app from their Strava settings, Strava sends a webhook with aspect_type:
    "update" and updates: { authorized: "false" }. Your current logic doesn't catch this, so you might continue

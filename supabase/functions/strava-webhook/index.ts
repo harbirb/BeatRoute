@@ -58,6 +58,15 @@ async function handleWebhookEvent(req: Request): Promise<Response> {
     return Response.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
+  // Handle Deauthorization
+  if (
+    payload.aspect_type === "update" &&
+    payload.updates?.authorized === "false"
+  ) {
+    await handleDeauthorization(payload);
+    return Response.json({ received: true });
+  }
+
   if (
     payload.aspect_type === "create" || payload.aspect_type === "update"
   ) {
@@ -100,6 +109,22 @@ async function processActivity(payload: StravaWebhookPayload) {
   } catch (error) {
     console.error("Failed to process activity", { activityId, error });
   }
+}
+
+async function handleDeauthorization(payload: StravaWebhookPayload) {
+  const { owner_id: athleteId } = payload;
+
+  const { error } = await supabaseAdmin
+    .from("strava_tokens")
+    .delete()
+    .eq("athlete_id", athleteId);
+
+  if (error) {
+    console.error("Failed to handle deauthorization", { athleteId, error });
+    return;
+  }
+
+  console.log("Successfully deauthorized athlete", { athleteId });
 }
 
 async function deleteActivityFromDatabase(payload: StravaWebhookPayload) {
