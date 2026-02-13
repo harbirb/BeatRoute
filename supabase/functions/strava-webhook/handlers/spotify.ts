@@ -1,6 +1,6 @@
 import type { StravaDetailedActivity } from "@/shared/stravaTypes.ts";
 import { PlayHistory, SpotifyApi } from "spotify-sdk";
-import { getToken } from "@/shared/tokens.ts";
+import { SupabaseSpotifyAccessTokenStrategy } from "@/shared/spotifyStrategy.ts";
 import type { Database } from "@/types/supabaseTypes.ts";
 import { supabaseAdmin } from "@/shared/supabaseAdmin.ts";
 
@@ -13,7 +13,11 @@ export async function fetchSongsForActivity(
   userId: string,
 ): Promise<void> {
   const { startTimeMs, endTimeMs } = getActivityStartEndTimes(activity);
-  const sdk = await createSpotifyClient(userId);
+  
+  // Initialize SDK with our custom strategy
+  const strategy = new SupabaseSpotifyAccessTokenStrategy(userId);
+  const sdk = new SpotifyApi(strategy);
+  
   const songs = await getSongsDuringActivity(sdk, startTimeMs, endTimeMs);
 
   if (songs.length === 0) {
@@ -67,23 +71,6 @@ function mapToSongRecord(song: PlayHistory): SongsInsert {
     album_art_url: song.track.album.images[0]?.url ?? null,
     spotify_url: song.track.external_urls.spotify,
   };
-}
-
-async function createSpotifyClient(userId: string): Promise<SpotifyApi> {
-  const SPOTIFY_ACCESS_TOKEN = await getToken(userId, "spotify");
-  if (!SPOTIFY_ACCESS_TOKEN) {
-    throw new Error("No Spotify access token found for user");
-  }
-
-  return SpotifyApi.withAccessToken(
-    Deno.env.get("SPOTIFY_CLIENT_ID")!,
-    {
-      access_token: SPOTIFY_ACCESS_TOKEN,
-      token_type: "Bearer",
-      expires_in: 3600, // Dummy value
-      refresh_token: "", // Dummy value
-    },
-  );
 }
 
 // Fetch songs played during the activity
