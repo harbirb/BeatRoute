@@ -2,6 +2,9 @@
 
 ### Frontend
 
-- use native navigation components
-- use react-native-safe-area-context
 - Add activity tracking
+- Fix stickers page
+- Add more stickers
+
+- Supabase production deployment
+- Make production build for iphone
