@@ -61,6 +61,24 @@ export async function fetchStravaActivity(
   return activity;
 }
 
+export async function getUserIdByAthleteId(
+  athleteId: number,
+): Promise<string> {
+  const { data, error } = await supabaseAdmin
+    .from("strava_tokens")
+    .select("user_id")
+    .eq("athlete_id", athleteId)
+    .single();
+
+  if (error || !data) {
+    throw new Error(`Failed to resolve user for athlete ${athleteId}`, {
+      cause: error,
+    });
+  }
+
+  return data.user_id;
+}
+
 async function upsertActivity(
   activity: StravaDetailedActivity,
   userId: string,

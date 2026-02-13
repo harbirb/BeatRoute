@@ -1,7 +1,7 @@
 import "edge-runtime";
-import { createClient } from "supabase";
 import { ProviderName, PROVIDERS } from "./providers.ts";
 import { StravaApi } from "strava-sdk";
+import { supabaseAdmin } from "./supabaseAdmin.ts";
 
 interface RefreshTokenResult {
   access_token: string;
@@ -10,11 +10,6 @@ interface RefreshTokenResult {
 }
 
 type RefreshHandler = (refreshToken: string) => Promise<RefreshTokenResult>;
-
-const supabaseAdmin = createClient(
-  Deno.env.get("SUPABASE_URL")!,
-  Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
-);
 
 const REFRESH_STRATEGIES: Record<ProviderName, RefreshHandler> = {
   strava: refreshStravaToken,

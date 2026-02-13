@@ -33,9 +33,11 @@ async function linkSongsToActivity(
     songRecords,
     { onConflict: "id" },
   );
+
   if (songError) {
-    console.error("Error upserting songs", songError);
-    return;
+    throw new Error(`Error upserting songs: ${songError.message}`, {
+      cause: songError,
+    });
   }
 
   const joinRecords = songs.map((song): SongsOnActivitiesInsert => ({
@@ -43,13 +45,16 @@ async function linkSongsToActivity(
     played_at: song.played_at,
     song_id: song.track.id,
   }));
+
   const { error: joinError } = await supabaseAdmin.from("activity_songs")
     .upsert(joinRecords, {
       onConflict: "activity_id, song_id, played_at",
     });
+
   if (joinError) {
-    console.error("Error upserting activity_songs", joinError);
-    return;
+    throw new Error(`Error upserting activity_songs: ${joinError.message}`, {
+      cause: joinError,
+    });
   }
 }
 
