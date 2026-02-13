@@ -103,7 +103,22 @@ async function processActivity(payload: StravaWebhookPayload) {
 }
 
 async function deleteActivityFromDatabase(payload: StravaWebhookPayload) {
-  // TODO: Delete activity from database
+  const { object_id: activityId } = payload;
+
+  const { error } = await supabaseAdmin
+    .from("activities")
+    .delete()
+    .eq("activity_id", activityId);
+
+  if (error) {
+    console.error("Failed to delete activity from database", {
+      activityId,
+      error,
+    });
+    return;
+  }
+
+  console.log("Successfully deleted activity from database", { activityId });
 }
 
 async function resolveUserIdFromStravaOwnerId(
