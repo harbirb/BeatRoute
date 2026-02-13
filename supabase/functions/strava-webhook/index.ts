@@ -63,22 +63,16 @@ async function handleWebhookEvent(req: Request): Promise<Response> {
     payload.aspect_type === "update" &&
     payload.updates?.authorized === "false"
   ) {
-    await handleDeauthorization(payload);
+    EdgeRuntime.waitUntil(handleDeauthorization(payload));
     return Response.json({ received: true });
   }
 
   if (
     payload.aspect_type === "create" || payload.aspect_type === "update"
   ) {
-    // Perform async processing here, return success response immediately
-    // EdgeRuntime.waitUntil(processActivity(payload));
-
-    // Perform synchronous processing for testing/logging locally
-    await processActivity(payload);
+    EdgeRuntime.waitUntil(processActivity(payload));
   } else if (payload.aspect_type === "delete") {
-    // EdgeRuntime.waitUntil(deleteActivityFromDatabase(payload));
-    await deleteActivityFromDatabase(payload);
-    return Response.json({ received: true });
+    EdgeRuntime.waitUntil(deleteActivityFromDatabase(payload));
   }
 
   return Response.json({ received: true });

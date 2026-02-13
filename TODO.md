@@ -11,11 +11,6 @@
 
 FUNCTION TECH DEBT
 
-2. Handling Deauthorization
-   When a user disconnects your app from their Strava settings, Strava sends a webhook with aspect_type:
-   "update" and updates: { authorized: "false" }. Your current logic doesn't catch this, so you might continue
-   trying to sync a disconnected account.
-
 3. Background Processing (waitUntil)
    Webhooks should respond to the sender (Strava) as quickly as possible (usually < 2s). Currently, you are
    await-ing the entire processing flow (fetching activity, fetching songs, database inserts) before
