@@ -19,10 +19,13 @@ const ExpoSecureStoreAdapter = {
   },
 };
 
-const supabaseUrl = process.env.EXPO_PUBLIC_LOCAL_SUPABASE_URL ||
-  process.env.EXPO_PUBLIC_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.EXPO_PUBLIC_LOCAL_SUPABASE_ANON_KEY ||
-  process.env.EXPO_PUBLIC_PUBLIC_SUPABASE_ANON_KEY;
+// Uncomment this to use prod backend
+const supabaseUrl = process.env.EXPO_PUBLIC_PUBLIC_SUPABASE_URL;
+const supabaseAnonKey = process.env.EXPO_PUBLIC_PUBLIC_SUPABASE_ANON_KEY;
+
+// Uncomment this to use local backend
+// const supabaseUrl = process.env.EXPO_PUBLIC_LOCAL_SUPABASE_URL;
+// const supabaseAnonKey = process.env.EXPO_PUBLIC_LOCAL_SUPABASE_ANON_KEY;
 
 export const supabase = createClient<Database>(supabaseUrl!, supabaseAnonKey!, {
   auth: {
