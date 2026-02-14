@@ -40,7 +40,6 @@ export default function LoginScreen() {
 
     const { error } = await supabase.auth.signInWithOtp({
       email,
-      options: { emailRedirectTo: redirectTo },
     });
 
     setLoading(false);

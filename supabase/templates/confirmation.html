@@ -35,17 +35,19 @@
     .otp-container {
       text-align: center;
       margin: 30px 0;
-      padding: 20px;
+      padding: 30px;
       background-color: #f9fafb;
       border-radius: 6px;
-      border: 1px solid #e5e7eb;
+      border: 2px dashed #e5e7eb;
     }
     .otp-code {
-      font-size: 32px;
+      font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+      font-size: 42px;
       font-weight: 700;
-      letter-spacing: 4px;
+      letter-spacing: 6px;
       color: #4f46e5;
       margin: 0;
+      user-select: all;
     }
     .footer {
       text-align: center;
@@ -62,10 +64,11 @@
     </div>
     <div class="content">
       <p>Hello,</p>
-      <p>Welcome to BeatRoute! Please use the following verification code to confirm your email address and finish setting up your account.</p>
+      <p>Welcome to BeatRoute! Please use the following code to confirm your email address and finish setting up your account.</p>
       <div class="otp-container">
-        <p class="otp-code">{{ .Token }}</p>
+        <div class="otp-code">{{ .Token }}</div>
       </div>
+      <p style="font-size: 14px; color: #6b7280; text-align: center;">This code expires in 1 hour.</p>
       <p>If you didn't sign up for BeatRoute, you can safely ignore this email.</p>
     </div>
     <div class="footer">
