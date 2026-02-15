@@ -29,6 +29,7 @@ Expected response:
 
 <!-- USE YOUR STRAVA ID, and ACTIVITY ID -->
 <!-- PUT A VALID TOKEN IN THE DB -->
+<!-- LOCAL WEBHOOK POSTS -->
 
 ```bash
 curl -i "http://127.0.0.1:54381/functions/v1/strava-webhook" \
@@ -37,6 +38,24 @@ curl -i "http://127.0.0.1:54381/functions/v1/strava-webhook" \
     "aspect_type": "update",
     "event_time": 1516126040,
     "object_id": 17309829452,
+    "object_type": "activity",
+    "owner_id": 28437315,
+    "subscription_id": 120475,
+    "updates": {
+      "title": "Messy"
+    }
+  }'
+```
+
+<!-- PROD WEBHOOK POSTS -->
+
+```bash
+curl -i "https://lcznqhfllcgmbtfexmmw.supabase.co/functions/v1/strava-webhook" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "aspect_type": "update",
+    "event_time": 1516126040,
+    "object_id": 17385791631,
     "object_type": "activity",
     "owner_id": 28437315,
     "subscription_id": 120475,

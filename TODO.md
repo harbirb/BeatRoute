@@ -8,9 +8,9 @@
 
 ## Frontend Deployment
 
-- Update env to use prod backend links ✅
-- Build and use on iphone directly
-- Make release/prod build instead of dev build
+- Fix header bug - i think getHeaderHeight is slow and makes it jump
+- Truncate long song titles (goes off screen)
+- Populate cards with elevation/HR data
 
 ## Backend Deployment
 
