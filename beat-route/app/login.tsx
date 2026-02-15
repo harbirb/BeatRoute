@@ -30,8 +30,7 @@ export default function LoginScreen() {
   const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState<"email" | "otp">("email");
-  const colorScheme = useColorScheme();
-  const theme = Colors[colorScheme ?? "light"];
+  const theme = Colors.light;
 
   async function signInWithEmail() {
     if (!email) return;

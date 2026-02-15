@@ -69,15 +69,13 @@ function RootNavigator() {
 }
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
-
   return (
-    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+    <ThemeProvider value={DefaultTheme}>
       <AuthProvider>
         <DataProvider>
           <SplashScreenController />
           <RootNavigator />
-          <StatusBar style="auto" />
+          <StatusBar style="dark" />
         </DataProvider>
       </AuthProvider>
     </ThemeProvider>
