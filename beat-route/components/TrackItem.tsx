@@ -14,8 +14,12 @@ export const TrackItem = ({ song }: { song: ActivitySong }) => (
     <View style={styles.trackContainer}>
       <Image source={song.albumArtUrl} style={styles.trackImage} />
       <View style={styles.trackInfo}>
-        <Text style={styles.trackTitle}>{song.title}</Text>
-        <Text style={styles.trackArtist}>{song.artists.join(", ")}</Text>
+        <Text style={styles.trackTitle} numberOfLines={1}>
+          {song.title}
+        </Text>
+        <Text style={styles.trackArtist} numberOfLines={1}>
+          {song.artists.join(", ")}
+        </Text>
       </View>
     </View>
   </Pressable>
@@ -33,6 +37,7 @@ const styles = StyleSheet.create({
   },
   trackInfo: {
     gap: 2,
+    flex: 1,
     justifyContent: "center",
   },
   trackTitle: {

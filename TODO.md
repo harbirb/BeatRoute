@@ -8,7 +8,6 @@
 
 ## Frontend Deployment
 
-- Fix header bug - i think getHeaderHeight is slow and makes it jump
 - Truncate long song titles (goes off screen)
 - Populate cards with elevation/HR data
 
