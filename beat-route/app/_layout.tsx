@@ -60,6 +60,7 @@ function RootNavigator() {
             presentation: "card",
             headerShown: true,
             headerBackButtonDisplayMode: "minimal",
+            headerTransparent: true,
           }}
         />
       </Stack.Protected>

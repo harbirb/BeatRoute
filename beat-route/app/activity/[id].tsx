@@ -18,15 +18,12 @@ import { TrackList } from "@/components/TrackList";
 import { FONT_SIZE, FONT_WEIGHT, SPACING } from "@/constants/theme";
 import Carousel from "@/components/Carousel";
 import Stickers from "@/components/Stickers";
-import { useHeaderHeight } from "@react-navigation/elements";
-
 export default function ActivityDetailScreen() {
   const { activities, loading } = useData();
   const { id } = useLocalSearchParams<{ id: string }>();
   const activity = activities.find((act: Activity) => act.id === id);
   const [activitySongData, setActivitySongData] = useState<ActivitySong[]>([]);
   const [songsLoading, setSongsLoading] = useState(true);
-  const headerHeight = useHeaderHeight();
 
   // load songs on mount
   useEffect(() => {
@@ -74,37 +71,41 @@ export default function ActivityDetailScreen() {
   };
 
   return (
-    <ScrollView
-      contentContainerStyle={[styles.container, { paddingTop: headerHeight }]}
-    >
-      <Stack.Screen
-        options={{ title: activity.name, headerTransparent: true }}
-      />
-      <DetailCard item={activity} />
-      {/* Playlist section */}
-      {activitySongData.length > 0 && (
+    <>
+      <Stack.Screen options={{ title: activity.name }} />
+      <ScrollView
+        contentInsetAdjustmentBehavior="automatic"
+        contentContainerStyle={styles.container}
+      >
+        <DetailCard item={activity} />
+        {/* Playlist section */}
+        {activitySongData.length > 0 && (
+          <View>
+            <View style={styles.playlistHeaderContainer}>
+              <Text style={styles.playlistHeader}>Playlist</Text>
+              <Button title="Copy" onPress={handleCopy}></Button>
+            </View>
+            <TrackList tracks={activitySongData} />
+          </View>
+        )}
+        {/* Sticker section */}
         <View>
           <View style={styles.playlistHeaderContainer}>
-            <Text style={styles.playlistHeader}>Playlist</Text>
-            <Button title="Copy" onPress={handleCopy}></Button>
+            <Text style={styles.playlistHeader}>Stickers</Text>
+            <Link
+              href={{
+                pathname: "/stickers-modal",
+                params: { id: activity.id },
+              }}
+              asChild
+            >
+              <Button title="Edit"></Button>
+            </Link>
           </View>
-          <TrackList tracks={activitySongData} />
+          <Carousel data={Stickers(activity)} />
         </View>
-      )}
-      {/* Sticker section */}
-      <View>
-        <View style={styles.playlistHeaderContainer}>
-          <Text style={styles.playlistHeader}>Stickers</Text>
-          <Link
-            href={{ pathname: "/stickers-modal", params: { id: activity.id } }}
-            asChild
-          >
-            <Button title="Edit"></Button>
-          </Link>
-        </View>
-        <Carousel data={Stickers(activity)} />
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </>
   );
 }
 
