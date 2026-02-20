@@ -78,7 +78,7 @@ export default function ActivityDetailScreen() {
         contentContainerStyle={styles.container}
       >
         <DetailCard item={activity} />
-        {/* Playlist section */}
+        {/* Playlist section here */}
         {activitySongData.length > 0 && (
           <View>
             <View style={styles.playlistHeaderContainer}>
