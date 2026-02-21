@@ -1,4 +1,4 @@
-import { Link, router } from "expo-router";
+import { router } from "expo-router";
 import {
   View,
   Text,
@@ -6,6 +6,7 @@ import {
   StyleSheet,
   ActivityIndicator,
   Button,
+  RefreshControl,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useData } from "@/context/DataContext";
@@ -13,7 +14,7 @@ import ActivityPreview from "@/components/ActivityPreview";
 import { FONT_SIZE, FONT_WEIGHT, SPACING } from "@/constants/theme";
 
 export default function HomeScreen() {
-  const { activities, loading } = useData();
+  const { activities, loading, refreshing, refresh } = useData();
 
   if (loading) {
     return <ActivityIndicator style={styles.centered} />;
@@ -30,6 +31,9 @@ export default function HomeScreen() {
         renderItem={({ item }) => <ActivityPreview item={item} />}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.scrollContainer}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={refresh} />
+        }
       />
     </SafeAreaView>
   );

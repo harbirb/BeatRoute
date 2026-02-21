@@ -39,6 +39,8 @@ export interface Activity {
 interface DataContextType {
   activities: Activity[];
   loading: boolean;
+  refreshing: boolean;
+  refresh: () => Promise<void>;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -46,6 +48,7 @@ const DataContext = createContext<DataContextType | undefined>(undefined);
 export const DataProvider = ({ children }: { children: ReactNode }) => {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     const loadData = async () => {
@@ -63,7 +66,19 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     loadData();
   }, []);
 
-  const value = { activities, loading };
+  const refresh = async () => {
+    setRefreshing(true);
+    try {
+      const data = await fetchActivities();
+      setActivities(data);
+    } catch (e) {
+      console.error("Failed to refresh activities", e);
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
+  const value = { activities, loading, refreshing, refresh };
 
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;
 };
