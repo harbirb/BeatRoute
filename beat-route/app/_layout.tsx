@@ -3,7 +3,7 @@ import {
   DefaultTheme,
   ThemeProvider,
 } from "@react-navigation/native";
-import { SplashScreen, Stack } from "expo-router";
+import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
 
@@ -17,7 +17,13 @@ export const unstable_settings = {
 };
 
 function RootNavigator() {
-  const { isLoggedIn, profile, isLoading } = useAuth();
+  const {
+    isLoggedIn,
+    profile,
+    isLoading,
+    hasSeenWelcome,
+    hasSeenConnectServices,
+  } = useAuth();
 
   if (isLoading) {
     return null;
@@ -25,18 +31,27 @@ function RootNavigator() {
 
   return (
     <Stack>
-      {/* Not logged in */}
-      <Stack.Protected guard={!isLoggedIn}>
+      {/* First launch: show welcome screen */}
+      <Stack.Protected guard={!hasSeenWelcome}>
+        <Stack.Screen name="welcome" options={{ headerShown: false }} />
+      </Stack.Protected>
+
+      {/* Has seen welcome, not logged in */}
+      <Stack.Protected guard={hasSeenWelcome && !isLoggedIn}>
         <Stack.Screen name="login" options={{ headerShown: false }} />
       </Stack.Protected>
 
-      {/* Logged in but no profile */}
-      <Stack.Protected guard={isLoggedIn && !profile?.name}>
+      {/* Logged in but hasn't completed setup (name + services step) */}
+      <Stack.Protected
+        guard={isLoggedIn && (!profile?.name || !hasSeenConnectServices)}
+      >
         <Stack.Screen name="profile-setup" options={{ headerShown: false }} />
       </Stack.Protected>
 
-      {/* Logged in and has profile */}
-      <Stack.Protected guard={isLoggedIn && profile?.name}>
+      {/* Fully onboarded */}
+      <Stack.Protected
+        guard={isLoggedIn && !!profile?.name && hasSeenConnectServices}
+      >
         <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen
           name="profile"
@@ -64,19 +79,20 @@ function RootNavigator() {
           }}
         />
       </Stack.Protected>
-      {/* <Stack.Screen name="+not-found" /> */}
     </Stack>
   );
 }
 
 export default function RootLayout() {
+  const colorScheme = useColorScheme();
+
   return (
-    <ThemeProvider value={DefaultTheme}>
+    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <AuthProvider>
         <DataProvider>
           <SplashScreenController />
           <RootNavigator />
-          <StatusBar style="dark" />
+          <StatusBar style="auto" />
         </DataProvider>
       </AuthProvider>
     </ThemeProvider>

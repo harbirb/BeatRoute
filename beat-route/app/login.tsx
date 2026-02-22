@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   StyleSheet,
   TextInput,
@@ -10,11 +10,12 @@ import {
   Platform,
   ActivityIndicator,
   useColorScheme,
+  Image,
 } from "react-native";
 import { Stack } from "expo-router";
-import { makeRedirectUri } from "expo-auth-session";
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { ProgressDots } from "../components/ProgressDots";
 
 import { supabase } from "../lib/supabase";
 import {
@@ -30,16 +31,23 @@ export default function LoginScreen() {
   const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState<"email" | "otp">("email");
-  const theme = Colors.light;
+  const [resendCooldown, setResendCooldown] = useState(0);
+
+  const colorScheme = useColorScheme();
+  const theme = colorScheme === "dark" ? Colors.dark : Colors.light;
+
+  // Countdown timer for resend cooldown
+  useEffect(() => {
+    if (resendCooldown <= 0) return;
+    const timer = setTimeout(() => setResendCooldown((c) => c - 1), 1000);
+    return () => clearTimeout(timer);
+  }, [resendCooldown]);
 
   async function signInWithEmail() {
     if (!email) return;
     setLoading(true);
-    const redirectTo = makeRedirectUri();
 
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-    });
+    const { error } = await supabase.auth.signInWithOtp({ email });
 
     setLoading(false);
 
@@ -47,12 +55,19 @@ export default function LoginScreen() {
       Alert.alert("Error", error.message);
     } else {
       setStep("otp");
+      setResendCooldown(60);
     }
   }
+
+  // Auto-submit when all 6 digits are entered
+  useEffect(() => {
+    if (otp.length === 6) verifyOtp();
+  }, [otp]);
 
   async function verifyOtp() {
     if (!otp) return;
     setLoading(true);
+
     const { error } = await supabase.auth.verifyOtp({
       email,
       token: otp,
@@ -74,6 +89,20 @@ export default function LoginScreen() {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.content}
       >
+        {/* Brand */}
+        <View style={styles.brandArea}>
+          <Image
+            source={require("../assets/images/icon.png")}
+            style={styles.brandLogo}
+            resizeMode="contain"
+          />
+          <Text style={[styles.brandName, { color: theme.text }]}>
+            BeatRoute
+          </Text>
+        </View>
+
+        <ProgressDots total={2} current={1} />
+
         <View style={styles.header}>
           <Text style={[styles.title, { color: theme.text }]}>
             {step === "email" ? "Welcome" : "Check your inbox"}
@@ -124,7 +153,6 @@ export default function LoginScreen() {
                   placeholderTextColor={theme.icon}
                   keyboardType="number-pad"
                   maxLength={6}
-                  onSubmitEditing={verifyOtp}
                   returnKeyType="done"
                 />
                 <TouchableOpacity
@@ -145,11 +173,31 @@ export default function LoginScreen() {
                   setStep("email");
                   setEmail("");
                   setOtp("");
+                  setResendCooldown(0);
                 }}
                 style={styles.backButton}
               >
                 <Text style={[styles.backButtonText, { color: theme.tint }]}>
                   Change email
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={resendCooldown === 0 ? signInWithEmail : undefined}
+                style={styles.backButton}
+                disabled={resendCooldown > 0}
+              >
+                <Text
+                  style={[
+                    styles.backButtonText,
+                    {
+                      color: resendCooldown > 0 ? theme.icon : theme.tint,
+                    },
+                  ]}
+                >
+                  {resendCooldown > 0
+                    ? `Resend code in ${resendCooldown}s`
+                    : "Resend code"}
                 </Text>
               </TouchableOpacity>
             </>
@@ -168,14 +216,27 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: SPACING.large,
     justifyContent: "center",
+    gap: SPACING.large,
+  },
+  brandArea: {
+    alignItems: "center",
+    gap: SPACING.small,
+    marginBottom: SPACING.small,
+  },
+  brandLogo: {
+    width: 64,
+    height: 64,
+  },
+  brandName: {
+    fontSize: FONT_SIZE.large,
+    fontWeight: FONT_WEIGHT.bold,
   },
   header: {
-    marginBottom: SPACING.large * 2,
+    gap: SPACING.small,
   },
   title: {
     fontSize: FONT_SIZE.xlarge,
     fontWeight: FONT_WEIGHT.bold,
-    marginBottom: SPACING.small,
   },
   subtitle: {
     fontSize: FONT_SIZE.medium,
