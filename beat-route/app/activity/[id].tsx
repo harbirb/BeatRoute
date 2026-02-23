@@ -46,18 +46,6 @@ export default function ActivityDetailScreen() {
     loadSongs();
   }, [id]);
 
-  if (loading || songsLoading) {
-    return <ActivityIndicator style={styles.centered} />;
-  }
-
-  if (!activity) {
-    return (
-      <View style={styles.centered}>
-        <Text>Activity not found</Text>
-      </View>
-    );
-  }
-
   const handleCopy = async () => {
     try {
       const trackListText = activitySongData
@@ -72,39 +60,46 @@ export default function ActivityDetailScreen() {
 
   return (
     <>
-      <Stack.Screen options={{ title: activity.name }} />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        contentContainerStyle={styles.container}
-      >
-        <DetailCard item={activity} />
-        {/* Playlist section here */}
-        {activitySongData.length > 0 && (
+      {/* Always set the title immediately — activity is already in memory from home screen */}
+      <Stack.Screen options={{ title: activity?.name ?? "" }} />
+      {loading || songsLoading ? (
+        <ActivityIndicator style={styles.centered} />
+      ) : !activity ? (
+        <View style={styles.centered}>
+          <Text>Activity not found</Text>
+        </View>
+      ) : (
+        <ScrollView
+          contentInsetAdjustmentBehavior="automatic"
+          contentContainerStyle={styles.container}
+        >
+          <DetailCard item={activity} />
+          {activitySongData.length > 0 && (
+            <View>
+              <View style={styles.playlistHeaderContainer}>
+                <Text style={styles.playlistHeader}>Playlist</Text>
+                <Button title="Copy" onPress={handleCopy} />
+              </View>
+              <TrackList tracks={activitySongData} />
+            </View>
+          )}
           <View>
             <View style={styles.playlistHeaderContainer}>
-              <Text style={styles.playlistHeader}>Playlist</Text>
-              <Button title="Copy" onPress={handleCopy}></Button>
+              <Text style={styles.playlistHeader}>Stickers</Text>
+              <Link
+                href={{
+                  pathname: "/stickers-modal",
+                  params: { id: activity.id },
+                }}
+                asChild
+              >
+                <Button title="Edit" />
+              </Link>
             </View>
-            <TrackList tracks={activitySongData} />
+            <Carousel data={Stickers(activity)} />
           </View>
-        )}
-        {/* Sticker section */}
-        <View>
-          <View style={styles.playlistHeaderContainer}>
-            <Text style={styles.playlistHeader}>Stickers</Text>
-            <Link
-              href={{
-                pathname: "/stickers-modal",
-                params: { id: activity.id },
-              }}
-              asChild
-            >
-              <Button title="Edit"></Button>
-            </Link>
-          </View>
-          <Carousel data={Stickers(activity)} />
-        </View>
-      </ScrollView>
+        </ScrollView>
+      )}
     </>
   );
 }
