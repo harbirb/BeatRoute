@@ -34,12 +34,12 @@ export default function ProfileSetupScreen() {
   const {
     session,
     profile,
-    isStravaConnected,
-    isSpotifyConnected,
     refetchProfile,
-    refetchConnectedServices,
     markConnectServicesSeen,
   } = useAuth();
+
+  const stravaConnected = !!profile?.strava_connected;
+  const spotifyConnected = !!profile?.spotify_connected;
 
   const [name, setName] = useState(profile?.name ?? "");
   const [loading, setLoading] = useState(false);
@@ -65,6 +65,7 @@ export default function ProfileSetupScreen() {
   }
 
   const canContinue = name.trim().length > 0;
+  const cardBackground = colorScheme === "dark" ? "#1a1a1a" : "#f9f9f9";
 
   return (
     <SafeAreaView
@@ -123,22 +124,16 @@ export default function ProfileSetupScreen() {
               style={[
                 styles.serviceCard,
                 {
-                  borderColor: isStravaConnected ? theme.tint : theme.icon,
-                  backgroundColor:
-                    colorScheme === "dark" ? "#1a1a1a" : "#f9f9f9",
+                  borderColor: stravaConnected ? theme.tint : theme.icon,
+                  backgroundColor: cardBackground,
                 },
               ]}
             >
               <View style={styles.serviceHeader}>
-                <View style={styles.serviceTitleRow}>
-                  <Text style={[styles.serviceName, { color: theme.text }]}>
-                    Strava
-                  </Text>
-                  <Text style={[styles.serviceTag, { color: "#fc4c02" }]}>
-                    Required
-                  </Text>
-                </View>
-                {isStravaConnected && (
+                <Text style={[styles.serviceName, { color: theme.text }]}>
+                  Strava
+                </Text>
+                {stravaConnected && (
                   <View style={styles.connectedBadge}>
                     <Ionicons
                       name="checkmark-circle"
@@ -154,7 +149,7 @@ export default function ProfileSetupScreen() {
               <Text style={[styles.serviceDescription, { color: theme.icon }]}>
                 Imports your workout activities.
               </Text>
-              {!isStravaConnected && (
+              {!stravaConnected && (
                 <View style={styles.buttonWrapper}>
                   <StravaOAuthButton />
                 </View>
@@ -166,22 +161,16 @@ export default function ProfileSetupScreen() {
               style={[
                 styles.serviceCard,
                 {
-                  borderColor: isSpotifyConnected ? theme.tint : theme.icon,
-                  backgroundColor:
-                    colorScheme === "dark" ? "#1a1a1a" : "#f9f9f9",
+                  borderColor: spotifyConnected ? theme.tint : theme.icon,
+                  backgroundColor: cardBackground,
                 },
               ]}
             >
               <View style={styles.serviceHeader}>
-                <View style={styles.serviceTitleRow}>
-                  <Text style={[styles.serviceName, { color: theme.text }]}>
-                    Spotify
-                  </Text>
-                  <Text style={[styles.serviceTag, { color: "#1DB954" }]}>
-                    Recommended
-                  </Text>
-                </View>
-                {isSpotifyConnected && (
+                <Text style={[styles.serviceName, { color: theme.text }]}>
+                  Spotify
+                </Text>
+                {spotifyConnected && (
                   <View style={styles.connectedBadge}>
                     <Ionicons
                       name="checkmark-circle"
@@ -197,7 +186,7 @@ export default function ProfileSetupScreen() {
               <Text style={[styles.serviceDescription, { color: theme.icon }]}>
                 Matches songs to your workouts.
               </Text>
-              {!isSpotifyConnected && (
+              {!spotifyConnected && (
                 <View style={styles.buttonWrapper}>
                   <SpotifyOAuthButton />
                 </View>
@@ -207,10 +196,9 @@ export default function ProfileSetupScreen() {
             {/* Refresh link */}
             <TouchableOpacity
               style={styles.refreshButton}
-              onPress={refetchConnectedServices}
+              onPress={refetchProfile}
             >
               <Text style={[styles.refreshText, { color: theme.tint }]}>
-                {/* TODO change this so user does not have to check agian, it should be automatic */}
                 Check again
               </Text>
             </TouchableOpacity>
@@ -295,20 +283,11 @@ const styles = StyleSheet.create({
   serviceHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "flex-start",
-  },
-  serviceTitleRow: {
-    flexDirection: "row",
     alignItems: "center",
-    gap: SPACING.small,
   },
   serviceName: {
     fontSize: FONT_SIZE.large,
     fontWeight: FONT_WEIGHT.bold,
-  },
-  serviceTag: {
-    fontSize: FONT_SIZE.small,
-    fontWeight: FONT_WEIGHT.medium,
   },
   serviceDescription: {
     fontSize: FONT_SIZE.small,
