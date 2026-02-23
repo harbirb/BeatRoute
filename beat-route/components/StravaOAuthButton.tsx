@@ -4,17 +4,19 @@ import * as WebBrowser from "expo-web-browser";
 import { useAuthRequest } from "expo-auth-session";
 import { supabase } from "@/lib/supabase";
 
-// Complete the auth session if we're in a web browser environment
 WebBrowser.maybeCompleteAuthSession();
 
-// Strava OAuth endpoints
 const discovery = {
   authorizationEndpoint: "https://www.strava.com/oauth/mobile/authorize",
   tokenEndpoint: "https://www.strava.com/oauth/token",
   revocationEndpoint: "https://www.strava.com/oauth/deauthorize",
 };
 
-export default function StravaOAuthButton() {
+type Props = {
+  onConnected?: () => void;
+};
+
+export default function StravaOAuthButton({ onConnected }: Props) {
   const [loading, setLoading] = useState(false);
   const [request, response, promptAsync] = useAuthRequest(
     {
@@ -30,29 +32,20 @@ export default function StravaOAuthButton() {
   );
 
   useEffect(() => {
-    if (request) {
-      console.log("Strava Redirect URI:", request.redirectUri);
-    }
-  }, [request]);
-
-  useEffect(() => {
     const handleResponse = async () => {
       if (response?.type === "success") {
         const { code } = response.params;
-        console.log("Strava Authorization Code:", code);
-
         setLoading(true);
         try {
-          const { data, error } = await supabase.functions.invoke("exchange-oauth-token", {
-            body: { provider: "strava", code },
-          });
-
+          const { error } = await supabase.functions.invoke(
+            "exchange-oauth-token",
+            { body: { provider: "strava", code } },
+          );
           if (error) throw error;
-
-          Alert.alert("Success", "Strava connected successfully!");
+          onConnected?.();
         } catch (error: any) {
           console.error("Error exchanging Strava token:", error);
-          Alert.alert("Error", error.message || "Failed to exchange Strava token");
+          Alert.alert("Error", error.message || "Failed to connect Strava");
         } finally {
           setLoading(false);
         }
@@ -75,9 +68,7 @@ export default function StravaOAuthButton() {
     <Button
       disabled={!request || loading}
       title="Connect Strava"
-      onPress={() => {
-        promptAsync();
-      }}
+      onPress={() => promptAsync()}
     />
   );
 }

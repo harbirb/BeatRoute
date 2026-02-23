@@ -4,21 +4,22 @@ import * as WebBrowser from "expo-web-browser";
 import { useAuthRequest } from "expo-auth-session";
 import { supabase } from "@/lib/supabase";
 
-// Complete the auth session if we're in a web browser environment
 WebBrowser.maybeCompleteAuthSession();
 
-// Spotify OAuth endpoints
 const discovery = {
   authorizationEndpoint: "https://accounts.spotify.com/authorize",
   tokenEndpoint: "https://accounts.spotify.com/api/token",
 };
 
-export default function SpotifyOAuthButton() {
+type Props = {
+  onConnected?: () => void;
+};
+
+export default function SpotifyOAuthButton({ onConnected }: Props) {
   const [loading, setLoading] = useState(false);
   const [request, response, promptAsync] = useAuthRequest(
     {
       clientId: process.env.EXPO_PUBLIC_SPOTIFY_CLIENT_ID || "",
-      // Spotify has removed multiple scopes recently. Removed deprecated scopes because it causes the API to ignore our requests
       scopes: ["user-read-recently-played"],
       redirectUri: process.env.EXPO_PUBLIC_SPOTIFY_REDIRECT_URI || "",
       usePKCE: false,
@@ -31,35 +32,20 @@ export default function SpotifyOAuthButton() {
   );
 
   useEffect(() => {
-    if (request) {
-      console.log("Spotify Redirect URI:", request.redirectUri);
-    }
-  }, [request]);
-
-  useEffect(() => {
     const handleResponse = async () => {
       if (response?.type === "success") {
         const { code } = response.params;
-        console.log("Spotify Authorization Code:", code);
-
         setLoading(true);
         try {
-          const { data, error } = await supabase.functions.invoke(
+          const { error } = await supabase.functions.invoke(
             "exchange-oauth-token",
-            {
-              body: { provider: "spotify", code },
-            },
+            { body: { provider: "spotify", code } },
           );
-
           if (error) throw error;
-
-          Alert.alert("Success", "Spotify connected successfully!");
+          onConnected?.();
         } catch (error: any) {
           console.error("Error exchanging Spotify token:", error);
-          Alert.alert(
-            "Error",
-            error.message || "Failed to exchange Spotify token",
-          );
+          Alert.alert("Error", error.message || "Failed to connect Spotify");
         } finally {
           setLoading(false);
         }
@@ -82,10 +68,8 @@ export default function SpotifyOAuthButton() {
     <Button
       disabled={!request || loading}
       title="Connect Spotify"
-      color="#1DB954" // Spotify Green
-      onPress={() => {
-        promptAsync({ preferEphemeralSession: true });
-      }}
+      color="#1DB954"
+      onPress={() => promptAsync({ preferEphemeralSession: true })}
     />
   );
 }

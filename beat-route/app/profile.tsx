@@ -117,7 +117,7 @@ export default function ProfileScreen() {
           </Text>
           {!stravaConnected && (
             <View style={styles.buttonWrapper}>
-              <StravaOAuthButton />
+              <StravaOAuthButton onConnected={refetchProfile} />
             </View>
           )}
         </View>
@@ -160,19 +160,10 @@ export default function ProfileScreen() {
           </Text>
           {!spotifyConnected && (
             <View style={styles.buttonWrapper}>
-              <SpotifyOAuthButton />
+              <SpotifyOAuthButton onConnected={refetchProfile} />
             </View>
           )}
         </View>
-
-        <TouchableOpacity
-          style={styles.refreshButton}
-          onPress={refetchProfile}
-        >
-          <Text style={[styles.refreshText, { color: theme.tint }]}>
-            Check again
-          </Text>
-        </TouchableOpacity>
       </View>
 
       {/* Sign out */}
@@ -263,15 +254,6 @@ const styles = StyleSheet.create({
   },
   buttonWrapper: {
     marginTop: SPACING.xsmall,
-  },
-  refreshButton: {
-    alignSelf: "center",
-    padding: SPACING.small,
-    marginTop: SPACING.xsmall,
-  },
-  refreshText: {
-    fontSize: FONT_SIZE.medium,
-    fontWeight: FONT_WEIGHT.medium,
   },
   signOutButton: {
     borderWidth: 1,
