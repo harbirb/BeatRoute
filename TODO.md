@@ -9,6 +9,7 @@
 ## Frontend Deployment
 
 - Populate cards with elevation/HR data
+- Make onboarding flow smoother
 
 ## Backend Deployment
 
