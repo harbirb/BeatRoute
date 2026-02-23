@@ -1,0 +1,1 @@
+ALTER TABLE profiles ADD COLUMN strava_connected boolean DEFAULT false; ALTER TABLE profiles ADD COLUMN spotify_connected boolean DEFAULT false;

@@ -60,6 +60,15 @@ export const exchangeHandler = async (req: Request) => {
       throw new Error(`Database insert failed: ${dbError.message}`);
     }
 
+    const { error: profileError } = await supabaseAdmin
+      .from("profiles")
+      .update({ [`${provider}_connected`]: true })
+      .eq("id", userId);
+
+    if (profileError) {
+      throw new Error(`Profile update failed: ${profileError.message}`);
+    }
+
     console.log(`Stored ${provider} tokens in database for user`, userId);
 
     return Response.json({ msg: "OAuth token exchanged successfully" }, {
