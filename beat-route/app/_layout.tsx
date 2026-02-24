@@ -78,6 +78,13 @@ function RootNavigator() {
             headerTransparent: true,
           }}
         />
+        <Stack.Screen
+          name="record"
+          options={{
+            presentation: "fullScreenModal",
+            headerShown: false,
+          }}
+        />
       </Stack.Protected>
     </Stack>
   );
