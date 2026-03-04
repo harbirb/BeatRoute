@@ -34,6 +34,7 @@ export interface Activity {
   averageSpeedKph?: number;
   pace?: string;
   polyline?: string;
+  startLatLng?: [number, number];
 }
 
 interface DataContextType {

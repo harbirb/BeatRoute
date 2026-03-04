@@ -2,22 +2,7 @@ import { View, StyleSheet } from "react-native";
 import { Activity } from "@/context/DataContext";
 import Card from "@/components/ui/Card";
 import PropertyValuePair from "@/components/PropertyValuePair";
-
-function formatTime(seconds: number): string {
-  const hrs = Math.floor(seconds / 3600);
-  const mins = Math.floor((seconds % 3600) / 60);
-  const secs = seconds % 60;
-
-  if (hrs > 0) {
-    return `${hrs}:${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
-  }
-  return `${mins}:${secs.toString().padStart(2, "0")}`;
-}
-
-function formatDistance(meters: number): string {
-  const km = meters / 1000;
-  return `${km.toFixed(1)} km`;
-}
+import { formatTime, formatDistance } from "@/lib/format";
 
 export const DetailCard = ({ item }: { item: Activity }) => {
   const details = [

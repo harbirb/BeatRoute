@@ -61,8 +61,18 @@ export async function fetchActivities(): Promise<Activity[]> {
         distanceInMeters,
       ),
       polyline: row.summary_polyline || undefined,
+      startLatLng: extractStartLatLng(row.raw_data),
     };
   });
+}
+
+function extractStartLatLng(rawData: unknown): [number, number] | undefined {
+  if (!rawData || typeof rawData !== "object") return undefined;
+  const latlng = (rawData as Record<string, unknown>)["start_latlng"];
+  if (Array.isArray(latlng) && latlng.length === 2) {
+    return [latlng[0] as number, latlng[1] as number];
+  }
+  return undefined;
 }
 
 function getDefaultActivityName(type: ActivityType, startTime: string | null): string {
