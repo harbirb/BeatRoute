@@ -11,9 +11,15 @@
 - Populate cards with elevation/HR data
 - Make onboarding flow smoother
   - put spotify behind feature flag
-
 - Add tracking feature
 
 ## Backend Deployment
 
 - PENDING: move webhook subscription to new project
+
+STEPS
+
+- Fix data issues on cards
+- Fix stickers
+- Upload to appstore
+- stop paying render service

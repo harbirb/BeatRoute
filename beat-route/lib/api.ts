@@ -47,7 +47,7 @@ export async function fetchActivities(): Promise<Activity[]> {
     return {
       id: row.activity_id.toString(),
       type,
-      name: row.name || "Untitled " + type,
+      name: row.name || getDefaultActivityName(type, row.start_time),
       date: row.start_time || new Date().toISOString(),
       durationInSeconds,
       distanceInMeters,
@@ -63,6 +63,26 @@ export async function fetchActivities(): Promise<Activity[]> {
       polyline: row.summary_polyline || undefined,
     };
   });
+}
+
+function getDefaultActivityName(type: ActivityType, startTime: string | null): string {
+  const typeLabel: Record<ActivityType, string> = {
+    run: "Run",
+    ride: "Ride",
+    hike: "Hike",
+    walk: "Walk",
+    other: "Activity",
+  };
+
+  if (!startTime) return `Morning ${typeLabel[type]}`;
+
+  const hour = new Date(startTime).getHours();
+  let timeOfDay = "Morning";
+  if (hour >= 12 && hour < 17) timeOfDay = "Afternoon";
+  else if (hour >= 17 && hour < 21) timeOfDay = "Evening";
+  else if (hour >= 21 || hour < 5) timeOfDay = "Night";
+
+  return `${timeOfDay} ${typeLabel[type]}`;
 }
 
 function getActivityType(activityType: string | null) {
