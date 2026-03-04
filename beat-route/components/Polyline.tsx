@@ -8,10 +8,18 @@ const PADDING = 10;
 
 type PolylineProps = {
   encodedPolyline: string;
-  style: StickerStyle;
+  style?: StickerStyle;
+  size?: number;
 };
 
-export default function Polyline({ encodedPolyline, style }: PolylineProps) {
+const defaultStyle: StickerStyle = {
+  color: "#000000",
+  fontWeight: "normal",
+  fontSize: 14,
+  strokeWidth: 2,
+};
+
+export default function Polyline({ encodedPolyline, style = defaultStyle, size = 300 }: PolylineProps) {
   // decode polyline to lat/lng points
   const decodedPoints = polyline.decode(encodedPolyline);
 
@@ -38,7 +46,7 @@ export default function Polyline({ encodedPolyline, style }: PolylineProps) {
 
   // calculate scaling based on longest side
   // TODO: make size dynamic based on screen size or parent size container
-  const baseSize = 300;
+  const baseSize = size;
   const scale = baseSize / longestSide;
 
   // calculate dimensions with padding (avoid clipping)
