@@ -15,11 +15,6 @@
 
 ## Backend Deployment
 
-- PENDING: move webhook subscription to new project
-
-STEPS
-
-- Fix data issues on cards
-- Fix stickers
-- Upload to appstore
-- stop paying render service
+- Setup edge func to consume webhook updates
+- Setup edge function to upload to strava
+- Move webhook subscription to new project

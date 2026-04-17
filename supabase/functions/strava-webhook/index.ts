@@ -3,6 +3,7 @@ import "edge-runtime";
 import {
   fetchStravaActivity,
   getUserIdByAthleteId,
+  updateStravaActivityDescription,
 } from "./handlers/strava.ts";
 import { fetchSongsForActivity } from "./handlers/spotify.ts";
 import { supabaseAdmin } from "@/shared/supabaseAdmin.ts";
@@ -14,6 +15,7 @@ interface StravaWebhookPayload {
   owner_id: number;
   updates?: {
     authorized?: "false" | string;
+    title?: string;
     [key: string]: unknown;
   };
   subscription_id?: number;
@@ -87,6 +89,11 @@ async function handleWebhookEvent(req: Request): Promise<Response> {
 
   // Handle Activity Events
   if (payload.object_type === "activity") {
+    if (payload.aspect_type === "update" && payload.updates?.title === "Moo") {
+      await handleMooTitleUpdate(payload);
+      return Response.json({ received: true, branch: "moo-title-update" });
+    }
+
     if (payload.aspect_type === "create" || payload.aspect_type === "update") {
       EdgeRuntime.waitUntil(processActivity(payload));
     } else if (payload.aspect_type === "delete") {
@@ -119,13 +126,7 @@ async function processActivity(payload: StravaWebhookPayload) {
       return;
     }
 
-    // Fetch activity details from Strava and upsert into database
-    const activity = await fetchStravaActivity(activityId, userId);
-
-    // Fetch songs from Spotify and upsert into database (including join table)
-    await fetchSongsForActivity(activity, userId);
-
-    console.log("Successfully processed activity", { activityId, userId });
+    await syncActivity(activityId, userId);
   } catch (error) {
     console.error("Failed to process activity", {
       activityId,
@@ -133,6 +134,12 @@ async function processActivity(payload: StravaWebhookPayload) {
       error: error instanceof Error ? error.message : error,
     });
   }
+}
+
+async function syncActivity(activityId: number, userId: string) {
+  const activity = await fetchStravaActivity(activityId, userId);
+  await fetchSongsForActivity(activity, userId);
+  console.log("Successfully processed activity", { activityId, userId });
 }
 
 async function handleDeauthorization(payload: StravaWebhookPayload) {
@@ -168,4 +175,58 @@ async function deleteActivityFromDatabase(payload: StravaWebhookPayload) {
   }
 
   console.log("Successfully deleted activity from database", { activityId });
+}
+
+async function handleMooTitleUpdate(payload: StravaWebhookPayload) {
+  const { object_id: activityId, owner_id: athleteId } = payload;
+
+  console.log("Moo title branch triggered", { activityId, athleteId });
+
+  const userId = await getUserIdByAthleteId(athleteId);
+  if (!userId) {
+    console.warn("Could not find user for athlete", { athleteId });
+    return;
+  }
+
+  await syncActivity(activityId, userId);
+
+  const description = await buildSongDescription(activityId);
+  if (!description) {
+    console.log("No songs found, skipping description update", { activityId });
+    return;
+  }
+
+  await updateStravaActivityDescription(activityId, userId, description);
+}
+
+async function buildSongDescription(
+  activityId: number,
+): Promise<string | null> {
+  const { data, error } = await supabaseAdmin
+    .from("activity_songs")
+    .select("played_at, songs(title, artists)")
+    .eq("activity_id", activityId)
+    .order("played_at", { ascending: true });
+
+  if (error) {
+    console.error("Failed to fetch songs for description", {
+      activityId,
+      error,
+    });
+    return null;
+  }
+
+  if (!data || data.length === 0) return null;
+
+  const lines = data.map((item) => {
+    const song = item.songs as unknown as
+      | { title: string; artists: string[] }
+      | null;
+    if (!song) return null;
+    return `${song.title} - ${song.artists.join(", ")}`;
+  }).filter(Boolean);
+
+  if (lines.length === 0) return null;
+
+  return lines.join("\n");
 }

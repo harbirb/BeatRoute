@@ -61,6 +61,36 @@ export async function fetchStravaActivity(
   return activity;
 }
 
+export async function updateStravaActivityDescription(
+  activityId: number,
+  userId: string,
+  description: string,
+): Promise<void> {
+  const accessToken = await getToken(userId, "strava");
+
+  const res = await fetch(
+    `https://www.strava.com/api/v3/activities/${activityId}`,
+    {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ description }),
+    },
+  );
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => null);
+    throw new Error(
+      `Failed to update Strava activity description: ${res.status} ${res.statusText}`,
+      { cause: errorData },
+    );
+  }
+
+  console.log("Successfully updated activity description", { activityId });
+}
+
 export async function getUserIdByAthleteId(
   athleteId: number,
 ): Promise<string | null> {
