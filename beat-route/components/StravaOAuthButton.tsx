@@ -21,7 +21,7 @@ export default function StravaOAuthButton({ onConnected }: Props) {
   const [request, response, promptAsync] = useAuthRequest(
     {
       clientId: process.env.EXPO_PUBLIC_STRAVA_CLIENT_ID || "",
-      scopes: ["activity:read_all"],
+      scopes: ["read", "activity:read_all", "activity:write"],
       redirectUri: process.env.EXPO_PUBLIC_STRAVA_REDIRECT_URI || "",
       responseType: "code",
       extraParams: {
