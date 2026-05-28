@@ -13,11 +13,11 @@ export async function fetchSongsForActivity(
   userId: string,
 ): Promise<void> {
   const { startTimeMs, endTimeMs } = getActivityStartEndTimes(activity);
-  
+
   // Initialize SDK with our custom strategy
   const strategy = new SupabaseSpotifyAccessTokenStrategy(userId);
   const sdk = new SpotifyApi(strategy);
-  
+
   const songs = await getSongsDuringActivity(sdk, startTimeMs, endTimeMs);
 
   if (songs.length === 0) {
@@ -33,8 +33,9 @@ async function linkSongsToActivity(
   activity: StravaDetailedActivity,
 ) {
   const songRecords = songs.map(mapToSongRecord);
+  const uniqueSongRecords = Array.from(new Map(songRecords.map((s) => [s.id, s])).values());
   const { error: songError } = await supabaseAdmin.from("songs").upsert(
-    songRecords,
+    uniqueSongRecords,
     { onConflict: "id" },
   );
 
