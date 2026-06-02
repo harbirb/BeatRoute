@@ -67,6 +67,7 @@ export async function updateStravaActivityDescription(
   description: string,
 ): Promise<void> {
   const accessToken = await getToken(userId, "strava");
+  const name = ""; // Clear activity name
 
   const res = await fetch(
     `https://www.strava.com/api/v3/activities/${activityId}`,
@@ -76,7 +77,7 @@ export async function updateStravaActivityDescription(
         Authorization: `Bearer ${accessToken}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ description }),
+      body: JSON.stringify({ name, description }),
     },
   );
 
